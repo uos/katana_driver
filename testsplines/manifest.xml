@@ -1,0 +1,16 @@
+<package>
+  <description brief="testsplines">
+
+     testsplines
+
+  </description>
+  <author>Martin Günther</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/testsplines</url>
+  <depend package="roscpp"/>
+  <depend package="trajectory_msgs"/>
+
+</package>
+
+
