@@ -1,0 +1,17 @@
+<package>
+  <description brief="katana_description">
+
+     katana_description
+
+  </description>
+  <author>Martin Günther</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_description</url>
+  <depend package="urdf"/>
+  <depend package="convex_decomposition"/>
+  <depend package="ivcon"/>
+
+</package>
+
+
