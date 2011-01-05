@@ -34,7 +34,7 @@ TARGETS	= alib solib
 
 all: $(TARGETS)
 
-$(TARGET_DIR)/$(LIB_STATIC): $(SOURCES:.cpp=.o)
+$(TARGET_DIR)/$(LIB_STATIC): $(SOURCES:.cpp=.o) $(TARGET_DIR)
 	echo -n "Building: $@  "
 	if $(AR) $(ARFLAGS) $@ $(SOURCES:.cpp=.o) 1>.alog 2>.alog; \
 	then echo " [ok]"; \
@@ -42,7 +42,7 @@ $(TARGET_DIR)/$(LIB_STATIC): $(SOURCES:.cpp=.o)
 	     cat .alog; \
 	fi
 
-$(TARGET_DIR)/$(LIB_SO): $(SOURCES:.cpp=.o)
+$(TARGET_DIR)/$(LIB_SO): $(SOURCES:.cpp=.o) $(TARGET_DIR)
 	echo -n "Building: $@  "
 	if $(CXX) $(CXXFLAGS) $(LLDFLAGS) -o $@ $(SOURCES:.cpp=.o) 2>.slog; \
 	then echo " [ok]"; \
@@ -57,3 +57,8 @@ clean:
 	echo "cleaning up...: "
 	rm -rf *.o *~ ./.?log ../include/*~ $(TARGET_DIR)/$(LIB_STATIC) $(TARGET_DIR)/$(LIB_SO)
 	echo "...done "
+
+$(TARGET_DIR):
+	mkdir -p $(TARGET_DIR)
+
+
