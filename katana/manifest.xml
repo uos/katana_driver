@@ -1,0 +1,27 @@
+<package>
+  <description brief="katana">
+
+    katana
+
+    GPL license due to KNI library
+
+  </description>
+  <author>Martin</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana</url>
+  <depend package="roscpp"/>
+  <depend package="kni"/>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="tf"/>
+
+  <!-- for JointTrajectoryActionController -->
+  <depend package="actionlib" />
+  <depend package="pr2_controllers_msgs" />
+  <depend package="trajectory_msgs"/>
+  <depend package="urdf"/>
+
+  <rosdep name="armadillo"/>
+
+</package>
