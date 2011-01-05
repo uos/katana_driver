@@ -1,0 +1,17 @@
+<package>
+  <description brief="simple_trajectory">
+
+     simple_trajectory
+
+  </description>
+  <author>Martin</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/simple_trajectory</url>
+  <depend package="actionlib"/>
+  <depend package="roscpp"/>
+  <depend package="pr2_controllers_msgs"/>
+
+</package>
+
+
