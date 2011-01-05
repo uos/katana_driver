@@ -1,0 +1,251 @@
+<?xml version="1.0"?>
+
+<robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://ros.org/wiki/xacro"
+       name="katana">
+
+  <property name="scale" value=".001" />               <!-- all katana meshes are scaled in millimeters, but ros uses meters -->
+  <property name="M_PI" value="3.1415926535897931" />  <!-- only approximately correct -->
+
+  <!-- all values from the katana manual -->
+  <property name="controlbox_height" value="0.08" />
+  <property name="base_height" value="0.2015" />
+  <property name="link2_length" value="0.19" />
+  <property name="link3_length" value="0.139" />
+  <property name="link4_length" value="0.1473" />
+  <property name="link5_length" value="0.1505" />
+
+  <link name="katana_internal_controlbox_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" 
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+        
+        <material name="grey">
+          <color rgba="0.8 0.8 0.8 1"/>
+        </material>
+      </visual>
+  </link>
+
+  <joint name="katana_base_joint" type="fixed">
+    <parent link="katana_internal_controlbox_link"/>
+    <child link="katana_base_link"/>
+    <origin xyz="0 0 ${controlbox_height}"/>
+  </joint>
+
+  <link name="katana_base_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+        
+        <material name="grey" />
+      </visual>
+  </link>
+
+  <joint name="katana_motor1_pan_joint" type="revolute">
+    <!-- Joint 1 in Katana Manual -->
+    <parent link="katana_base_link"/>
+    <child link="katana_motor1_pan_link" />
+    <origin xyz="0 0 ${base_height}"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="0.120" upper="6.159"  velocity="0.5"/>  <!-- TODO:  give correct effort + velocity limits (lower + upper come from angleOffset, angleRange in config file) -->
+  </joint>
+
+  <link name="katana_motor1_pan_link">
+      <visual>
+        <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+        
+        <material name="grey" />
+      </visual>
+  </link>
+
+  <joint name="katana_motor2_lift_joint" type="revolute">
+    <!-- Joint 2 in Katana Manual -->
+    <parent link="katana_motor1_pan_link" />
+    <child link="katana_motor2_lift_link" />
+    <origin xyz="0 0 0" rpy="${M_PI/2} 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="-0.134" upper="2.163"  velocity="0.5"/>  <!-- TODO: give correct limits -->
+  </joint>
+
+  <link name="katana_motor2_lift_link">
+      <visual>
+        <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor2_lift_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+        <!-- <geometry>
+          <cylinder length="${link2_length}" radius="0.02"/>
+        </geometry>
+        <origin rpy="0 ${-M_PI/2} 0" xyz="${link2_length/2} 0 0" /> -->
+
+        <material name="grey" />
+      </visual>
+  </link>
+
+
+  <joint name="katana_motor3_lift_joint" type="revolute">
+    <!-- Joint 3 in Katana Manual -->
+    <parent link="katana_motor2_lift_link" />
+    <child  link="katana_motor3_lift_link" />
+    <origin xyz="${link2_length} 0 0" rpy="0 0 ${M_PI}"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="0.935" upper="5.195"  velocity="0.5"/>  <!-- TODO: give correct limits -->
+  </joint>
+
+  <link name="katana_motor3_lift_link">
+      <visual>
+        <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor3_lift_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+         <!--<geometry>
+          <cylinder length="${link3_length}" radius="0.02"/>
+        </geometry>
+        <origin rpy="0 ${-M_PI/2} 0" xyz="${link3_length/2} 0 0" />-->
+
+        <material name="grey" />
+      </visual>
+  </link>
+
+  <joint name="katana_motor4_lift_joint" type="revolute">
+    <!-- Joint 4 in Katana Manual -->
+    <parent link="katana_motor3_lift_link" />
+    <child  link="katana_motor4_lift_link" />
+    <origin rpy="${M_PI} 0 ${M_PI}" xyz="${link3_length} 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="1.116" upper="5.017"  velocity="0.5"/>  <!-- TODO: give correct limits -->
+  </joint>
+
+  <link name="katana_motor4_lift_link">
+      <visual>
+        <origin rpy="${M_PI/2} 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor4_lift_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+         <!-- <geometry>
+          <cylinder length="${link4_length}" radius="0.02"/>
+        </geometry>
+        <origin rpy="0 ${-M_PI/2} 0" xyz="${link4_length/2} 0 0" /> -->
+
+        <material name="grey" />
+      </visual>
+  </link>
+
+
+  <joint name="katana_motor5_wrist_roll_joint" type="revolute">
+    <!-- Joint 5 in Katana Manual -->
+    <parent link="katana_motor4_lift_link" />
+    <child  link="katana_motor5_wrist_roll_link" />
+    <origin rpy="${-M_PI/2} 0 ${M_PI/2}" xyz="${link4_length} 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="0.152" upper="6.159"  velocity="0.5"/>  <!-- TODO: give correct limits -->
+  </joint>
+
+  <link name="katana_motor5_wrist_roll_link">
+      <visual>
+        <origin rpy="0 ${M_PI/2} 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor5_wrist_roll_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+         <!--<geometry>
+          <cylinder length="${link5_length}" radius="0.02"/>
+        </geometry>
+        <origin rpy="0 ${-M_PI/2} 0" xyz="${link5_length/2} 0 0" />-->
+
+        <material name="grey" />
+      </visual>
+  </link>
+
+
+  <joint name="katana_gripper_joint" type="fixed">
+    <parent link="katana_motor5_wrist_roll_link" />
+    <child link="katana_gripper_link" />
+    <origin rpy="0 0 0" xyz="0.0323 0 0"/>
+  </joint>
+
+  <link name="katana_gripper_link">
+      <visual>
+        <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_gripper_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+
+        <material name="grey" />
+      </visual>
+    </link>
+
+  <xacro:macro name="finger" params="prefix rotate">
+    <joint name="katana_${prefix}_finger_joint" type="revolute">
+      <parent link="katana_gripper_link" />
+      <child  link="katana_${prefix}_finger_link" />
+      <origin rpy="${rotate} 0 0" xyz="0.034 0 0"/>
+      <axis xyz="0 0 1"/>
+      <limit effort="1000.0" lower="-0.44" upper="0.51"  velocity="0.5"/>  <!-- TODO: give correct limits (even lower and upper are not yet correct)  -->
+      <!-- motor 6 limits: lower="-2.085" upper="3.656" (0 is almost closed, fingertips parallel) -->
+      <!-- gemessen: -1.6422866492027579: fully open, 0.17664640984051988: almost closed, fingertips parallel; TODO -->
+    </joint>
+  
+    <link name="katana_${prefix}_finger_link">
+        <visual>
+          <origin rpy="0 ${M_PI} 0" xyz="-0.034 0 0"/>
+          <geometry>
+            <mesh filename="package://katana_description/meshes/katana/katana_gripper_${prefix}_finger.stl"
+              scale="${scale} ${scale} ${scale}"/>
+          </geometry>
+  
+          <material name="grey" />
+        </visual>
+    </link>
+  </xacro:macro>
+
+  <xacro:finger prefix="r" rotate="0" />
+  <xacro:finger prefix="l" rotate="${M_PI}" />
+
+
+
+
+  <joint name="katana_gripper_tool_frame_joint" type="fixed">
+    <parent link="katana_motor5_wrist_roll_link"/>
+    <child link="katana_gripper_tool_frame" />
+    <origin xyz="${link5_length} 0 0" rpy="0 ${M_PI/2} 0"/>
+  </joint>
+
+  <link name="katana_gripper_tool_frame">
+    <!-- This is the coordinate system of the tool (this is the position 
+         used in IK etc., relative to the base frame); there is no actual 
+         arm part attached to this link -->
+  </link>
+
+
+
+  <!-- **************************************************************** -->
+
+  <joint name="katana_base_frame_joint" type="fixed">
+    <parent link="katana_base_link"/>
+    <child link="katana_base_frame" />
+    <origin xyz="0 0 ${base_height}" rpy="0 0 ${M_PI}"/>
+  </joint>
+
+  <link name="katana_base_frame">
+    <!-- This is the reference coordinate system of the arm (all IK etc. are specified 
+         in this frame); there is no actual arm part attached to this link -->
+  </link>
+
+</robot>
