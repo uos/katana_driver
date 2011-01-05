@@ -1,0 +1,9 @@
+<stack>
+  <description brief="katana_driver">katana_driver</description>
+  <author>Maintained by Martin Günther</author>
+  <license>BSD</license>  
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_driver</url>
+  <depend stack="ros" />
+
+</stack>
