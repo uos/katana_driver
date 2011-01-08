@@ -1,0 +1,16 @@
+<!-- Provides forward and inverse kinematics using the generic arm_kinematics
+     package from urdf_tools. This is the easiest way to provide FK and IK,
+     but it is rather slow. Two alternatives could be implemented:
+     - Wrap the KNI library; advantage: already optimized for Katana arm; 
+       disadvantage: a real Katana arm has to be running, doesn't work in 
+       Gazebo
+     - use the OpenRave ikfast module; advantage: blazing fast; disadvantage:
+       some work to implement
+-->
+
+<launch>
+  <node pkg="arm_kinematics" type="arm_kinematics" name="arm_kinematics" >
+    <param name="root_name" value="katana_base_link" />
+    <param name="tip_name" value="katana_motor5_wrist_roll_link" />
+  </node>
+</launch>
