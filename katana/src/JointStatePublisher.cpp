@@ -40,26 +40,39 @@ void JointStatePublisher::loopOnce()
 {
   /* ************** Publish joint angles ************** */
   sensor_msgs::JointStatePtr jsMsg = boost::make_shared<sensor_msgs::JointState>();
-  std::vector<double> motorAngles = katana->getMotorAngles();
+  std::vector<double> angles = katana->getMotorAngles();
+  std::vector<double> vels = katana->getMotorVelocities();
 
   // TODO: read joint names from katana, for the fingers use dependent_joints like the joint_state_publisher does
 
   jsMsg->name.push_back("katana_motor1_pan_joint");
-  jsMsg->position.push_back(motorAngles[0]);
+  jsMsg->position.push_back(angles[0]);
+  jsMsg->velocity.push_back(vels[0]);
+
   jsMsg->name.push_back("katana_motor2_lift_joint");
-  jsMsg->position.push_back(motorAngles[1]);
+  jsMsg->position.push_back(angles[1]);
+  jsMsg->velocity.push_back(vels[1]);
+
   jsMsg->name.push_back("katana_motor3_lift_joint");
-  jsMsg->position.push_back(motorAngles[2]);
+  jsMsg->position.push_back(angles[2]);
+  jsMsg->velocity.push_back(vels[2]);
+
   jsMsg->name.push_back("katana_motor4_lift_joint");
-  jsMsg->position.push_back(motorAngles[3]);
+  jsMsg->position.push_back(angles[3]);
+  jsMsg->velocity.push_back(vels[3]);
+
   jsMsg->name.push_back("katana_motor5_wrist_roll_joint");
-  jsMsg->position.push_back(motorAngles[4]);
+  jsMsg->position.push_back(angles[4]);
+  jsMsg->velocity.push_back(vels[4]);
 
   // TODO: call getGripperAngle or something
   jsMsg->name.push_back("katana_r_finger_joint");
-  jsMsg->position.push_back(motorAngles[5]);
+  jsMsg->position.push_back(angles[5]);
+  jsMsg->velocity.push_back(vels[5]);
+
   jsMsg->name.push_back("katana_l_finger_joint");
-  jsMsg->position.push_back(motorAngles[5]); // both right and left finger are controlled by motor 6
+  jsMsg->position.push_back(angles[5]); // both right and left finger are controlled by motor 6
+  jsMsg->velocity.push_back(vels[5]);
 
   jsMsg->header.stamp = ros::Time::now();
   pub.publish(jsMsg); // NOTE: jsMsg must not be changed after publishing; use reset() if necessary (http://www.ros.org/wiki/roscpp/Internals)
