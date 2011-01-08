@@ -1,0 +1,13 @@
+<launch>
+  <!-- load katana urdf -->
+  <include file="$(find katana_description)/launch/upload_katana.launch" />
+
+  <!-- robot state publisher -->
+  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" />
+
+  <!-- katana node -->
+  <rosparam command="load" file="$(find katana_description)/params/katana_arm_controllers.yaml" />
+  <param name="simulation" value="true" />
+  <node pkg="katana" type="katana" name="katana" />
+</launch>
+
