@@ -4,7 +4,7 @@
     <remap from="robot_description" to="robot_description" />
     <remap from="joint_state" to="joint_states" />
     <remap from="arm_ik" to="pr2_right_arm_kinematics/get_constraint_aware_ik" />  <!-- TODO -->
-    <remap from="arm_fk" to="pr2_right_arm_kinematics/get_fk" />  <!-- TODO -->
+    <remap from="arm_fk" to="arm_kinematics/get_fk" />
     <remap from="filter_trajectory" to="trajectory_filter/filter_trajectory_with_constraints" />	
     
     <remap from="get_trajectory_validity" to="environment_server/get_trajectory_validity" />	
