@@ -11,7 +11,7 @@
 default_collision_operations:
 # check for collisions between body and arm, body and end effector, arm and 
 # end effector;
- - object1: robot_body
+  - object1: robot_body
     object2: arm
     operation: enable
 
