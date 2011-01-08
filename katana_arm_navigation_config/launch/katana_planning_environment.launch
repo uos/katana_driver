@@ -4,6 +4,6 @@
 	<rosparam command="load" ns="robot_description_collision" file="$(find katana_arm_navigation_config)/config/collision_checks.yaml" />
 
 	<!-- send parameters needed for motion planning -->
-	<rosparam command="load" ns="robot_description_planning" file="$(find pr2_arm_navigation_config)/config/planning_groups.yaml" />
+	<rosparam command="load" ns="robot_description_planning" file="$(find katana_arm_navigation_config)/config/planning_groups.yaml" />
 
 </launch>
