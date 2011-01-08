@@ -31,7 +31,8 @@ KatanaNode::KatanaNode(ros::NodeHandle n) :
       nh(n)
 {
   bool simulation;
-  nh.param("simulation", simulation, false);
+  ros::NodeHandle pn("~");
+  pn.param("simulation", simulation, false);
 
   if (simulation)
     katana.reset(new SimulatedKatana(nh));

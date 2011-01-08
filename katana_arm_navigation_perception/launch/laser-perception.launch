@@ -25,8 +25,8 @@
   </node> -->
 
   <!-- displaying known model markers -->
-  <include file="$(find planning_environment)/launch/display_planner_collision_model.launch" />
-  <include file="$(find planning_environment)/launch/display_planner_collision_model_ik.launch" />
+  <!-- TODO <include file="$(find planning_environment)/launch/display_planner_collision_model.launch" /> -->
+  <!-- TODO <include file="$(find planning_environment)/launch/display_planner_collision_model_ik.launch" /> -->
 	
   <!-- need to individually self filter scans -->
   <!-- TODO <include file="$(find pr2_arm_navigation_perception)/launch/tilt_laser_self_filter.launch" />     -->

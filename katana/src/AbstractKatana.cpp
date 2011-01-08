@@ -38,16 +38,18 @@ AbstractKatana::AbstractKatana(ros::NodeHandle n)
   motor_velocities_.resize(NUM_MOTORS);
 
   /* ********* get parameters ********* */
+  ros::NodeHandle pn("~");
+
   XmlRpc::XmlRpcValue joint_names;
 
   // Gets all of the joints
-  if (!n.getParam("joints", joint_names))
+  if (!pn.getParam("joints", joint_names))
   {
-    ROS_ERROR("No joints given. (namespace: %s)", n.getNamespace().c_str());
+    ROS_ERROR("No joints given. (namespace: %s)", pn.getNamespace().c_str());
   }
   if (joint_names.getType() != XmlRpc::XmlRpcValue::TypeArray)
   {
-    ROS_ERROR("Malformed joint specification.  (namespace: %s)", n.getNamespace().c_str());
+    ROS_ERROR("Malformed joint specification.  (namespace: %s)", pn.getNamespace().c_str());
   }
   if (joint_names.size() != (size_t)NUM_JOINTS)
   {
@@ -59,7 +61,7 @@ AbstractKatana::AbstractKatana(ros::NodeHandle n)
     if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
     {
       ROS_ERROR("Array of joint names should contain all strings.  (namespace: %s)",
-          n.getNamespace().c_str());
+          pn.getNamespace().c_str());
     }
 
     joint_names_[i] = (std::string)name_value;
