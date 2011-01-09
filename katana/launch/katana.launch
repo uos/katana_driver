@@ -9,7 +9,7 @@
   <node pkg="katana" type="katana" name="katana">
     <param name="simulation" value="true" />
     <param name="publish_kni_tcp_frame" value="true" />
-    <rosparam command="load" file="$(find katana_description)/params/katana_arm_controllers.yaml" />
+    <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
   </node>
 </launch>
 

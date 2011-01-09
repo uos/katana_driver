@@ -1,7 +1,7 @@
 <!-- see http://www.ros.org/wiki/move_arm/Tutorials/GettingStarted -->
 <launch>
   <!-- start katana node -->
-  <include file="$(find katana_description)/launch/katana.launch" />
+  <include file="$(find katana)/launch/katana.launch" />
 
   <!-- motion planning -->
   <include file="$(find katana_arm_navigation_planning)/launch/ompl_planning.launch"/>
