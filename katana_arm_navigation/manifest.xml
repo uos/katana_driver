@@ -4,13 +4,13 @@
      katana_arm_navigation
 
   </description>
-  <author>Martin</author>
+  <author>Martin Günther</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana_arm_navigation</url>
   <depend package="katana"/>
   <depend package="katana_description"/>
-  <depend package="roscpp"/>
+  <depend package="arm_kinematics" />
 
 </package>
 
