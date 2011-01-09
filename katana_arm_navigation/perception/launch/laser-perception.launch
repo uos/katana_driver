@@ -1,6 +1,6 @@
 <launch>
   <!-- send planning environment parameters -->
-  <include file="$(find katana_arm_navigation_config)/launch/katana_planning_environment.launch" />
+  <include file="$(find katana_arm_navigation)/config/launch/katana_planning_environment.launch" />
 
 
   <!-- set laser tilt rate -->

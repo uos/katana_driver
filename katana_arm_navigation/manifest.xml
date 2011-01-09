@@ -11,6 +11,7 @@
   <depend package="katana"/>
   <depend package="katana_description"/>
   <depend package="arm_kinematics" />
+  <depend package="katana_arm_kinematics_constraint_aware" />
 
 </package>
 

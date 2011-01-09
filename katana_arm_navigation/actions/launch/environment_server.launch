@@ -14,7 +14,7 @@
 
     <param name="contacts_to_compute_for_display" type="int" value="50" />
 
-    <rosparam command="load" file="$(find katana_arm_navigation_actions)/config/environment_server_padding.yaml" />		
+    <rosparam command="load" file="$(find katana_arm_navigation)/actions/config/environment_server_padding.yaml" />		
 
   </node>
 </launch>
