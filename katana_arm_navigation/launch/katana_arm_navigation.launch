@@ -14,13 +14,11 @@
   <include file="$(find katana_arm_navigation_filtering)/launch/trajectory_filter.launch"/>
 
   <!-- inverse kinematics -->
-  <!-- TODO: implement get_constraint_aware_ik -->
   <include file="$(find katana_arm_navigation_kinematics)/launch/urdf_arm_kinematics.launch"/>
 
   <!-- load planning_environment -->
   <include file="$(find katana_arm_navigation_actions)/launch/environment_server.launch"/>
 
   <!-- load move_arm -->
-  <!-- TODO: change remapping of get_constraint_aware_ik here: -->
   <include file="$(find katana_arm_navigation_actions)/launch/move_arm.launch"/>
 </launch>
