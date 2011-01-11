@@ -12,6 +12,27 @@
   <depend package="katana_description"/>
   <depend package="arm_kinematics" />
   <depend package="katana_arm_kinematics_constraint_aware" />
+  
+  <depend package="actionlib_msgs"/>
+  <depend package="collision_environment_msgs" />
+  <depend package="collision_map"/>
+  <depend package="constraint_aware_spline_smoother"/>
+  <depend package="kinematics_msgs"/>
+  <depend package="laser_assembler"/>
+  <depend package="laser_filters"/>
+  <depend package="motion_planning_msgs"/>
+  <depend package="move_arm"/>
+  <depend package="move_arm_msgs"/>
+  <depend package="planning_environment"/>
+  <depend package="planning_environment_msgs"/>
+  <depend package="robot_self_filter"/>
+  <depend package="sensor_msgs"/>
+  <depend package="spline_smoother"/>
+  <depend package="trajectory_filter_server"/>
+  
+  <depend package="ompl_planning"/>
+  <depend package="ompl_search"/>
+  <!-- <depend package="chomp_motion_planner"/> -->
 
 </package>
 
