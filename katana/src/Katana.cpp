@@ -344,14 +344,16 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
 }
 
 /* ******************************** conversions ******************************** */
-
 int Katana::angle_rad2enc(int index, double angle)
 {
   // no access to Katana hardware, so no locking required
   const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
 
-  return ((param->angleOffset - angle) * (double)param->encodersPerCycle * (double)param->rotationDirection) / (2.0
-      * M_PI) + param->encoderOffset;
+  if (index == NUM_MOTORS - 1)    // gripper
+    angle = (angle - URDF_GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
+
+  return ((param->angleOffset - angle) * (double)param->encodersPerCycle * (double)param->rotationDirection)
+      / (2.0 * M_PI) + param->encoderOffset;
 }
 
 double Katana::angle_enc2rad(int index, int encoders)
@@ -359,8 +361,15 @@ double Katana::angle_enc2rad(int index, int encoders)
   // no access to Katana hardware, so no locking required
   const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
 
-  return param->angleOffset - (((double)encoders - (double)param->encoderOffset) * 2.0 * M_PI)
+  double result = param->angleOffset - (((double)encoders - (double)param->encoderOffset) * 2.0 * M_PI)
       / ((double)param->encodersPerCycle * (double)param->rotationDirection);
+
+  if (index == NUM_MOTORS - 1)    // gripper
+  {
+    result = (result - KNI_GRIPPER_CLOSED_ANGLE) * KNI_TO_URDF_GRIPPER_FACTOR + URDF_GRIPPER_CLOSED_ANGLE;
+  }
+
+  return result;
 }
 
 /**

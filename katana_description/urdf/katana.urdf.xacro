@@ -197,14 +197,12 @@
       <child  link="katana_${prefix}_finger_link" />
       <origin rpy="${rotate} 0 0" xyz="0.034 0 0"/>
       <axis xyz="0 0 1"/>
-      <limit effort="1000.0" lower="-0.44" upper="0.51"  velocity="0.5"/>  <!-- TODO: give correct limits (even lower and upper are not yet correct)  -->
-      <!-- motor 6 limits: lower="-2.085" upper="3.656" (0 is almost closed, fingertips parallel) -->
-      <!-- gemessen: -1.6422866492027579: fully open, 0.17664640984051988: almost closed, fingertips parallel; TODO -->
-    </joint>
+      <limit effort="1000.0" lower="-0.40" upper="0.40"  velocity="0.5"/>  <!-- TODO: give correct limits -->
+   </joint>
   
     <link name="katana_${prefix}_finger_link">
         <visual>
-          <origin rpy="0 ${M_PI} 0" xyz="-0.034 0 0"/>
+          <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
           <geometry>
             <mesh filename="package://katana_description/meshes/katana/katana_gripper_${prefix}_finger.stl"
               scale="${scale} ${scale} ${scale}"/>
