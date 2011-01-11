@@ -1,0 +1,6 @@
+cloud_sources:
+  - name: tilt_scan_cloud_filtered
+    frame_subsample: 1
+    point_subsample: 1
+    sensor_frame: kinect_depth
+

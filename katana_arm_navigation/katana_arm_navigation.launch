@@ -7,7 +7,6 @@
   <include file="$(find katana_arm_navigation)/planning/launch/ompl_planning.launch"/>
 
   <!-- laser perception, planning environment -->
-  <!-- TODO: use the rotunit or something here, this needs to be adjusted -->
   <include file="$(find katana_arm_navigation)/perception/launch/laser-perception.launch"/>
 
   <!-- trajectory filtering (spline smoother) -->

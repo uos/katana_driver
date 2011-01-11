@@ -1,0 +1,12 @@
+min_sensor_dist: .05
+self_see_default_padding: .01
+self_see_default_scale: 1.0
+# TODO
+#self_see_links:
+#  - name: l_upper_arm_link
+#    padding: .04
+
+
+    
+
+  
