@@ -133,7 +133,7 @@ void Katana::refreshEncoders()
       const TMotPVP* pvp = motors[i].GetPVP();
 
       motor_angles_[i] = angle_enc2rad(i, pvp->pos);
-      motor_velocities_[i] = velocity_enc2rad(i, pvp->vel);
+      motor_velocities_[i] = vel_acc_jerk_enc2rad(i, pvp->vel); // TODO: test
       motor_status_[i] = pvp->msf;
 
       //  MSF_MECHSTOP    = 1,    //!< mechanical stopper reached, new: unused (default value)
@@ -252,6 +252,20 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
       idleWait.sleep();
     }
 
+    // ------- move to start position
+    {
+      assert(traj->size() > 0);
+      assert(traj->at(0).splines.size() == NUM_JOINTS);
+
+      boost::recursive_mutex::scoped_lock lock(kni_mutex);
+      std::vector<int> encoders(NUM_JOINTS);
+
+      for (size_t i = 0; i < NUM_JOINTS; i++) {
+        encoders.push_back(angle_rad2enc(i, traj->at(0).splines[i].coef[0]));
+      }
+      kni->moveRobotToEnc(encoders, true);
+    }
+
     // ------- wait until start time
     ros::Time::sleepUntil(start_time);
     if ((ros::Time::now() - start_time).toSec() > 0.01)
@@ -293,15 +307,18 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
         // some parts taken from CLMBase::movLM2P
         polynomial.push_back((short)floor(s_time + 0.5)); // duration
 
-        polynomial.push_back((short)floor(seg.splines[j].target_position + 0.5)); // target position
+        polynomial.push_back(angle_rad2enc(j, seg.splines[j].target_position)); // target position
 
         // the four spline coefficients
         // the actual position, round
-        polynomial.push_back((short)(short)floor(seg.splines[j].coef[0] + 0.5)); // p0
+        polynomial.push_back(angle_rad2enc(j, seg.splines[j].coef[0])); // p0
+
         // shift to be firmware compatible and round
-        polynomial.push_back((short)floor(64 * seg.splines[j].coef[1] / s_time + 0.5)); // p1
-        polynomial.push_back((short)floor(1024 * seg.splines[j].coef[2] / pow(s_time, 2) + 0.5)); // p2
-        polynomial.push_back((short)floor(32768 * seg.splines[j].coef[3] / pow(s_time, 3) + 0.5)); // p3
+        polynomial.push_back((short)floor(64 * vel_acc_jerk_rad2enc(j, seg.splines[j].coef[1]) / s_time + 0.5)); // p1
+        polynomial.push_back(
+                             (short)floor(1024 * vel_acc_jerk_rad2enc(j, seg.splines[j].coef[2]) / pow(s_time, 2) + 0.5)); // p2
+        polynomial.push_back((short)floor(32768 * vel_acc_jerk_rad2enc(j, seg.splines[j].coef[3]) / pow(s_time, 3)
+            + 0.5)); // p3
       }
 
       // gripper
@@ -344,16 +361,16 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
 }
 
 /* ******************************** conversions ******************************** */
-int Katana::angle_rad2enc(int index, double angle)
+short Katana::angle_rad2enc(int index, double angle)
 {
   // no access to Katana hardware, so no locking required
   const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
 
-  if (index == NUM_MOTORS - 1)    // gripper
+  if (index == NUM_MOTORS - 1) // gripper
     angle = (angle - URDF_GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
 
-  return ((param->angleOffset - angle) * (double)param->encodersPerCycle * (double)param->rotationDirection)
-      / (2.0 * M_PI) + param->encoderOffset;
+  return ((param->angleOffset - angle) * (double)param->encodersPerCycle * (double)param->rotationDirection) / (2.0
+      * M_PI) + param->encoderOffset;
 }
 
 double Katana::angle_enc2rad(int index, int encoders)
@@ -364,7 +381,7 @@ double Katana::angle_enc2rad(int index, int encoders)
   double result = param->angleOffset - (((double)encoders - (double)param->encoderOffset) * 2.0 * M_PI)
       / ((double)param->encodersPerCycle * (double)param->rotationDirection);
 
-  if (index == NUM_MOTORS - 1)    // gripper
+  if (index == NUM_MOTORS - 1) // gripper
   {
     result = (result - KNI_GRIPPER_CLOSED_ANGLE) * KNI_TO_URDF_GRIPPER_FACTOR + URDF_GRIPPER_CLOSED_ANGLE;
   }
@@ -373,26 +390,34 @@ double Katana::angle_enc2rad(int index, int encoders)
 }
 
 /**
- * Converts the given velocity [rad/s] to [encoders/10ms], which is the unit used by the Katana,
- * at least for setting the velocity limits.
- *
- * The maximum for the velocity limits seems to be 180.
+ * Conversions for velocity, acceleration and jerk (first derivative of acceleration).
+ * Basically the same as for angle, but without the offsets.
  */
-int Katana::velocity_rad2enc(int index, double angular_velocity)
+short Katana::vel_acc_jerk_rad2enc(int index, double vel_acc_jerk)
 {
   // no access to Katana hardware, so no locking required
   const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
 
-  return (angular_velocity * (double)param->encodersPerCycle) / (2.0 * M_PI * 100.0);
+  if (index == NUM_MOTORS - 1) // gripper
+    vel_acc_jerk = vel_acc_jerk / KNI_TO_URDF_GRIPPER_FACTOR;
+
+  return ((-vel_acc_jerk) * (double)param->encodersPerCycle * (double)param->rotationDirection) / (2.0 * M_PI);
 }
 
-double Katana::velocity_enc2rad(int index, int encoder_velocity)
+double Katana::vel_acc_jerk_enc2rad(int index, short encoders)
 {
   // no access to Katana hardware, so no locking required
   const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
 
-  // convert rad value to encoder value
-  return (double)encoder_velocity * 2.0 * M_PI * 100.0 / (double)param->encodersPerCycle;
+  double result = -((double)encoders * 2.0 * M_PI) / ((double)param->encodersPerCycle
+      * (double)param->rotationDirection);
+
+  if (index == NUM_MOTORS - 1) // gripper
+  {
+    result = result * KNI_TO_URDF_GRIPPER_FACTOR;
+  }
+
+  return result;
 }
 
 /* ******************************** helper functions ******************************** */

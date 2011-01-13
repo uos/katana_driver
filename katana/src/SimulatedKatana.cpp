@@ -37,11 +37,11 @@ SimulatedKatana::SimulatedKatana(ros::NodeHandle n) :
   hold[0].duration = 0.0;
   hold[0].splines.resize(NUM_JOINTS);
 
-  hold[0].splines[0].coef[0] = angle_rad2enc(0, 0.12);
-  hold[0].splines[1].coef[0] = angle_rad2enc(1, 2.163);
-  hold[0].splines[2].coef[0] = angle_rad2enc(2, 0.935);
-  hold[0].splines[3].coef[0] = angle_rad2enc(3, 1.116);
-  hold[0].splines[4].coef[0] = angle_rad2enc(4, 0.152);
+  hold[0].splines[0].coef[0] = 0.12;
+  hold[0].splines[1].coef[0] = 2.163;
+  hold[0].splines[2].coef[0] = 0.935;
+  hold[0].splines[3].coef[0] = 1.116;
+  hold[0].splines[4].coef[0] = 0.152;
 
   current_trajectory_ = hold_ptr;
 }
@@ -65,11 +65,11 @@ void SimulatedKatana::refreshEncoders()
   for (size_t j = 0; j < NUM_JOINTS; j++)
   {
     double pos_t, vel_t, acc_t;
-    sampleSplineWithTimeBounds(traj[seg].splines[j].coef, traj[seg].duration,
-                               ros::Time::now().toSec() - traj[seg].start_time, pos_t, vel_t, acc_t);
+    sampleSplineWithTimeBounds(traj[seg].splines[j].coef, traj[seg].duration, ros::Time::now().toSec()
+        - traj[seg].start_time, pos_t, vel_t, acc_t);
 
-    motor_angles_[j] = angle_enc2rad(j, pos_t);
-    motor_velocities_[j] = angle_enc2rad(j, vel_t);
+    motor_angles_[j] = pos_t;
+    motor_velocities_[j] = vel_t;
   }
 }
 
@@ -89,34 +89,16 @@ bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> t
   SpecifiedTrajectory &traj = *traj_ptr;
 
   // ------- fix start time
-  assert(traj[0].start_time == 0.0);
-
-  for (size_t i = 0; i < traj.size(); ++i) {
-    traj[i].start_time += start_time.toSec();
+  if (traj[0].start_time == 0.0)
+  {
+    for (size_t i = 0; i < traj.size(); ++i)
+    {
+      traj[i].start_time += start_time.toSec();
+    }
   }
 
   current_trajectory_ = traj_ptr;
   return true;
-}
-
-int SimulatedKatana::angle_rad2enc(int index, double angle)
-{
-  return SIM_ENC_PER_RAD * angle;
-}
-
-double SimulatedKatana::angle_enc2rad(int index, int encoders)
-{
-  return (double)encoders / (double)SIM_ENC_PER_RAD;
-}
-
-int SimulatedKatana::velocity_rad2enc(int index, double angular_velocity)
-{
-  return SIM_ENC_PER_RAD * angular_velocity;
-}
-
-double SimulatedKatana::velocity_enc2rad(int index, int encoder_velocity)
-{
-  return (double)encoder_velocity / (double)SIM_ENC_PER_RAD;
 }
 
 }

@@ -53,15 +53,6 @@ public:
   virtual std::vector<double> getMotorAngles();
   virtual std::vector<double> getMotorVelocities();
 
-  virtual int angle_rad2enc(int index, double angle) = 0;
-  virtual double angle_enc2rad(int index, int encoders) = 0;
-  virtual int velocity_rad2enc(int index, double angular_velocity) = 0;
-  virtual double velocity_enc2rad(int index, int encoder_velocity) = 0;
-
-  virtual double ros2kni_time(ros::Time ros_time);
-  virtual double ros2kni_time(ros::Duration ros_time);
-  virtual ros::Time kni2ros_time(double kni_time);
-
 protected:
   ros::NodeHandle nh;
 

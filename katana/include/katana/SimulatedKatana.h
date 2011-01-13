@@ -30,7 +30,6 @@
 
 namespace katana
 {
-const int SIM_ENC_PER_RAD = 10000;
 
 class SimulatedKatana : public katana::AbstractKatana
 {
@@ -41,11 +40,6 @@ public:
   virtual void refreshEncoders();
   virtual std::vector<double> getCoordinates();
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time);
-
-  virtual int angle_rad2enc(int index, double angle);
-  virtual double angle_enc2rad(int index, int encoders);
-  virtual int velocity_rad2enc(int index, double angular_velocity);
-  virtual double velocity_enc2rad(int index, int encoder_velocity);
 
 private:
   boost::shared_ptr<SpecifiedTrajectory> current_trajectory_;

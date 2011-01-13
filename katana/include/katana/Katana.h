@@ -54,11 +54,6 @@ public:
   std::vector<double> getCoordinates();
   bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time);
 
-  int angle_rad2enc(int index, double angle);
-  double angle_enc2rad(int index, int encoders);
-  int velocity_rad2enc(int index, double angular_velocity);
-  double velocity_enc2rad(int index, int encoder_velocity);
-
 private:
   boost::shared_ptr<CLMBase> kni;
   CCplSerialCRC* protocol;
@@ -71,6 +66,12 @@ private:
   void calibrate();
   bool someMotorCrashed();
   bool allJointsReady();
+
+  short angle_rad2enc(int index, double angle);
+  double angle_enc2rad(int index, int encoders);
+  short vel_acc_jerk_rad2enc(int index, double vel_acc_jerk);
+  double vel_acc_jerk_enc2rad(int index, short encoders);
+
 };
 
 

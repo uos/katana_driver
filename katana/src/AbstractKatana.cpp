@@ -110,22 +110,4 @@ std::vector<double> AbstractKatana::getMotorVelocities()
   return motor_velocities_;
 }
 
-/* ******************************** conversions ******************************** */
-
-double AbstractKatana::ros2kni_time(ros::Time ros_time)
-{
-  // kni time is given in 10 ms steps
-  return ros_time.toSec() * 100.0;
-}
-
-double AbstractKatana::ros2kni_time(ros::Duration ros_time)
-{
-  return ros_time.toSec() * 100.0;
-}
-
-ros::Time AbstractKatana::kni2ros_time(double kni_time)
-{
-  return ros::Time(kni_time / 100.0);
-}
-
 }

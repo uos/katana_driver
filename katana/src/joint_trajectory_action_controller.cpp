@@ -505,53 +505,14 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
 
   // calculate new trajectory
   std::vector<double> jointAngles = katana_->getMotorAngles();
-  boost::shared_ptr<SpecifiedTrajectory> new_ros_traj = calculateTrajectory(goal->trajectory, start_time, jointAngles);
-  if (!new_ros_traj)
+  boost::shared_ptr<SpecifiedTrajectory> new_traj = calculateTrajectory(goal->trajectory, start_time, jointAngles);
+  if (!new_traj)
   {
     action_server_.setAborted();
     return;
   }
-  current_trajectory_ = new_ros_traj;
+  current_trajectory_ = new_traj;
 
-  // convert message to KNI parameters, calculate KNI trajectory
-  trajectory_msgs::JointTrajectory kni_msg;
-  kni_msg.header = goal->trajectory.header;
-  kni_msg.header.stamp = ros::Time(0.0); // this makes our time calculations easier     // FIXME: doesn't need to set start time to 0.0, doesn't need to have two separate trajectories
-
-  kni_msg.joint_names = goal->trajectory.joint_names;
-
-  std::vector<int> lookup = makeJointsLookup(goal->trajectory);
-  assert(lookup.size() > 0); // otherwise the first call to calculateTrajectory() would have failed
-
-  for (size_t i = 0; i < goal->trajectory.points.size(); i++)
-  {
-    trajectory_msgs::JointTrajectoryPoint kni_point;
-
-    // kni_point.time_from_start = ros::Duration(katana_->ros2kni_time(goal->trajectory.points[i].time_from_start));
-    kni_point.time_from_start = ros::Duration(goal->trajectory.points[i].time_from_start);
-
-    for (size_t j = 0; j < goal->trajectory.points[i].positions.size(); j++)
-    {
-      kni_point.positions.push_back(katana_->angle_rad2enc(lookup[j], goal->trajectory.points[i].positions[j]));
-    }
-    for (size_t j = 0; j < goal->trajectory.points[i].velocities.size(); j++)
-    {
-      kni_point.velocities.push_back(katana_->velocity_rad2enc(lookup[j], goal->trajectory.points[i].velocities[j]));
-      // TODO: spline with velocities not tested yet
-    }
-    // accelerations are ignored
-
-    kni_msg.points.push_back(kni_point);
-  }
-
-  std::vector<double> kniJointAngles;
-  for (size_t i = 0; i < jointAngles.size(); i++)
-  {
-    kniJointAngles.push_back(katana_->angle_rad2enc(i, jointAngles[i]));
-  }
-
-  boost::shared_ptr<SpecifiedTrajectory> new_kni_traj = calculateTrajectory(kni_msg, kni_msg.header.stamp,
-                                                                            kniJointAngles);
 
   // sleep until 0.5 seconds before scheduled start
   ros::Rate rate(10);
@@ -565,14 +526,14 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     rate.sleep();
   }
 
-  if (!validTrajectory(*new_kni_traj))
+  if (!validTrajectory(*new_traj))
   {
     ROS_ERROR("Computed trajectory did not fulfill all constraints!");
     action_server_.setAborted();
     return;
   }
 
-  bool success = katana_->executeTrajectory(new_kni_traj, start_time);
+  bool success = katana_->executeTrajectory(new_traj, start_time);  // TODO: doesn't need start_time, is in header stamp
   if (!success)
   {
     ROS_ERROR("Problem while transferring trajectory to Katana arm, aborting");
