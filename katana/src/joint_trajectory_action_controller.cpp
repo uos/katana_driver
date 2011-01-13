@@ -318,10 +318,9 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
     double times[steps + 1], positions[steps + 1], velocities[steps + 1], durations[steps], coeff0[steps],
            coeff1[steps], coeff2[steps], coeff3[steps];
 
-    times[0] = start_time.toSec();
+    times[0] = start_time.toSec() + msg.points[0].time_from_start.toSec();
     positions[0] = initialJointAngles[j];
     velocities[0] = 0.0;
-    durations[0] = msg.points[0].time_from_start.toSec();
 
     for (size_t i = 0; i < steps; i++)
     {
@@ -399,7 +398,7 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
     sampleSplineWithTimeBounds(new_traj[seg].splines[0].coef, new_traj[seg].duration, t - new_traj[seg].start_time,
                                pos_t, vel_t, acc_t);
 
-    trajectory_file << t << " " << pos_t << " " << vel_t << " " << acc_t << std::endl;
+    trajectory_file << t - new_traj[0].start_time << " " << pos_t << " " << vel_t << " " << acc_t << std::endl;
   }
 
   trajectory_file.close();
@@ -560,7 +559,6 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   {
     if (action_server_.isPreemptRequested() || !ros::ok())
     {
-      //
       action_server_.setPreempted();
       return;
     }
@@ -583,7 +581,8 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   }
 
   // TODO: katana -> wait until finished
-  // TODO later: if we want to get fancy, we can check for goal and trajectory constraints here
+  ros::Time endtime = ros::Time::now() + ros::Duration(5.0);
+  ros::Time::sleepUntil(endtime);
 
   // that worked out nicely
   action_server_.setSucceeded();
@@ -648,7 +647,7 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
   {
     if (std::abs(traj[0].splines[j].coef[1]) > EPSILON)
     {
-      ROS_ERROR("Velocity at t = 0 is not 0 (joint %zu)", j);
+      ROS_ERROR("Velocity at t = 0 is not 0: %f (joint %zu)", traj[0].splines[j].coef[1], j);
       return false;
     }
   }
