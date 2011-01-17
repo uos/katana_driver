@@ -6,4 +6,5 @@ filter_chain:
   -
     name: cubic_spline_short_cutter_smoother
     type: CubicSplineShortCutterFilterJointTrajectoryWithConstraints
-    params: {discretization: 0.01}
+    params: {discretization: 0.10}
+# if discretization is set too high, too many trajectory segments will be generated (the Katana can only process ~16 or so)
