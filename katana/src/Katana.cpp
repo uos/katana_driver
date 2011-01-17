@@ -258,21 +258,34 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
       assert(traj->at(0).splines.size() == NUM_JOINTS);
 
       boost::recursive_mutex::scoped_lock lock(kni_mutex);
-      std::vector<int> encoders(NUM_JOINTS);
+      std::vector<int> encoders;
 
       for (size_t i = 0; i < NUM_JOINTS; i++) {
         encoders.push_back(angle_rad2enc(i, traj->at(0).splines[i].coef[0]));
       }
-      kni->moveRobotToEnc(encoders, true);
+
+      std::vector<int> current_encoders = kni->getRobotEncoders(true);
+      ROS_INFO("current encoders: %d %d %d %d %d", current_encoders[0], current_encoders[1], current_encoders[2], current_encoders[3], current_encoders[4]);
+      ROS_INFO("target encoders:  %d %d %d %d %d", encoders[0], encoders[1], encoders[2], encoders[3], encoders[4]);
+
+      kni->moveRobotToEnc(encoders, false);
+      ros::Time move_time = ros::Time::now() + ros::Duration(2.0);
+      ros::Time::sleepUntil(move_time);
     }
 
     // ------- wait until start time
     ros::Time::sleepUntil(start_time);
     if ((ros::Time::now() - start_time).toSec() > 0.01)
-      ROS_WARN("Trajectory started %f ms too late! Scheduled: %f, started: %f", (ros::Time::now() - start_time).toSec(), start_time.toSec(), ros::Time::now().toSec());
+      ROS_WARN("Trajectory started %f s too late! Scheduled: %f, started: %f", (ros::Time::now() - start_time).toSec(), start_time.toSec(), ros::Time::now().toSec());
 
     // ------- start trajectory
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
+
+    // fix start times
+    double delay = ros::Time::now().toSec() - traj->at(0).start_time;
+    for (size_t i = 0; i < traj->size(); i++) {
+      traj->at(i).start_time += delay;
+    }
 
     for (size_t i = 0; i < traj->size(); i++)
     {
@@ -289,7 +302,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
         // last spline, start movement
         activityflag = 1; // no_next
       }
-      else if (seg.start_time < 0.4)
+      else if (seg.start_time - traj->at(0).start_time < 0.4)
       {
         // more splines following, do not start movement yet
         activityflag = 2; // no_start
@@ -314,11 +327,17 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
         polynomial.push_back(angle_rad2enc(j, seg.splines[j].coef[0])); // p0
 
         // shift to be firmware compatible and round
-        polynomial.push_back((short)floor(64 * vel_acc_jerk_rad2enc(j, seg.splines[j].coef[1]) / s_time + 0.5)); // p1
-        polynomial.push_back(
-                             (short)floor(1024 * vel_acc_jerk_rad2enc(j, seg.splines[j].coef[2]) / pow(s_time, 2) + 0.5)); // p2
-        polynomial.push_back((short)floor(32768 * vel_acc_jerk_rad2enc(j, seg.splines[j].coef[3]) / pow(s_time, 3)
-            + 0.5)); // p3
+        polynomial.push_back(round(64 * (vel_acc_jerk_rad2enc(j, seg.splines[j].coef[1]) / 100.0))); // p1
+        polynomial.push_back(round(1024 * (vel_acc_jerk_rad2enc(j, seg.splines[j].coef[2]) / 10000.0))); // p2
+        polynomial.push_back(round(32768 * (vel_acc_jerk_rad2enc(j, seg.splines[j].coef[3]) / 1000000.0))); // p3
+
+        short endpos = angle_rad2enc(j, seg.splines[j].coef[0])
+            + vel_acc_jerk_rad2enc(j, seg.splines[j].coef[1]) * seg.duration
+            + vel_acc_jerk_rad2enc(j, seg.splines[j].coef[2]) * pow(seg.duration, 2)
+            + vel_acc_jerk_rad2enc(j, seg.splines[j].coef[3]) * pow(seg.duration, 3);
+
+        ROS_INFO("target: %d, endpos: %d", angle_rad2enc(j, seg.splines[j].target_position), endpos);
+
       }
 
       // gripper
@@ -420,7 +439,16 @@ double Katana::vel_acc_jerk_enc2rad(int index, short encoders)
   return result;
 }
 
+
 /* ******************************** helper functions ******************************** */
+
+short Katana::round(const double x)
+{
+  if (x >= 0)
+    return (short)(x + 0.5);
+  else
+    return (short)(x - 0.5);
+}
 
 void Katana::calibrate()
 {

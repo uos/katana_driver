@@ -33,7 +33,6 @@
 namespace katana
 {
 
-
 JointTrajectoryActionController::JointTrajectoryActionController(ros::NodeHandle &n,
                                                                  boost::shared_ptr<AbstractKatana> katana) :
   katana_(katana), node_(n), action_server_(n, "joint_trajectory_action",
@@ -260,7 +259,7 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
                                                                                             const trajectory_msgs::JointTrajectory &msg,
                                                                                             ros::Time start_time,
                                                                                             std::vector<double> initialJointAngles)
-{
+{// TODO: remove initialJointAngles, start_time
   boost::shared_ptr<SpecifiedTrajectory> new_traj_ptr;
 
   bool allPointsHaveVelocities = true;
@@ -301,7 +300,7 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
   new_traj_ptr.reset(new SpecifiedTrajectory);
   SpecifiedTrajectory &new_traj = *new_traj_ptr;
 
-  size_t steps = msg.points.size();
+  size_t steps = msg.points.size() - 1;
 
   ROS_INFO("steps: %zu", steps);
   assert(steps > 0); // this is checked before
@@ -318,18 +317,18 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
     double times[steps + 1], positions[steps + 1], velocities[steps + 1], durations[steps], coeff0[steps],
            coeff1[steps], coeff2[steps], coeff3[steps];
 
-    times[0] = start_time.toSec() + msg.points[0].time_from_start.toSec();
-    positions[0] = initialJointAngles[j];
-    velocities[0] = 0.0;
+    for (size_t i = 0; i < steps + 1; i++)
+    {
+      times[i] = start_time.toSec() + msg.points[i].time_from_start.toSec();
+      positions[i] = msg.points[i].positions[lookup[j]];
+      if (allPointsHaveVelocities)
+        velocities[i] = msg.points[i].velocities[lookup[j]];
+      ROS_INFO("position %zu for joint %zu in message (= our joint %d): %f", i, j, lookup[j], positions[i]);
+    }
 
     for (size_t i = 0; i < steps; i++)
     {
-      times[i + 1] = start_time.toSec() + msg.points[i].time_from_start.toSec();
       durations[i] = times[i + 1] - times[i];
-      positions[i + 1] = msg.points[i].positions[lookup[j]];
-      if (allPointsHaveVelocities)
-        velocities[i] = msg.points[i].velocities[lookup[j]];
-      ROS_INFO("position %zu for joint %zu in message (= our joint %d): %f", i, j, lookup[j], positions[i+1]);
     }
 
     // calculate and store the coefficients
@@ -381,27 +380,32 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
   }
 
   // -------- sample trajectory and write to file
-  std::ofstream trajectory_file("/tmp/trajectory.dat", std::ios_base::out);
-  trajectory_file.precision(8);
-  for (double t = new_traj[0].start_time; t < new_traj.back().start_time + new_traj.back().duration; t += 0.01)
+  for (size_t j = 0; j < NUM_JOINTS; j++)
   {
-    // Determines which segment of the trajectory to use
-    int seg = -1;
-    while (seg + 1 < (int)new_traj.size() && new_traj[seg + 1].start_time <= t)
+    char filename[25];
+    sprintf(filename, "/tmp/trajectory-%zu.dat", j);
+    std::ofstream trajectory_file(filename, std::ios_base::out);
+    trajectory_file.precision(8);
+    for (double t = new_traj[0].start_time; t < new_traj.back().start_time + new_traj.back().duration; t += 0.01)
     {
-      ++seg;
+      // Determines which segment of the trajectory to use
+      int seg = -1;
+      while (seg + 1 < (int)new_traj.size() && new_traj[seg + 1].start_time <= t)
+      {
+        ++seg;
+      }
+
+      assert(seg >= 0);
+
+      double pos_t, vel_t, acc_t;
+      sampleSplineWithTimeBounds(new_traj[seg].splines[j].coef, new_traj[seg].duration, t - new_traj[seg].start_time,
+                                 pos_t, vel_t, acc_t);
+
+      trajectory_file << t - new_traj[0].start_time << " " << pos_t << " " << vel_t << " " << acc_t << std::endl;
     }
 
-    assert(seg >= 0);
-
-    double pos_t, vel_t, acc_t;
-    sampleSplineWithTimeBounds(new_traj[seg].splines[0].coef, new_traj[seg].duration, t - new_traj[seg].start_time,
-                               pos_t, vel_t, acc_t);
-
-    trajectory_file << t - new_traj[0].start_time << " " << pos_t << " " << vel_t << " " << acc_t << std::endl;
+    trajectory_file.close();
   }
-
-  trajectory_file.close();
 
   return new_traj_ptr;
 }
@@ -508,11 +512,11 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   boost::shared_ptr<SpecifiedTrajectory> new_traj = calculateTrajectory(goal->trajectory, start_time, jointAngles);
   if (!new_traj)
   {
+    ROS_ERROR("Could not calculate new trajectory, aborting");
     action_server_.setAborted();
     return;
   }
   current_trajectory_ = new_traj;
-
 
   // sleep until 0.5 seconds before scheduled start
   ros::Rate rate(10);
@@ -520,6 +524,7 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   {
     if (action_server_.isPreemptRequested() || !ros::ok())
     {
+      ROS_WARN("Goal canceled by client, aborting");
       action_server_.setPreempted();
       return;
     }
@@ -533,7 +538,7 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     return;
   }
 
-  bool success = katana_->executeTrajectory(new_traj, start_time);  // TODO: doesn't need start_time, is in header stamp
+  bool success = katana_->executeTrajectory(new_traj, start_time); // TODO: doesn't need start_time, is in header stamp
   if (!success)
   {
     ROS_ERROR("Problem while transferring trajectory to Katana arm, aborting");
@@ -581,8 +586,8 @@ std::vector<int> JointTrajectoryActionController::makeJointsLookup(const traject
  */
 bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory &traj)
 {
-  const double MAX_SPEED = 18000; // encoder per second
-  const double MIN_TIME = 0.03; // seconds
+  const double MAX_SPEED = 18000; // encoder per second, TODO: convert to rad/s
+  const double MIN_TIME = 0.02; // seconds
   const double EPSILON = 0.000001;
 
   // ------- check times
@@ -598,7 +603,7 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
   {
     if (traj[seg].duration < MIN_TIME)
     {
-      ROS_ERROR("duration of segment %zu is too small", seg);
+      ROS_ERROR("duration of segment %zu is too small: %f", seg, traj[seg].duration);
       return false;
     }
   }

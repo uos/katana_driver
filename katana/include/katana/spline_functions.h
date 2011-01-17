@@ -95,7 +95,7 @@ static void getCubicSplineCoefficients(double start_pos, double start_vel, doubl
  *                      after segment i (input, size [steps + 1], unit: motor
  *                      encoders)
  * @param arr_p1        arr_p1[i]: segment i's spline coefficients for t^0 (= position)     (output, size [steps])
- * @param arr_p2        arr_p2[i]: segment i's spline coefficients for t^1 (= velocitie)    (output, size [steps])
+ * @param arr_p2        arr_p2[i]: segment i's spline coefficients for t^1 (= velocity)     (output, size [steps])
  * @param arr_p3        arr_p3[i]: segment i's spline coefficients for t^2 (= acceleration) (output, size [steps])
  * @param arr_p4        arr_p4[i]: segment i's spline coefficients for t^3 (= jerk)         (output, size [steps])
  */
@@ -103,7 +103,7 @@ static void splineCoefficients(int steps, double *timearray, double *encoderarra
                                double *arr_p3, double *arr_p4)
 {
 
-  int i, j; // countervariables
+  int i, j; // counter variables
 
   // calculate time differences between points and b-coefficients
   double* deltatime = new double[steps];
@@ -202,6 +202,11 @@ static void splineCoefficients(int steps, double *timearray, double *encoderarra
     arr_p2[i] = b0 - c0;
     arr_p3[i] = c0 - d0;
     arr_p4[i] = d0;
+
+    // added MG: normalize to segment duration (of course we could do some simplifications here)
+    arr_p2[i] = arr_p2[i] / deltatime[i];
+    arr_p3[i] = arr_p3[i] / pow(deltatime[i], 2);
+    arr_p4[i] = arr_p4[i] / pow(deltatime[i], 3);
   }
 }
 
