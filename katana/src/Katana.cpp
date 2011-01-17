@@ -252,26 +252,26 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
       idleWait.sleep();
     }
 
-    // ------- move to start position
-    {
-      assert(traj->size() > 0);
-      assert(traj->at(0).splines.size() == NUM_JOINTS);
-
-      boost::recursive_mutex::scoped_lock lock(kni_mutex);
-      std::vector<int> encoders;
-
-      for (size_t i = 0; i < NUM_JOINTS; i++) {
-        encoders.push_back(angle_rad2enc(i, traj->at(0).splines[i].coef[0]));
-      }
-
-      std::vector<int> current_encoders = kni->getRobotEncoders(true);
-      ROS_INFO("current encoders: %d %d %d %d %d", current_encoders[0], current_encoders[1], current_encoders[2], current_encoders[3], current_encoders[4]);
-      ROS_INFO("target encoders:  %d %d %d %d %d", encoders[0], encoders[1], encoders[2], encoders[3], encoders[4]);
-
-      kni->moveRobotToEnc(encoders, false);
-      ros::Time move_time = ros::Time::now() + ros::Duration(2.0);
-      ros::Time::sleepUntil(move_time);
-    }
+    //// ------- move to start position
+    //{
+    //  assert(traj->size() > 0);
+    //  assert(traj->at(0).splines.size() == NUM_JOINTS);
+    //
+    //  boost::recursive_mutex::scoped_lock lock(kni_mutex);
+    //  std::vector<int> encoders;
+    //
+    //  for (size_t i = 0; i < NUM_JOINTS; i++) {
+    //    encoders.push_back(angle_rad2enc(i, traj->at(0).splines[i].coef[0]));
+    //  }
+    //
+    //  std::vector<int> current_encoders = kni->getRobotEncoders(true);
+    //  ROS_INFO("current encoders: %d %d %d %d %d", current_encoders[0], current_encoders[1], current_encoders[2], current_encoders[3], current_encoders[4]);
+    //  ROS_INFO("target encoders:  %d %d %d %d %d", encoders[0], encoders[1], encoders[2], encoders[3], encoders[4]);
+    //
+    //  kni->moveRobotToEnc(encoders, false);
+    //  ros::Time move_time = ros::Time::now() + ros::Duration(2.0);
+    //  ros::Time::sleepUntil(move_time);
+    //}
 
     // ------- wait until start time
     ros::Time::sleepUntil(start_time);
