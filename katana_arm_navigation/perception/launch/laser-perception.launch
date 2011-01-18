@@ -33,7 +33,7 @@
   </node>
 	
   <!-- need to individually self filter scans -->
-  <node pkg="robot_self_filter" type="self_filter" respawn="true" name="pr2_arm_navigation_tilt_laser_self_filter" output="screen">
+  <node pkg="robot_self_filter" type="self_filter" respawn="true" name="self_filter" output="screen">
 
     <!-- The topic for the input cloud -->
     <remap from="cloud_in" to="tilt_scan_cloud_known" />
