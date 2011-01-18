@@ -41,15 +41,15 @@ JointTrajectoryActionController::JointTrajectoryActionController(ros::NodeHandle
   joints_ = katana_->getJointNames();
 
   // Trajectory and goal constraints
-  node_.param("joint_trajectory_action_node/constraints/goal_time", goal_time_constraint_, 0.0);
-  node_.param("joint_trajectory_action_node/constraints/stopped_velocity_tolerance", stopped_velocity_tolerance_, 0.01);
+//  node_.param("joint_trajectory_action_node/constraints/goal_time", goal_time_constraint_, 0.0);
+  node_.param("joint_trajectory_action_node/constraints/stopped_velocity_tolerance", stopped_velocity_tolerance_, 1e-6);
   goal_constraints_.resize(joints_.size());
-  trajectory_constraints_.resize(joints_.size());
+//  trajectory_constraints_.resize(joints_.size());
   for (size_t i = 0; i < joints_.size(); ++i)
   {
     std::string ns = std::string("joint_trajectory_action_node/constraints") + joints_[i];
-    node_.param(ns + "/goal", goal_constraints_[i], -1.0);
-    node_.param(ns + "/trajectory", trajectory_constraints_[i], -1.0);
+    node_.param(ns + "/goal", goal_constraints_[i], 0.02);
+//    node_.param(ns + "/trajectory", trajectory_constraints_[i], -1.0);
   }
 
   // Subscriptions, publishers, services
@@ -140,66 +140,6 @@ void JointTrajectoryActionController::update()
   {
     error[i] = katana_->getMotorAngles()[i] - q[i];
   }
-
-  // ------ Determines if the goal has failed or succeeded
-  // TODO later
-  //  if (traj[seg].gh && traj[seg].gh == active_goal_)
-  //  {
-  //    ros::Time end_time(traj[seg].start_time + traj[seg].duration);
-  //    if (time <= end_time)
-  //    {
-  //      // Verifies trajectory constraints
-  //      for (size_t j = 0; j < joints_.size(); ++j)
-  //      {
-  //        if (trajectory_constraints_[j] > 0 && fabs(error[j]) > trajectory_constraints_[j])
-  //        {
-  //          ROS_WARN("Aborting because trajectory constraints failed!");
-  //          if (traj[seg].gh->getGoalStatus().status == actionlib_msgs::GoalStatus::ACTIVE)
-  //            traj[seg].gh->setAborted();
-  //          // TODO: shouldn't we call reset_trajectory_and_stop() here?
-  //          break;
-  //        }
-  //      }
-  //    }
-  //    else if (seg == (int)traj.size() - 1)
-  //    {
-  //      // Checks that we have ended inside the goal constraints
-  //      bool inside_goal_constraints = true;
-  //      for (size_t i = 0; i < joints_.size() && inside_goal_constraints; ++i)
-  //      {
-  //        if (goal_constraints_[i] > 0 && fabs(error[i]) > goal_constraints_[i])
-  //          inside_goal_constraints = false;
-  //
-  //        // It's important to be stopped if that's desired.
-  //        if (fabs(qd[i]) < 1e-6)
-  //        {
-  //          if (fabs(katana_->getMotorVelocities()[i]) > stopped_velocity_tolerance_)
-  //            inside_goal_constraints = false;
-  //        }
-  //      }
-  //
-  //      if (inside_goal_constraints)
-  //      {
-  //        if (traj[seg].gh->getGoalStatus().status == actionlib_msgs::GoalStatus::ACTIVE)
-  //          traj[seg].gh->setSucceeded();
-  //        // we don't need to call reset_trajectory_and_stop() here, because we're on the last segment anyway
-  //        active_goal_.reset();
-  //        ROS_INFO("Success!  (%s)", traj[seg].gh->getGoalID().id.c_str());
-  //      }
-  //      else if (time < end_time + ros::Duration(goal_time_constraint_))
-  //      {
-  //        // Still have some time left to make it.
-  //      }
-  //      else
-  //      {
-  //        ROS_WARN("Aborting because we wound up outside the goal constraints");
-  //        if (traj[seg].gh->getGoalStatus().status == actionlib_msgs::GoalStatus::ACTIVE)
-  //          traj[seg].gh->setAborted();
-  //        // we don't need to call reset_trajectory_and_stop() here, because we're on the last segment anyway
-  //        active_goal_.reset();
-  //      }
-  //    }
-  //  }
 
   // ------ State publishing
 
@@ -546,12 +486,33 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     return;
   }
 
-  // TODO: katana -> wait until finished
-  ros::Time endtime = ros::Time::now() + ros::Duration(5.0);
-  ros::Time::sleepUntil(endtime);
+  // wait until goal reached
+  ros::Rate goalWait(25);
+  while (!goalReached())
+  {
+    goalWait.sleep();
+  }
 
   // that worked out nicely
   action_server_.setSucceeded();
+}
+
+/**
+ * Checks that we have ended inside the goal constraints.
+ */
+bool JointTrajectoryActionController::goalReached()
+{
+  for (size_t i = 0; i < joints_.size(); i++)
+  {
+    double error = current_trajectory_->back().splines[i].target_position - katana_->getMotorAngles()[i];
+    if (goal_constraints_[i] > 0 && fabs(error) > goal_constraints_[i])
+      return false;
+
+    // It's important to be stopped if that's desired.
+    if (fabs(katana_->getMotorVelocities()[i]) > stopped_velocity_tolerance_)
+      return false;
+  }
+  return true;
 }
 
 std::vector<int> JointTrajectoryActionController::makeJointsLookup(const trajectory_msgs::JointTrajectory &msg)

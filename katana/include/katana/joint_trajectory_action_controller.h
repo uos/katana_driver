@@ -62,10 +62,10 @@ private:
   boost::shared_ptr<AbstractKatana> katana_;
 
   // parameters
-  double goal_time_constraint_;
+//  double goal_time_constraint_;
   double stopped_velocity_tolerance_;
   std::vector<double> goal_constraints_;
-  std::vector<double> trajectory_constraints_;
+//  std::vector<double> trajectory_constraints_;
 
   // node handle
   ros::NodeHandle node_;
@@ -97,6 +97,8 @@ private:
   std::vector<int> makeJointsLookup(const trajectory_msgs::JointTrajectory &msg);
 
   bool validTrajectory(const SpecifiedTrajectory &traj);
+
+  bool goalReached();
 };
 
 }
