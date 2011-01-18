@@ -1,4 +1,4 @@
-## from version 0.2.4 on, trajectory_filters takes joint limits from the URDF
+## from version 0.02.4 on, trajectory_filters takes joint limits from the URDF
 ## but will override them with values from the yaml configuration file if they
 ## exist, acceleration parameters however must still be specified in yaml since
 ## they are not usually found in the urdf 
@@ -8,22 +8,22 @@
 joint_limits:
   katana_motor1_pan_joint:
     has_acceleration_limits: true
-    max_acceleration: 1.0
+    max_acceleration: 2.0
     angle_wraparound: false
   katana_motor2_lift_joint:
     has_acceleration_limits: true
-    max_acceleration: 1.0
+    max_acceleration: 2.0
     angle_wraparound: false
   katana_motor3_lift_joint:
     has_acceleration_limits: true
-    max_acceleration: 1.0
+    max_acceleration: 2.0
     angle_wraparound: false
   katana_motor4_lift_joint:
     has_acceleration_limits: true
-    max_acceleration: 1.0
+    max_acceleration: 2.0
     angle_wraparound: false
   katana_motor5_wrist_roll_joint:
     has_acceleration_limits: true
-    max_acceleration: 1.0
+    max_acceleration: 2.0
     angle_wraparound: false
 

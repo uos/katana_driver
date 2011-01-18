@@ -8,9 +8,9 @@
 
     <param name="collision_map_safety_timeout" type="double" value="100000.0" /> <!-- unit: seconds -->
 
-    <param name="joint_states_safety_timeout" type="double" value="25.0" />  <!-- unit: seconds -->
+    <param name="joint_states_safety_timeout" type="double" value="2.0" />  <!-- unit: seconds -->
 
-    <param name="velocity_history_size" type="int" value="20000" /> <!-- TODO: evil hack. to fix this, set to 20 and grep for "Self-Preempting" in rosout.log -->
+    <param name="velocity_history_size" type="int" value="200" />
 
     <param name="bounding_planes" type="string" value="0 0 1 -0.01" />
 
