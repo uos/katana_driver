@@ -46,7 +46,7 @@ KatanaNode::~KatanaNode()
 
 int KatanaNode::loop()
 {
-  ros::Rate loop_rate(10);
+  ros::Rate loop_rate(25);
 
   JointStatePublisher jointStatePublisher(nh, katana);
   TcpPublisher tcpPublisher(nh, katana);

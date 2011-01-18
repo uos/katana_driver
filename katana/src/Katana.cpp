@@ -126,37 +126,39 @@ void Katana::refreshEncoders()
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
     CMotBase* motors = kni->GetBase()->GetMOT()->arr;
 
+    kni->GetBase()->recvMPS(); // refresh all pvp->pos at once
+
+    // Using recvMPS() instead of recvPVP() makes our updates 6 times
+    // faster, since we only need one KNI call instead of 6. The KNI
+    // needs exactly 40 ms for every update call.
+
     for (size_t i = 0; i < NUM_MOTORS; i++)
     {
-      motors[i].recvPVP(); // throws ParameterReadingException
-
+      // motors[i].recvPVP(); // refresh pvp->pos, pvp->vel and pvp->msf for single motor; throws ParameterReadingException
       const TMotPVP* pvp = motors[i].GetPVP();
 
-      motor_angles_[i] = angle_enc2rad(i, pvp->pos);
-      motor_velocities_[i] = vel_acc_jerk_enc2rad(i, pvp->vel); // TODO: test
-      motor_status_[i] = pvp->msf;
+      double current_angle = angle_enc2rad(i, pvp->pos);
+      double time_since_update = (ros::Time::now() - last_encoder_update_).toSec();
 
-      //  MSF_MECHSTOP    = 1,    //!< mechanical stopper reached, new: unused (default value)
-      //  MSF_MAXPOS      = 2,    //!< max. position was reached, new: unused
-      //  MSF_MINPOS      = 4,    //!< min. position was reached, new: calibrating
-      //  MSF_DESPOS      = 8,    //!< in desired position, new: fixed, state holding
-      //  MSF_NORMOPSTAT  = 16,   //!< trying to follow target, new: moving (polymb not full)
-      //  MSF_MOTCRASHED  = 40,   //!< motor has crashed, new: collision (MG: this means that the motor has reached a collision limit (e.g., after executing a invalid spline) and has to be reset using unBlock())
-      //  MSF_NLINMOV     = 88,   //!< non-linear movement ended, new: poly move finished
-      //  MSF_LINMOV      = 152,  //!< linear movement ended, new: moving poly, polymb full
-      //  MSF_NOTVALID    = 128   //!< motor data not valid
+      if (last_encoder_update_ == ros::Time(0.0) || time_since_update == 0.0) {
+        motor_velocities_[i] = 0.0;
+      } else {
+        motor_velocities_[i] = (current_angle - motor_angles_[i]) / time_since_update;
+      }
+      //  // only necessary when using recvPVP():
+      //  motor_velocities_[i] = vel_acc_jerk_enc2rad(i, pvp->vel) * -100.0;
 
-      /*
-       *  Das Handbuch zu Katana4D sagt (zu ReadAxisState):
-       *    0 = off (ausgeschaltet)
-       *    8 = in gewünschter Position (Roboter fixiert)
-       *   24 = im "normalen Bewegungsstatus"; versucht die gewünschte Position zu erreichen
-       *   40 = wegen einer Kollision gestoppt
-       *   88 = die Linearbewegung ist beendet
-       *  128 = ungültige Achsendaten (interne Kommunikationsprobleme)
-       */
-
+      motor_angles_[i] = current_angle;
     }
+
+    //  // This is an ugly workaround, but apparently the velocities returned by the
+    //  // Katana are wrong by a factor of exactly 0.5 for motor 2 and a factor of -1
+    //  // for motor 4. This is only necessary when using recvPVP() to receive the
+    //  // velocities directly from the KNI.
+    //  motor_velocities_[2] *= 0.5;
+    //  motor_velocities_[4] *= -1.0;
+
+    last_encoder_update_ = ros::Time::now();
   }
   catch (WrongCRCException e)
   {
@@ -177,6 +179,59 @@ void Katana::refreshEncoders()
   catch (...)
   {
     ROS_ERROR("Unhandled exception in refreshEncoders()");
+  }
+}
+
+void Katana::refreshMotorStatus()
+{
+  try
+  {
+    boost::recursive_mutex::scoped_lock lock(kni_mutex);
+    CMotBase* motors = kni->GetBase()->GetMOT()->arr;
+
+    kni->GetBase()->recvGMS(); // refresh all pvp->msf at once
+
+    for (size_t i = 0; i < NUM_MOTORS; i++)
+    {
+      const TMotPVP* pvp = motors[i].GetPVP();
+
+      motor_status_[i] = pvp->msf;
+      //  MSF_MECHSTOP    = 1,    //!< mechanical stopper reached, new: unused (default value)
+      //  MSF_MAXPOS      = 2,    //!< max. position was reached, new: unused
+      //  MSF_MINPOS      = 4,    //!< min. position was reached, new: calibrating
+      //  MSF_DESPOS      = 8,    //!< in desired position, new: fixed, state holding
+      //  MSF_NORMOPSTAT  = 16,   //!< trying to follow target, new: moving (polymb not full)
+      //  MSF_MOTCRASHED  = 40,   //!< motor has crashed, new: collision (MG: this means that the motor has reached a collision limit (e.g., after executing a invalid spline) and has to be reset using unBlock())
+      //  MSF_NLINMOV     = 88,   //!< non-linear movement ended, new: poly move finished
+      //  MSF_LINMOV      = 152,  //!< linear movement ended, new: moving poly, polymb full
+      //  MSF_NOTVALID    = 128   //!< motor data not valid
+
+      /*
+       *  Das Handbuch zu Katana4D sagt (zu ReadAxisState):
+       *    0 = off (ausgeschaltet)
+       *    8 = in gewünschter Position (Roboter fixiert)
+       *   24 = im "normalen Bewegungsstatus"; versucht die gewünschte Position zu erreichen
+       *   40 = wegen einer Kollision gestoppt
+       *   88 = die Linearbewegung ist beendet
+       *  128 = ungültige Achsendaten (interne Kommunikationsprobleme)
+       */
+    }
+  }
+  catch (WrongCRCException e)
+  {
+    ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in refreshMotorStatus(): %s)", e.message().c_str());
+  }
+  catch (ReadNotCompleteException e)
+  {
+    ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in refreshMotorStatus(): %s)", e.message().c_str());
+  }
+  catch (Exception e)
+  {
+    ROS_ERROR("Unhandled exception in refreshMotorStatus(): %s", e.message().c_str());
+  }
+  catch (...)
+  {
+    ROS_ERROR("Unhandled exception in refreshMotorStatus()");
   }
 }
 
@@ -235,8 +290,9 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
 {
   try
   {
+    refreshMotorStatus();
+
     ROS_INFO("Motor status: %d, %d, %d, %d, %d, %d", motor_status_[0], motor_status_[1], motor_status_[2], motor_status_[3], motor_status_[4], motor_status_[5]);
-    // Motor status: 8, 8, 8, 8, 8, 8
 
     // ------- check if motors are blocked
     if (someMotorCrashed())
@@ -250,6 +306,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
     while (!allJointsReady())
     {
       idleWait.sleep();
+      refreshMotorStatus();
     }
 
     //// ------- move to start position
@@ -283,7 +340,8 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
 
     // fix start times
     double delay = ros::Time::now().toSec() - traj->at(0).start_time;
-    for (size_t i = 0; i < traj->size(); i++) {
+    for (size_t i = 0; i < traj->size(); i++)
+    {
       traj->at(i).start_time += delay;
     }
 
@@ -439,7 +497,6 @@ double Katana::vel_acc_jerk_enc2rad(int index, short encoders)
   return result;
 }
 
-
 /* ******************************** helper functions ******************************** */
 
 short Katana::round(const double x)
@@ -516,7 +573,7 @@ bool Katana::allJointsReady()
 
   for (size_t i = 0; i < NUM_JOINTS; i++)
   {
-    jointsReady &= motor_status_[i] != MSF_LINMOV; // TODO: is this really the correct state to check?
+    jointsReady &= motor_status_[i] == MSF_DESPOS;
   }
 
   return jointsReady;

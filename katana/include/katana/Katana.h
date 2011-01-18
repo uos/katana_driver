@@ -63,7 +63,11 @@ private:
 
   std::vector<TMotStsFlg> motor_status_;
 
+  ros::Time last_encoder_update_;
+
   void calibrate();
+
+  void refreshMotorStatus();
   bool someMotorCrashed();
   bool allJointsReady();
 
