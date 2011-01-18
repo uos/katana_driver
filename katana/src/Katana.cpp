@@ -404,6 +404,12 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
   return false;
 }
 
+void Katana::freezeRobot() {
+  boost::recursive_mutex::scoped_lock lock(kni_mutex);
+  kni->freezeRobot();
+}
+
+
 /* ******************************** conversions ******************************** */
 short Katana::angle_rad2enc(int index, double angle)
 {

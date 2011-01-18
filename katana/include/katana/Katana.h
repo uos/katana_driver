@@ -53,6 +53,7 @@ public:
   void refreshEncoders();
   std::vector<double> getCoordinates();
   bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time);
+  virtual void freezeRobot();
 
 private:
   boost::shared_ptr<CLMBase> kni;

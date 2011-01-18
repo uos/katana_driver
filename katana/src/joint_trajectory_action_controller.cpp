@@ -73,7 +73,7 @@ JointTrajectoryActionController::~JointTrajectoryActionController()
  */
 void JointTrajectoryActionController::reset_trajectory_and_stop()
 {
-  // TODO: send command to KNI (freezeRobot?), wait until stopped
+  katana_->freezeRobot();
 
   ros::Time time = ros::Time::now();
 
@@ -428,7 +428,6 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   }
 
   // make sure the katana is stopped
-  // note: this makes all the "merge old with new trajectory" code in calculateTrajectory obsolete
   reset_trajectory_and_stop();
 
   // ------ If requested, performs a stop
