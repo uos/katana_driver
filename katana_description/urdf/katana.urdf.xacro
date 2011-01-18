@@ -7,7 +7,7 @@
        name="katana">
 
   <property name="scale" value=".001" />               <!-- all katana meshes are scaled in millimeters, but ros uses meters -->
-  <property name="M_PI" value="3.1415926535897931" />  <!-- only approximately correct -->
+  <property name="M_PI" value="3.1415926535897931" />  <!-- only approximately correct ;-) -->
 
   <!-- all values from the katana manual -->
   <property name="controlbox_height" value="0.08" />
@@ -29,6 +29,13 @@
           <color rgba="0.8 0.8 0.8 1"/>
         </material>
       </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" 
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+      </collision>
   </link>
 
   <joint name="katana_base_joint" type="fixed">
@@ -47,6 +54,13 @@
         
         <material name="grey" />
       </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+      </collision>
   </link>
 
   <joint name="katana_motor1_pan_joint" type="revolute">
@@ -68,6 +82,13 @@
         
         <material name="grey" />
       </visual>
+      <collision>
+        <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+      </collision>
   </link>
 
   <joint name="katana_motor2_lift_joint" type="revolute">
@@ -93,6 +114,13 @@
 
         <material name="grey" />
       </visual>
+      <collision>
+        <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor2_lift_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+      </collision>
   </link>
 
 
@@ -119,6 +147,13 @@
 
         <material name="grey" />
       </visual>
+      <collision>
+        <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor3_lift_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+      </collision>
   </link>
 
   <joint name="katana_motor4_lift_joint" type="revolute">
@@ -144,6 +179,13 @@
 
         <material name="grey" />
       </visual>
+      <collision>
+        <origin rpy="${M_PI/2} 0 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor4_lift_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+      </collision>
   </link>
 
 
@@ -170,6 +212,13 @@
 
         <material name="grey" />
       </visual>
+      <collision>
+        <origin rpy="0 ${M_PI/2} 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor5_wrist_roll_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+      </collision>
   </link>
 
 
@@ -189,6 +238,13 @@
 
         <material name="grey" />
       </visual>
+      <collision>
+        <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
+        <geometry>
+          <mesh filename="package://katana_description/meshes/katana/katana_gripper_link.stl"
+            scale="${scale} ${scale} ${scale}"/>
+        </geometry>
+      </collision>
     </link>
 
   <xacro:macro name="finger" params="prefix rotate">
@@ -210,6 +266,13 @@
   
           <material name="grey" />
         </visual>
+        <collision>
+          <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
+          <geometry>
+            <mesh filename="package://katana_description/meshes/katana/katana_gripper_${prefix}_finger.stl"
+              scale="${scale} ${scale} ${scale}"/>
+          </geometry>
+        </collision>
     </link>
   </xacro:macro>
 
