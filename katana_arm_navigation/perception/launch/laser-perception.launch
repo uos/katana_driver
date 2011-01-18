@@ -15,7 +15,7 @@
     <remap from="cloud_in" to="kinect/depth/points" />
     <remap from="cloud_out" to="tilt_scan_cloud_known" />
     <param name="sensor_frame" type="string" value="kinect_depth" />
-    <param name="fixed_frame" type="string" value="katana_internal_controlbox_link" />
+    <param name="fixed_frame" type="string" value="/katana_internal_controlbox_link" /> <!-- TODO: use map frame here -->
     <param name="object_padd" type="double" value="0.02" />
     <param name="object_scale" type="double" value="1.0" />
   </node>
