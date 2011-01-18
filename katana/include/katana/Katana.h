@@ -90,8 +90,6 @@ static const double URDF_GRIPPER_OPEN_ANGLE = 0.4; /// should be equal to the va
 
 static const double KNI_TO_URDF_GRIPPER_FACTOR = (URDF_GRIPPER_OPEN_ANGLE - URDF_GRIPPER_CLOSED_ANGLE)
     / (KNI_GRIPPER_OPEN_ANGLE - KNI_GRIPPER_CLOSED_ANGLE);
-
-static const size_t MOVE_BUFFER_SIZE = 16; // or 18 or so; TODO: find out
 }
 
 #endif /* KATANA_H_ */

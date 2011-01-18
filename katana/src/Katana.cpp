@@ -25,38 +25,6 @@
 
 #include "katana/Katana.h"
 
-// == not implemented yet ==
-//
-//   TODO:
-//   services? actions?
-//     moveRobotToDeg bzw. besser movDegrees
-//     !!! openGripper / closeGripper       throws MotorOutOfRangeException, MotorTimeoutException, MotorCrashException   (see pr2_gripper_action, pr2_gripper_controller, pr2_gripper_grasp_controller)
-//     freezeMotor / freezeRobot        // stops motor / robot movement
-//     switchRobotOn / Off   // default: on; switching off is dangerous because the arm will fall to the ground if unsupported
-//     unBlock       // unblock robot after a crash (see crashLimits); has to be called after each MotorCrashException
-//
-//   inverse kinematics:
-//     setTcpOffset
-//     IkCalculate (see katana450 package)    // throws NoSolutionException
-//
-//   perhaps too high level:
-//     moveRobotLinearTo
-//     moveRobotTo
-//     setActivatePositionController
-//
-//   stuff that we might publish or provide as a service:
-//     getForce = efforts
-//     get... (all the limits)
-//
-//   setting limits:
-//     setMaximumLinearVelocity
-//     setMotorVelocityLimit
-//     setRobotVelocityLimit
-//     setMotorAccelerationLimit
-//     setRobotAccelerationLimit
-//     setForceLimit
-//     setSpeedCollisionLimit
-//     setPositionCollisionLimit
 
 namespace katana
 {

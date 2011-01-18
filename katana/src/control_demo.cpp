@@ -43,7 +43,6 @@ struct Tpos
 };
 
 // Katana object
-// TODO: auto_ptr<CLMBase> katana;
 CLMBase* kni;
 
 // positions, hard-coded. Use values from file instead.
@@ -187,7 +186,6 @@ int main(int argc, char *argv[])
     //--------------------------------------------------------//
     //init robot:
     //--------------------------------------------------------//
-    // TODO: katana.reset(new CLMBase());
     kni = new CLMBase();
     kni->create(argv[1], protocol.get());
 

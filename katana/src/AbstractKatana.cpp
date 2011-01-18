@@ -67,9 +67,6 @@ AbstractKatana::AbstractKatana(ros::NodeHandle n)
     joint_names_[i] = (std::string)name_value;
     joint_types_[i] = urdf::Joint::REVOLUTE; // all of our joints are of type revolute
   }
-
-  // TODO: handle gripper separately
-
 }
 
 AbstractKatana::~AbstractKatana()

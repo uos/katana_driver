@@ -41,15 +41,15 @@ JointTrajectoryActionController::JointTrajectoryActionController(ros::NodeHandle
   joints_ = katana_->getJointNames();
 
   // Trajectory and goal constraints
-//  node_.param("joint_trajectory_action_node/constraints/goal_time", goal_time_constraint_, 0.0);
+  //  node_.param("joint_trajectory_action_node/constraints/goal_time", goal_time_constraint_, 0.0);
   node_.param("joint_trajectory_action_node/constraints/stopped_velocity_tolerance", stopped_velocity_tolerance_, 1e-6);
   goal_constraints_.resize(joints_.size());
-//  trajectory_constraints_.resize(joints_.size());
+  //  trajectory_constraints_.resize(joints_.size());
   for (size_t i = 0; i < joints_.size(); ++i)
   {
     std::string ns = std::string("joint_trajectory_action_node/constraints") + joints_[i];
     node_.param(ns + "/goal", goal_constraints_[i], 0.02);
-//    node_.param(ns + "/trajectory", trajectory_constraints_[i], -1.0);
+    //    node_.param(ns + "/trajectory", trajectory_constraints_[i], -1.0);
   }
 
   // Subscriptions, publishers, services
@@ -547,9 +547,12 @@ std::vector<int> JointTrajectoryActionController::makeJointsLookup(const traject
  */
 bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory &traj)
 {
-  const double MAX_SPEED = 18000; // encoder per second, TODO: convert to rad/s
+  const double MAX_SPEED = 4.0; // rad/s; TODO: should be same value as URDF
   const double MIN_TIME = 0.02; // seconds
   const double EPSILON = 0.000001;
+
+  if (traj.size() > MOVE_BUFFER_SIZE)
+    ROS_WARN("new trajectory has %zu segments (move buffer size: %zu)", traj.size(), MOVE_BUFFER_SIZE);
 
   // ------- check times
   for (size_t seg = 0; seg < traj.size() - 1; seg++)
@@ -609,11 +612,11 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
         ROS_ERROR("Velocity discontinuity at end of segment %zu (joint %zu)", seg, j);
         return false;
       }
-      //  if (std::abs(2.0 * traj[seg + 1].splines[j].coef[2] - acc_t) > EPSILON)
-      //  {
-      //    ROS_ERROR("Acceleration discontinuity (%f) at end of segment %zu (joint %zu)", std::abs(traj[seg + 1].splines[j].coef[2] - acc_t), seg, j);
-      //    return false;
-      //  }
+      if (std::abs(2.0 * traj[seg + 1].splines[j].coef[2] - acc_t) > EPSILON)
+      {
+        ROS_WARN("Acceleration discontinuity (%f) at end of segment %zu (joint %zu)", std::abs(traj[seg + 1].splines[j].coef[2] - acc_t), seg, j);
+        // return false;
+      }
     }
   }
 

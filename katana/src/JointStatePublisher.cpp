@@ -43,7 +43,7 @@ void JointStatePublisher::loopOnce()
   std::vector<double> angles = katana->getMotorAngles();
   std::vector<double> vels = katana->getMotorVelocities();
 
-  // TODO: read joint names from katana, for the fingers use dependent_joints like the joint_state_publisher does
+  // TODO later: read joint names from katana, for the fingers use dependent_joints like the joint_state_publisher does
 
   jsMsg->name.push_back("katana_motor1_pan_joint");
   jsMsg->position.push_back(angles[0]);
@@ -65,7 +65,6 @@ void JointStatePublisher::loopOnce()
   jsMsg->position.push_back(angles[4]);
   jsMsg->velocity.push_back(vels[4]);
 
-  // TODO: call getGripperAngle or something
   jsMsg->name.push_back("katana_r_finger_joint");
   jsMsg->position.push_back(angles[5]);
   jsMsg->velocity.push_back(vels[5]);

@@ -84,7 +84,7 @@ bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> t
   // ------- wait until start time
   ros::Time::sleepUntil(start_time);
 
-  // TODO: I modify traj now, copy first because it's shared, make const
+  // TODO later: I modify traj now, copy first because it's shared, make const
 
   SpecifiedTrajectory &traj = *traj_ptr;
 
