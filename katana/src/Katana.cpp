@@ -291,8 +291,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
   try
   {
     refreshMotorStatus();
-
-    ROS_INFO("Motor status: %d, %d, %d, %d, %d, %d", motor_status_[0], motor_status_[1], motor_status_[2], motor_status_[3], motor_status_[4], motor_status_[5]);
+    ROS_DEBUG("Motor status: %d, %d, %d, %d, %d, %d", motor_status_[0], motor_status_[1], motor_status_[2], motor_status_[3], motor_status_[4], motor_status_[5]);
 
     // ------- check if motors are blocked
     if (someMotorCrashed())
@@ -394,7 +393,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
             + vel_acc_jerk_rad2enc(j, seg.splines[j].coef[2]) * pow(seg.duration, 2)
             + vel_acc_jerk_rad2enc(j, seg.splines[j].coef[3]) * pow(seg.duration, 3);
 
-        ROS_INFO("target: %d, endpos: %d", angle_rad2enc(j, seg.splines[j].target_position), endpos);
+        ROS_DEBUG("target: %d, endpos: %d", angle_rad2enc(j, seg.splines[j].target_position), endpos);
 
       }
 
@@ -406,11 +405,11 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
       polynomial.push_back(0); // p2
       polynomial.push_back(0); // p3
 
-      ROS_INFO("setAndStartPolyMovement(%d): ", activityflag);
+      ROS_DEBUG("setAndStartPolyMovement(%d): ", activityflag);
 
       for (size_t k = 5; k < polynomial.size(); k += 6)
       {
-        ROS_INFO("   time: %d   target: %d   p0: %d   p1: %d   p2: %d   p3: %d",
+        ROS_DEBUG("   time: %d   target: %d   p0: %d   p1: %d   p2: %d   p3: %d",
             polynomial[k-5], polynomial[k-4], polynomial[k-3], polynomial[k-2], polynomial[k-1], polynomial[k]);
       }
 
@@ -573,7 +572,7 @@ bool Katana::allJointsReady()
 
   for (size_t i = 0; i < NUM_JOINTS; i++)
   {
-    jointsReady &= motor_status_[i] == MSF_DESPOS;
+    jointsReady &= ((motor_status_[i] == MSF_DESPOS) || motor_status_[i] == (MSF_NLINMOV));
   }
 
   return jointsReady;

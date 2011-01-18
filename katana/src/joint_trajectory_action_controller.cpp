@@ -242,7 +242,7 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
 
   size_t steps = msg.points.size() - 1;
 
-  ROS_INFO("steps: %zu", steps);
+  ROS_DEBUG("steps: %zu", steps);
   assert(steps > 0); // this is checked before
 
   for (size_t i = 0; i < steps; i++)
@@ -263,7 +263,7 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
       positions[i] = msg.points[i].positions[lookup[j]];
       if (allPointsHaveVelocities)
         velocities[i] = msg.points[i].velocities[lookup[j]];
-      ROS_INFO("position %zu for joint %zu in message (= our joint %d): %f", i, j, lookup[j], positions[i]);
+      ROS_DEBUG("position %zu for joint %zu in message (= our joint %d): %f", i, j, lookup[j], positions[i]);
     }
 
     for (size_t i = 0; i < steps; i++)
@@ -274,7 +274,7 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
     // calculate and store the coefficients
     if (allPointsHaveVelocities)
     {
-      ROS_INFO("Using getCubicSplineCoefficients()");
+      ROS_DEBUG("Using getCubicSplineCoefficients()");
       for (size_t i = 0; i < steps; ++i)
       {
         std::vector<double> coeff;
@@ -288,7 +288,7 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
     }
     else
     {
-      ROS_INFO("Using splineCoefficients()");
+      ROS_DEBUG("Using splineCoefficients()");
       splineCoefficients(steps, times, positions, coeff0, coeff1, coeff2, coeff3);
     }
 
@@ -304,10 +304,10 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
     }
   }
 
-  ROS_INFO("The new trajectory has %d segments", (int)new_traj.size());
+  ROS_DEBUG("The new trajectory has %d segments", (int)new_traj.size());
   for (size_t i = 0; i < std::min((size_t)20, new_traj.size()); i++)
   {
-    ROS_INFO("Segment %2zu - start_time: %.3lf   duration: %.3lf", i, new_traj[i].start_time, new_traj[i].duration);
+    ROS_DEBUG("Segment %2zu - start_time: %.3lf   duration: %.3lf", i, new_traj[i].start_time, new_traj[i].duration);
     for (size_t j = 0; j < new_traj[i].splines.size(); ++j)
     {
       ROS_DEBUG("    %.2lf  %.2lf  %.2lf  %.2lf (%s)",
@@ -414,15 +414,15 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
 {
   if (!setsEqual(joints_, goal->trajectory.joint_names))
   {
+    ROS_ERROR("Joints on incoming goal don't match our joints");
     for (size_t i = 0; i < goal->trajectory.joint_names.size(); i++)
     {
-      ROS_INFO("incoming joint %d: %s", (int)i, goal->trajectory.joint_names[i].c_str());
+      ROS_INFO("  incoming joint %d: %s", (int)i, goal->trajectory.joint_names[i].c_str());
     }
     for (size_t i = 0; i < joints_.size(); i++)
     {
-      ROS_INFO("our joint      %d: %s", (int)i, joints_[i].c_str());
+      ROS_INFO("  our joint      %d: %s", (int)i, joints_[i].c_str());
     }
-    ROS_ERROR("Joints on incoming goal don't match our joints");
     action_server_.setAborted();
     return;
   }
