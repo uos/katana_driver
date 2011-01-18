@@ -1,12 +1,26 @@
 min_sensor_dist: .05
 self_see_default_padding: .01
 self_see_default_scale: 1.0
-# TODO
-#self_see_links:
-#  - name: l_upper_arm_link
-#    padding: .04
-
-
-    
-
-  
+self_see_links:
+  - name: katana_internal_controlbox_link 
+    padding: .04
+  - name: katana_base_link
+    padding: .04
+  - name: katana_base_link 
+    padding: .04
+  - name: katana_motor1_pan_link
+    padding: .04
+  - name: katana_motor2_lift_link
+    padding: .04
+  - name: katana_motor3_lift_link
+    padding: .04
+  - name: katana_motor4_lift_link
+    padding: .04
+  - name: katana_motor5_wrist_roll_link
+    padding: .04
+  - name: katana_gripper_link
+    padding: .04
+  - name: katana_l_finger_link
+    padding: .04
+  - name: katana_r_finger_link
+    padding: .04
