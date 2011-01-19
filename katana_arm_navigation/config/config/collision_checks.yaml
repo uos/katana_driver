@@ -23,13 +23,18 @@ default_collision_operations:
     object2: arm
     operation: enable
 
+# disable collision checks between adjacent links in separate planning groups
+  - object1: katana_motor1_pan_link
+    object2: robot_body
+    operation: disable
+
+  - object1: katana_motor4_lift_link
+    object2: end_effector
+    operation: disable
+
 # disable collision checks between links that cannot physically collide
 # (to speed up computation)
   - object1: katana_motor1_pan_link
     object2: robot_body
     operation: disable
-
-# TODO: the PR2 version of this file disables all checks between adjacent 
-# links in the "arm" planning group; is this really necessary? or are 
-# self-collisions among parts inside the groups not checked anyway?
 
