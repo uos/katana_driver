@@ -9,12 +9,12 @@
 -->
 
 <launch>
-  <node pkg="arm_kinematics" type="arm_kinematics" name="arm_kinematics" >
+  <node pkg="arm_kinematics" type="arm_kinematics" name="arm_kinematics" output="screen" >
     <param name="root_name" value="katana_base_link" />
     <param name="tip_name" value="katana_motor5_wrist_roll_link" />
   </node>
 
-  <node pkg="katana_arm_kinematics_constraint_aware" type="non_constraint_aware_ik_adapter" name="non_constraint_aware_ik_adapter">
+  <node pkg="katana_arm_kinematics_constraint_aware" type="non_constraint_aware_ik_adapter" name="non_constraint_aware_ik_adapter" output="screen">
     <param name="ik_service" value="arm_kinematics/get_ik" />
   </node>
 </launch>
