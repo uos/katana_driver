@@ -6,7 +6,6 @@
        xmlns:xacro="http://ros.org/wiki/xacro"
        name="katana">
 
-  <property name="scale" value=".001" />               <!-- all katana meshes are scaled in millimeters, but ros uses meters -->
   <property name="M_PI" value="3.1415926535897931" />  <!-- only approximately correct ;-) -->
 
   <!-- all values from the katana manual -->
@@ -21,8 +20,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" 
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" />
         </geometry>
         
         <material name="grey">
@@ -32,8 +30,7 @@
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" 
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" />
         </geometry>
       </collision>
   </link>
@@ -48,8 +45,7 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"/>
         </geometry>
         
         <material name="grey" />
@@ -57,8 +53,7 @@
       <collision>
         <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"/>
         </geometry>
       </collision>
   </link>
@@ -76,8 +71,7 @@
       <visual>
         <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"/>
         </geometry>
         
         <material name="grey" />
@@ -85,8 +79,7 @@
       <collision>
         <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"/>
         </geometry>
       </collision>
   </link>
@@ -104,8 +97,7 @@
       <visual>
         <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor2_lift_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor2_lift_link.stl"/>
         </geometry>
         <!-- <geometry>
           <cylinder length="${link2_length}" radius="0.02"/>
@@ -117,8 +109,7 @@
       <collision>
         <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor2_lift_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor2_lift_link.stl"/>
         </geometry>
       </collision>
   </link>
@@ -137,8 +128,7 @@
       <visual>
         <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor3_lift_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor3_lift_link.stl"/>
         </geometry>
          <!--<geometry>
           <cylinder length="${link3_length}" radius="0.02"/>
@@ -150,8 +140,7 @@
       <collision>
         <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor3_lift_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor3_lift_link.stl"/>
         </geometry>
       </collision>
   </link>
@@ -169,8 +158,7 @@
       <visual>
         <origin rpy="${M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor4_lift_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor4_lift_link.stl"/>
         </geometry>
          <!-- <geometry>
           <cylinder length="${link4_length}" radius="0.02"/>
@@ -182,8 +170,7 @@
       <collision>
         <origin rpy="${M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor4_lift_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor4_lift_link.stl"/>
         </geometry>
       </collision>
   </link>
@@ -202,8 +189,7 @@
       <visual>
         <origin rpy="0 ${M_PI/2} 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor5_wrist_roll_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor5_wrist_roll_link.stl"/>
         </geometry>
          <!--<geometry>
           <cylinder length="${link5_length}" radius="0.02"/>
@@ -215,8 +201,7 @@
       <collision>
         <origin rpy="0 ${M_PI/2} 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor5_wrist_roll_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_motor5_wrist_roll_link.stl"/>
         </geometry>
       </collision>
   </link>
@@ -232,8 +217,7 @@
       <visual>
         <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_gripper_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_gripper_link.stl"/>
         </geometry>
 
         <material name="grey" />
@@ -241,8 +225,7 @@
       <collision>
         <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_gripper_link.stl"
-            scale="${scale} ${scale} ${scale}"/>
+          <mesh filename="package://katana_description/meshes/katana/katana_gripper_link.stl"/>
         </geometry>
       </collision>
     </link>
@@ -260,8 +243,7 @@
         <visual>
           <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="package://katana_description/meshes/katana/katana_gripper_${prefix}_finger.stl"
-              scale="${scale} ${scale} ${scale}"/>
+            <mesh filename="package://katana_description/meshes/katana/katana_gripper_${prefix}_finger.stl"/>
           </geometry>
   
           <material name="grey" />
@@ -269,8 +251,7 @@
         <collision>
           <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="package://katana_description/meshes/katana/katana_gripper_${prefix}_finger.stl"
-              scale="${scale} ${scale} ${scale}"/>
+            <mesh filename="package://katana_description/meshes/katana/katana_gripper_${prefix}_finger.stl"/>
           </geometry>
         </collision>
     </link>
