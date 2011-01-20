@@ -30,7 +30,7 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(katana src/KatanaNode.cpp src/AbstractKatana.cpp src/Katana.cpp src/SimulatedKatana.cpp src/JointStatePublisher.cpp src/TcpPublisher.cpp src/joint_trajectory_action_controller.cpp)
+rosbuild_add_executable(katana src/KatanaNode.cpp src/AbstractKatana.cpp src/Katana.cpp src/SimulatedKatana.cpp src/JointStatePublisher.cpp src/TcpPublisher.cpp src/joint_trajectory_action_controller.cpp src/KNIKinematics.cpp)
 rosbuild_add_executable(control_demo src/control_demo.cpp src/keyboard.cpp)
 
 

@@ -22,6 +22,8 @@
   <depend package="trajectory_msgs"/>
   <depend package="urdf"/>
 
+  <depend package="kinematics_msgs"/>
+
   <rosdep name="armadillo"/>
 
 </package>

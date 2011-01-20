@@ -51,6 +51,7 @@ int KatanaNode::loop()
   JointStatePublisher jointStatePublisher(nh, katana);
   TcpPublisher tcpPublisher(nh, katana);
   JointTrajectoryActionController jointTrajectoryActionController(nh, katana);
+  KNIKinematics kni_kinematics(katana);
 
   while (ros::ok())
   {
@@ -58,6 +59,7 @@ int KatanaNode::loop()
     jointStatePublisher.loopOnce();
     tcpPublisher.loopOnce();
     jointTrajectoryActionController.update();
+    kni_kinematics.loopOnce();
 
     ros::spinOnce();
     loop_rate.sleep();
