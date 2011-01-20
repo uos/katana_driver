@@ -10,7 +10,8 @@
 
     <param name="joint_states_safety_timeout" type="double" value="2.0" />  <!-- unit: seconds -->
 
-    <param name="velocity_history_size" type="int" value="200" />
+    <!-- TODO: change back to 200 when no longer needed to prevent self-preemption due to non-moving joints -->
+    <param name="velocity_history_size" type="int" value="20000" />
 
     <param name="bounding_planes" type="string" value="0 0 1 -0.01" />
 
