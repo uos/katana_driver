@@ -17,10 +17,11 @@
     <param name="publish_occlusion" type="bool" value="true" />
 
     <!-- TODO: use map frame here -->
-    <param name="fixed_frame" type="string" value="/katana_internal_controlbox_link" />
+    <param name="fixed_frame" type="string" value="/katana_base_link" />
 
     <!-- define a box of size 2x3x4 around (0,  0, 0) in the robot frame -->
-    <param name="robot_frame" type="string" value="/katana_internal_controlbox_link" />
+    <!-- TODO: use map frame here -->
+    <param name="robot_frame" type="string" value="/katana_base_link" />
 
     <param name="origin_x" type="double" value="0.0" />
     <param name="origin_y" type="double" value="0.0" />

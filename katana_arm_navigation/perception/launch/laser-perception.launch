@@ -2,9 +2,8 @@
   <!-- send planning environment parameters -->
   <include file="$(find katana_arm_navigation)/config/launch/katana_planning_environment.launch" />
 
-  <!-- TODO -->
   <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
-    args="-0.64 -0.28 0.21 -1.57 0 -1.57 /katana_internal_controlbox_link /kinect_rgb 10" />
+    args="-0.64 -0.28 0.12 -1.57 0 -1.57 /katana_base_link /kinect_rgb 10" />
   <node pkg="tf" type="static_transform_publisher" name="kinect_rgb_to_kinect_depth"
     args="-0.03 0.0 0.0 0.0 0.0 0.0 /kinect_rgb /kinect_depth 10" />
 
@@ -15,7 +14,7 @@
     <remap from="cloud_in" to="kinect/depth/points" />
     <remap from="cloud_out" to="tilt_scan_cloud_known" />
     <param name="sensor_frame" type="string" value="kinect_depth" />
-    <param name="fixed_frame" type="string" value="/katana_internal_controlbox_link" /> <!-- TODO: use map frame here -->
+    <param name="fixed_frame" type="string" value="/katana_base_link" /> <!-- TODO: use map frame here -->
     <param name="object_padd" type="double" value="0.02" />
     <param name="object_scale" type="double" value="1.0" />
   </node>
