@@ -264,8 +264,10 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
     // ------- check if motors are blocked
     if (someMotorCrashed())
     {
-      ROS_ERROR("Motors are crashed before executing trajectory! Unblocking and aborting trajectory.");
-      return false;
+      ROS_WARN("Motors are crashed before executing trajectory! Unblocking...");
+
+      boost::recursive_mutex::scoped_lock lock(kni_mutex);
+      kni->unBlock();
     }
 
     // ------- wait until all motors idle
@@ -530,7 +532,6 @@ bool Katana::someMotorCrashed()
     {
       boost::recursive_mutex::scoped_lock lock(kni_mutex);
       motorsCrashed = true;
-      kni->unBlock();
       break;
     }
   }
