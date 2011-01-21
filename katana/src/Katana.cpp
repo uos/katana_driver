@@ -43,6 +43,8 @@ Katana::Katana(ros::NodeHandle n) :
   ros::param::param("~/katana/config_file_path", config_file_path, ros::package::getPath("kni")
       + "/KNI_4.3.0/configfiles450/katana6M90A_G.cfg");
 
+  converter = new KNIConverter(config_file_path);
+
   try
   {
     /* ********* open device: a network transport is opened in this case ********* */
@@ -85,6 +87,7 @@ Katana::~Katana()
   kni.reset(); // delete kni, so protocol and device won't be used any more
   delete protocol;
   delete device;
+  delete converter;
 }
 
 void Katana::refreshEncoders()
@@ -105,7 +108,7 @@ void Katana::refreshEncoders()
       // motors[i].recvPVP(); // refresh pvp->pos, pvp->vel and pvp->msf for single motor; throws ParameterReadingException
       const TMotPVP* pvp = motors[i].GetPVP();
 
-      double current_angle = angle_enc2rad(i, pvp->pos);
+      double current_angle = converter->angle_enc2rad(i, pvp->pos);
       double time_since_update = (ros::Time::now() - last_encoder_update_).toSec();
 
       if (last_encoder_update_ == ros::Time(0.0) || time_since_update == 0.0) {
@@ -114,7 +117,7 @@ void Katana::refreshEncoders()
         motor_velocities_[i] = (current_angle - motor_angles_[i]) / time_since_update;
       }
       //  // only necessary when using recvPVP():
-      //  motor_velocities_[i] = vel_acc_jerk_enc2rad(i, pvp->vel) * -100.0;
+      //  motor_velocities_[i] = vel_enc2rad(i, pvp->vel) * (-1);  // the -1 is because the KNI is inconsistent about velocities
 
       motor_angles_[i] = current_angle;
     }
@@ -201,79 +204,6 @@ void Katana::refreshMotorStatus()
   {
     ROS_ERROR("Unhandled exception in refreshMotorStatus()");
   }
-}
-
-/**
- * Return the position of the tool center point as calculated by the KNI. Uses the current position as input.
- *
- * @return a vector <x, y, z, r, p, y>; xyz in [m], rpy in [rad]
- */
-std::vector<double> Katana::getCoordinates()
-{
-  const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
-
-  double kni_z, kni_x1, kni_z2;
-  std::vector<double> pose(6, 0.0);
-
-  try
-  {
-    boost::recursive_mutex::scoped_lock lock(kni_mutex);
-
-    kni->getCoordinates(pose[0], pose[1], pose[2], kni_z, kni_x1, kni_z2, false);
-
-    // zyx = yaw, pitch, roll = pose[5], pose[4], pose[3]
-    EulerTransformationMatrices::zxz_to_zyx_angles(kni_z, kni_x1, kni_z2, pose[5], pose[4], pose[3]);
-
-    pose[0] = pose[0] * KNI_TO_ROS_LENGTH;
-    pose[1] = pose[1] * KNI_TO_ROS_LENGTH;
-    pose[2] = pose[2] * KNI_TO_ROS_LENGTH;
-  }
-  catch (WrongCRCException e)
-  {
-    ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in getCoordinates(): %s)", e.message().c_str());
-  }
-  catch (ReadNotCompleteException e)
-  {
-    ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in getCoordinates(): %s)", e.message().c_str());
-  }
-  catch (Exception e)
-  {
-    ROS_ERROR("Unhandled exception in getCoordinates(): %s", e.message().c_str());
-  }
-  catch (...)
-  {
-    ROS_ERROR("Unhandled exception in getCoordinates()");
-  }
-
-  return pose;
-}
-
-/**
- * Return the position of the tool center point as calculated by the KNI.
- *
- * @param jointAngles the joint angles to compute the pose for (direct kinematics)
- * @return a vector <x, y, z, r, p, y>; xyz in [m], rpy in [rad]
- */
-std::vector<double> Katana::getCoordinates(std::vector<double> jointAngles) {
-  const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
-
-  std::vector<double> result(6, 0.0);
-  std::vector<double> pose(6, 0.0);
-  std::vector<int> encoders;
-
-  for (size_t i = 0; i < jointAngles.size(); i++)
-    encoders.push_back(angle_rad2enc(i, jointAngles[i]));
-
-  kni->getCoordinatesFromEncoders(pose, encoders);
-
-  // zyx = yaw, pitch, roll = result[5], result[4], result[3]
-  EulerTransformationMatrices::zxz_to_zyx_angles(pose[3], pose[4], pose[5], result[5], result[4], result[3]);
-
-  result[0] = pose[0] * KNI_TO_ROS_LENGTH;
-  result[1] = pose[1] * KNI_TO_ROS_LENGTH;
-  result[2] = pose[2] * KNI_TO_ROS_LENGTH;
-
-  return result;
 }
 
 /**
@@ -372,32 +302,24 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
       for (size_t j = 0; j < seg.splines.size(); j++)
       {
         // some parts taken from CLMBase::movLM2P
-        polynomial.push_back((short)floor(s_time + 0.5)); // duration
+        polynomial.push_back(round(s_time)); // duration
 
-        polynomial.push_back(angle_rad2enc(j, seg.splines[j].target_position)); // target position
+        polynomial.push_back(converter->angle_rad2enc(j, seg.splines[j].target_position)); // target position
 
         // the four spline coefficients
         // the actual position, round
-        polynomial.push_back(angle_rad2enc(j, seg.splines[j].coef[0])); // p0
+        polynomial.push_back(converter->angle_rad2enc(j, seg.splines[j].coef[0])); // p0
 
         // shift to be firmware compatible and round
-        polynomial.push_back(round(64 * (vel_acc_jerk_rad2enc(j, seg.splines[j].coef[1]) / 100.0))); // p1
-        polynomial.push_back(round(1024 * (vel_acc_jerk_rad2enc(j, seg.splines[j].coef[2]) / 10000.0))); // p2
-        polynomial.push_back(round(32768 * (vel_acc_jerk_rad2enc(j, seg.splines[j].coef[3]) / 1000000.0))); // p3
-
-        short endpos = angle_rad2enc(j, seg.splines[j].coef[0])
-            + vel_acc_jerk_rad2enc(j, seg.splines[j].coef[1]) * seg.duration
-            + vel_acc_jerk_rad2enc(j, seg.splines[j].coef[2]) * pow(seg.duration, 2)
-            + vel_acc_jerk_rad2enc(j, seg.splines[j].coef[3]) * pow(seg.duration, 3);
-
-        ROS_DEBUG("target: %d, endpos: %d", angle_rad2enc(j, seg.splines[j].target_position), endpos);
-
+        polynomial.push_back(round(64 * converter->vel_rad2enc(j, seg.splines[j].coef[1]))); // p1
+        polynomial.push_back(round(1024 * converter->acc_rad2enc(j, seg.splines[j].coef[2]))); // p2
+        polynomial.push_back(round(32768 * converter->jerk_rad2enc(j, seg.splines[j].coef[3]))); // p3
       }
 
-      // gripper
+      // gripper: hold current position
       polynomial.push_back((short)floor(s_time + 0.5)); // duration
-      polynomial.push_back(angle_rad2enc(5, motor_angles_[5])); // target position (angle)
-      polynomial.push_back(angle_rad2enc(5, motor_angles_[5])); // p0
+      polynomial.push_back(converter->angle_rad2enc(5, motor_angles_[5])); // target position (angle)
+      polynomial.push_back(converter->angle_rad2enc(5, motor_angles_[5])); // p0
       polynomial.push_back(0); // p1
       polynomial.push_back(0); // p2
       polynomial.push_back(0); // p3
@@ -438,69 +360,14 @@ void Katana::freezeRobot() {
   kni->freezeRobot();
 }
 
-/* ******************************** conversions ******************************** */
-short Katana::angle_rad2enc(int index, double angle)
-{
-  // no access to Katana hardware, so no locking required
-  const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
 
-  if (index == NUM_MOTORS - 1) // gripper
-    angle = (angle - URDF_GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
-
-  return ((param->angleOffset - angle) * (double)param->encodersPerCycle * (double)param->rotationDirection) / (2.0
-      * M_PI) + param->encoderOffset;
-}
-
-double Katana::angle_enc2rad(int index, int encoders)
-{
-  // no access to Katana hardware, so no locking required
-  const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
-
-  double result = param->angleOffset - (((double)encoders - (double)param->encoderOffset) * 2.0 * M_PI)
-      / ((double)param->encodersPerCycle * (double)param->rotationDirection);
-
-  if (index == NUM_MOTORS - 1) // gripper
-  {
-    result = (result - KNI_GRIPPER_CLOSED_ANGLE) * KNI_TO_URDF_GRIPPER_FACTOR + URDF_GRIPPER_CLOSED_ANGLE;
-  }
-
-  return result;
-}
-
-/**
- * Conversions for velocity, acceleration and jerk (first derivative of acceleration).
- * Basically the same as for angle, but without the offsets.
- */
-short Katana::vel_acc_jerk_rad2enc(int index, double vel_acc_jerk)
-{
-  // no access to Katana hardware, so no locking required
-  const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
-
-  if (index == NUM_MOTORS - 1) // gripper
-    vel_acc_jerk = vel_acc_jerk / KNI_TO_URDF_GRIPPER_FACTOR;
-
-  return ((-vel_acc_jerk) * (double)param->encodersPerCycle * (double)param->rotationDirection) / (2.0 * M_PI);
-}
-
-double Katana::vel_acc_jerk_enc2rad(int index, short encoders)
-{
-  // no access to Katana hardware, so no locking required
-  const TMotInit* param = kni->GetBase()->GetMOT()->arr[index].GetInitialParameters();
-
-  double result = -((double)encoders * 2.0 * M_PI) / ((double)param->encodersPerCycle
-      * (double)param->rotationDirection);
-
-  if (index == NUM_MOTORS - 1) // gripper
-  {
-    result = result * KNI_TO_URDF_GRIPPER_FACTOR;
-  }
-
-  return result;
-}
 
 /* ******************************** helper functions ******************************** */
 
-short Katana::round(const double x)
+/**
+ * Round to nearest integer.
+ */
+short inline Katana::round(const double x)
 {
   if (x >= 0)
     return (short)(x + 0.5);
@@ -550,33 +417,24 @@ void Katana::calibrate()
 
 bool Katana::someMotorCrashed()
 {
-  bool motorsCrashed = false;
-
   for (size_t i = 0; i < NUM_MOTORS; i++)
   {
     if (motor_status_[i] == MSF_MOTCRASHED)
-    {
-      boost::recursive_mutex::scoped_lock lock(kni_mutex);
-      motorsCrashed = true;
-      break;
-    }
+      return true;
   }
 
-  return motorsCrashed;
+  return false;
 }
 
 bool Katana::allJointsReady()
 {
-  // taken from CLMBase::movLM2P()
-  // check if the robot buffer is ready to receive a new linear movement
-  bool jointsReady = true;
-
   for (size_t i = 0; i < NUM_JOINTS; i++)
   {
-    jointsReady &= ((motor_status_[i] == MSF_DESPOS) || motor_status_[i] == (MSF_NLINMOV));
+    if ((motor_status_[i] != MSF_DESPOS) && (motor_status_[i] != (MSF_NLINMOV)))
+      return false;
   }
 
-  return jointsReady;
+  return true;
 }
 
 }

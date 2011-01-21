@@ -30,7 +30,6 @@
 #include <katana/JointStatePublisher.h>
 #include <katana/TcpPublisher.h>
 #include <katana/joint_trajectory_action_controller.h>
-#include <katana/KNIKinematics.h>
 
 #include <katana/AbstractKatana.h>
 #include <katana/Katana.h>

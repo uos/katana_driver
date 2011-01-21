@@ -32,8 +32,8 @@
 #include <kniBase.h>
 
 #include <katana/SpecifiedTrajectory.h>
-#include <katana/EulerTransformationMatrices.hh>
 #include <katana/AbstractKatana.h>
+#include <katana/KNIConverter.h>
 
 namespace katana
 {
@@ -51,8 +51,6 @@ public:
   virtual ~Katana();
 
   void refreshEncoders();
-  std::vector<double> getCoordinates();
-  std::vector<double> getCoordinates(std::vector<double> jointAngles);
   bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time);
   virtual void freezeRobot();
 
@@ -60,6 +58,8 @@ private:
   boost::shared_ptr<CLMBase> kni;
   CCplSerialCRC* protocol;
   CCdlSocket* device;
+
+  KNIConverter* converter;
 
   boost::recursive_mutex kni_mutex;
 
@@ -69,29 +69,12 @@ private:
 
   void calibrate();
 
+  short round(const double x);
   void refreshMotorStatus();
   bool someMotorCrashed();
   bool allJointsReady();
-
-  short angle_rad2enc(int index, double angle);
-  double angle_enc2rad(int index, int encoders);
-  short vel_acc_jerk_rad2enc(int index, double vel_acc_jerk);
-  double vel_acc_jerk_enc2rad(int index, short encoders);
-  short round(const double x);
-
 };
 
-/**
- * constants for converting between the KNI gripper angle and the URDF gripper angle
- */
-static const double KNI_GRIPPER_CLOSED_ANGLE = 0.21652991032554647;
-static const double KNI_GRIPPER_OPEN_ANGLE = -2.0047969889958925;
-
-static const double URDF_GRIPPER_CLOSED_ANGLE = -0.4; /// should be equal to the value in the urdf description
-static const double URDF_GRIPPER_OPEN_ANGLE = 0.4; /// should be equal to the value in the urdf description
-
-static const double KNI_TO_URDF_GRIPPER_FACTOR = (URDF_GRIPPER_OPEN_ANGLE - URDF_GRIPPER_CLOSED_ANGLE)
-    / (KNI_GRIPPER_OPEN_ANGLE - KNI_GRIPPER_CLOSED_ANGLE);
 }
 
 #endif /* KATANA_H_ */

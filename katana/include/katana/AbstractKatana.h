@@ -43,8 +43,6 @@ public:
   virtual ~AbstractKatana();
 
   virtual void refreshEncoders() = 0;
-  virtual std::vector<double> getCoordinates() = 0;
-  virtual std::vector<double> getCoordinates(std::vector<double> jointAngles) = 0;
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time) = 0;
   virtual void freezeRobot();
 

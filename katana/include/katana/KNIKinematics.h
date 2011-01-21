@@ -26,33 +26,45 @@
 #define KNIKINEMATICS_H_
 
 #include <ros/ros.h>
+#include <ros/package.h>
 #include <kinematics_msgs/GetKinematicSolverInfo.h>
 #include <kinematics_msgs/GetPositionFK.h>
 #include <kinematics_msgs/GetPositionIK.h>
 
-#include <katana/AbstractKatana.h>
+#include <KNI_InvKin/ikBase.h>
+
+#include <katana/KNIConverter.h>
+#include <katana/EulerTransformationMatrices.hh>
 
 namespace katana
 {
 
+static const size_t NUM_JOINTS = 5;
+
+
 class KNIKinematics
 {
 public:
-  KNIKinematics(boost::shared_ptr<AbstractKatana> katana);
+  KNIKinematics();
   virtual ~KNIKinematics();
 
-  void loopOnce();
-
 private:
-  ros::NodeHandle nh;
-  boost::shared_ptr<AbstractKatana> katana;
-
+  ros::NodeHandle nh_;
   ros::ServiceServer get_kinematic_solver_info_server_;
+
+  std::vector<std::string> joint_names_;
+
+  CikBase ikBase_;
+  KNIConverter* converter_;
+
 
   bool get_kinematic_solver_info(kinematics_msgs::GetKinematicSolverInfo::Request &req,
                                  kinematics_msgs::GetKinematicSolverInfo::Response &res);
 
   bool get_position_fk(kinematics_msgs::GetPositionFK::Request &req, kinematics_msgs::GetPositionFK::Response &res);
+
+  std::vector<double> getCoordinates();
+  std::vector<double> getCoordinates(std::vector<double> jointAngles);
 };
 
 }

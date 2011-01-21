@@ -22,35 +22,69 @@
  *      Author: Martin Günther
  */
 
-#include "../include/katana/KNIKinematics.h"
+#include <katana/KNIKinematics.h>
 
 namespace katana
 {
 
-KNIKinematics::KNIKinematics(boost::shared_ptr<AbstractKatana> katana) :
-  katana(katana)
+KNIKinematics::KNIKinematics()
 {
-  ros::NodeHandle nh;
+  joint_names_.resize(NUM_JOINTS);
 
-  get_kinematic_solver_info_server_ = nh.advertiseService("get_kinematic_solver_info",
-                                                          &KNIKinematics::get_kinematic_solver_info, this);
+
+  // ------- get parameters
+  ros::NodeHandle pn("~");
+
+  std::string config_file_path;
+
+  ros::param::param("~/katana/config_file_path", config_file_path, ros::package::getPath("kni")
+      + "/KNI_4.3.0/configfiles450/katana6M90A_G.cfg");
+
+  converter_ = new KNIConverter(config_file_path);
+
+  XmlRpc::XmlRpcValue joint_names;
+
+  // Gets all of the joints
+  if (!pn.getParam("joints", joint_names))
+  {
+    ROS_ERROR("No joints given. (namespace: %s)", pn.getNamespace().c_str());
+  }
+  if (joint_names.getType() != XmlRpc::XmlRpcValue::TypeArray)
+  {
+    ROS_ERROR("Malformed joint specification.  (namespace: %s)", pn.getNamespace().c_str());
+  }
+  if (joint_names.size() != (size_t)NUM_JOINTS)
+  {
+    ROS_ERROR("Wrong number of joints! was: %zu, expected: %zu", joint_names.size(), NUM_JOINTS);
+  }
+  for (size_t i = 0; i < NUM_JOINTS; ++i)
+  {
+    XmlRpc::XmlRpcValue &name_value = joint_names[i];
+    if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
+    {
+      ROS_ERROR("Array of joint names should contain all strings.  (namespace: %s)",
+          pn.getNamespace().c_str());
+    }
+
+    joint_names_[i] = (std::string)name_value;
+  }
+
+  get_kinematic_solver_info_server_ = nh_.advertiseService("get_kinematic_solver_info",
+                                                           &KNIKinematics::get_kinematic_solver_info, this);
 
   // TODO: register GetPositionFK, GetPositionIK
+
 }
 
 KNIKinematics::~KNIKinematics()
 {
-}
-
-void KNIKinematics::loopOnce()
-{
-  ros::spinOnce();
+  delete converter_;
 }
 
 bool KNIKinematics::get_kinematic_solver_info(kinematics_msgs::GetKinematicSolverInfo::Request &req,
                                               kinematics_msgs::GetKinematicSolverInfo::Response &res)
 {
-  res.kinematic_solver_info.joint_names = katana->getJointNames();
+  res.kinematic_solver_info.joint_names = joint_names_;
   return true;
 }
 
@@ -69,7 +103,7 @@ bool KNIKinematics::get_position_fk(kinematics_msgs::GetPositionFK::Request &req
 
   // TODO: put joint angles from req.robot_state in the correct order into jointAngles
 
-  pose = katana->getCoordinates(jointAngles);
+  pose = getCoordinates(jointAngles);
 
   // The frame_id in the header message is the frame in which
   // the forward kinematics poses will be returned; TODO: transform result to header frame_id
@@ -104,4 +138,67 @@ bool KNIKinematics::get_position_fk(kinematics_msgs::GetPositionFK::Request &req
 //}
 
 
+/**
+ * Return the position of the tool center point as calculated by the KNI. Uses the current position as input.
+ *
+ * @return a vector <x, y, z, r, p, y>; xyz in [m], rpy in [rad]
+ */
+std::vector<double> KNIKinematics::getCoordinates()
+{
+  const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
+
+  double kni_z, kni_x1, kni_z2;
+  std::vector<double> pose(6, 0.0);
+
+  ikBase_.getCoordinates(pose[0], pose[1], pose[2], kni_z, kni_x1, kni_z2, false);
+
+  // zyx = yaw, pitch, roll = pose[5], pose[4], pose[3]
+  EulerTransformationMatrices::zxz_to_zyx_angles(kni_z, kni_x1, kni_z2, pose[5], pose[4], pose[3]);
+
+  pose[0] = pose[0] * KNI_TO_ROS_LENGTH;
+  pose[1] = pose[1] * KNI_TO_ROS_LENGTH;
+  pose[2] = pose[2] * KNI_TO_ROS_LENGTH;
+
+  return pose;
+}
+
+/**
+ * Return the position of the tool center point as calculated by the KNI.
+ *
+ * @param jointAngles the joint angles to compute the pose for (direct kinematics)
+ * @return a vector <x, y, z, r, p, y>; xyz in [m], rpy in [rad]
+ */
+std::vector<double> KNIKinematics::getCoordinates(std::vector<double> jointAngles)
+{
+  const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
+
+  std::vector<double> result(6, 0.0);
+  std::vector<double> pose(6, 0.0);
+  std::vector<int> encoders;
+
+  for (size_t i = 0; i < jointAngles.size(); i++)
+    encoders.push_back(converter_->angle_rad2enc(i, jointAngles[i]));
+
+  ikBase_.getCoordinatesFromEncoders(pose, encoders);
+
+  // zyx = yaw, pitch, roll = result[5], result[4], result[3]
+  EulerTransformationMatrices::zxz_to_zyx_angles(pose[3], pose[4], pose[5], result[5], result[4], result[3]);
+
+  result[0] = pose[0] * KNI_TO_ROS_LENGTH;
+  result[1] = pose[1] * KNI_TO_ROS_LENGTH;
+  result[2] = pose[2] * KNI_TO_ROS_LENGTH;
+
+  return result;
+}
+
+}
+
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "katana_arm_kinematics");
+
+  katana::KNIKinematics node;
+
+  ros::spin();
+  return 0;
 }

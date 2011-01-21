@@ -52,7 +52,8 @@ void TcpPublisher::loopOnce()
   {
     btQuaternion q;
 
-    std::vector<double> pose = katana->getCoordinates();
+    std::vector<double> pose ;
+    // FIXME: std::vector<double> pose = katana->getCoordinates();
 
     transform.setOrigin(tf::Vector3(pose[0], pose[1], pose[2]));
     transform.setRotation(tf::createQuaternionFromRPY(pose[3], pose[4], pose[5]));
