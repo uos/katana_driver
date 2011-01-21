@@ -87,7 +87,8 @@ void CKatana::create(KNI::kmlFactory* infos, CCplBase* protocol) {
 	mKatanaType = infos->getType();
 	if (mKatanaType == 450) {
 		mKinematics = infos->getKinematics();
-		base->flushMoveBuffers();
+		if (protocol != NULL)
+		  base->flushMoveBuffers();
 	} else {
 		mKinematics = 0;
 	}

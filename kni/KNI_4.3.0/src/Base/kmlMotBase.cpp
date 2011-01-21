@@ -22,7 +22,8 @@ bool CMotBase::init(CKatBase* _own, const TMotDesc _motDesc, CCplBase* _protocol
 	gnl.SID = _motDesc.slvID;
 	protocol =  _protocol;
 	try {
-		recvSFW();
+                if (protocol != NULL)
+                  recvSFW();
 	} catch (ParameterReadingException pre) {
 		sfw.type = 0; // set position controller for now
 		return true;

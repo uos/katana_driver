@@ -258,17 +258,20 @@ void CKatBase::recvMPS() {
 }
 ////////////////////////////////////////////////////////////////
 int CKatBase::checkKatanaType(int type){
-	recvMFW();
-	if((type == 400) || (type == 450)){
-		if(mfw.ver > K400_OLD_PROTOCOL_THRESHOLD){
-			return -1;
-		}
-	}
-	else if(type == 300){
-		if(mfw.ver < K400_OLD_PROTOCOL_THRESHOLD){
-			return -1;
-		}
-	}
+        if (protocol != NULL) {
+          recvMFW();
+          if((type == 400) || (type == 450)){
+                  if(mfw.ver > K400_OLD_PROTOCOL_THRESHOLD){
+                          return -1;
+                  }
+          }
+          else if(type == 300){
+                  if(mfw.ver < K400_OLD_PROTOCOL_THRESHOLD){
+                          return -1;
+                  }
+          }
+        }
+
 	return 1;
 }
 ////////////////////////////////////////////////////////////////
