@@ -27,11 +27,14 @@
 
 #include <ros/ros.h>
 #include <ros/package.h>
+#include <tf/transform_listener.h>
+#include <geometry_msgs/PoseStamped.h>
 #include <kinematics_msgs/GetKinematicSolverInfo.h>
 #include <kinematics_msgs/GetPositionFK.h>
 #include <kinematics_msgs/GetPositionIK.h>
 
 #include <KNI_InvKin/ikBase.h>
+#include <KNI/kmlFactories.h>
 
 #include <katana/KNIConverter.h>
 #include <katana/EulerTransformationMatrices.hh>
@@ -51,12 +54,13 @@ public:
 private:
   ros::NodeHandle nh_;
   ros::ServiceServer get_kinematic_solver_info_server_;
+  ros::ServiceServer get_fk_server_;
 
   std::vector<std::string> joint_names_;
 
   CikBase ikBase_;
   KNIConverter* converter_;
-
+  tf::TransformListener tf_listener_;
 
   bool get_kinematic_solver_info(kinematics_msgs::GetKinematicSolverInfo::Request &req,
                                  kinematics_msgs::GetKinematicSolverInfo::Response &res);
@@ -65,6 +69,8 @@ private:
 
   std::vector<double> getCoordinates();
   std::vector<double> getCoordinates(std::vector<double> jointAngles);
+  std::vector<int> makeJointsLookup(std::vector<std::string> &joint_names);
+
 };
 
 }

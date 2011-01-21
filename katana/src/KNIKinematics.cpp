@@ -31,7 +31,6 @@ KNIKinematics::KNIKinematics()
 {
   joint_names_.resize(NUM_JOINTS);
 
-
   // ------- get parameters
   ros::NodeHandle pn("~");
 
@@ -69,10 +68,22 @@ KNIKinematics::KNIKinematics()
     joint_names_[i] = (std::string)name_value;
   }
 
+
+  // ------- set up the KNI stuff
+  KNI::kmlFactory config;
+  bool success = config.openFile(config_file_path.c_str());
+
+  if (!success)
+    ROS_ERROR("Could not open config file: %s", config_file_path.c_str());
+
+  ikBase_.create(&config, NULL);
+
+  // ------- register services
   get_kinematic_solver_info_server_ = nh_.advertiseService("get_kinematic_solver_info",
                                                            &KNIKinematics::get_kinematic_solver_info, this);
 
-  // TODO: register GetPositionFK, GetPositionIK
+  get_fk_server_ = nh_.advertiseService("get_fk", &KNIKinematics::get_position_fk, this);
+  // TODO: register GetPositionIK
 
 }
 
@@ -91,7 +102,7 @@ bool KNIKinematics::get_kinematic_solver_info(kinematics_msgs::GetKinematicSolve
 bool KNIKinematics::get_position_fk(kinematics_msgs::GetPositionFK::Request &req,
                                     kinematics_msgs::GetPositionFK::Response &res)
 {
-  std::vector<double> jointAngles, pose;
+  std::vector<double> jointAngles, coordinates;
 
   if (req.fk_link_names.size() != 1 || req.fk_link_names[0] != "katana_gripper_tool_frame")
   {
@@ -99,67 +110,81 @@ bool KNIKinematics::get_position_fk(kinematics_msgs::GetPositionFK::Request &req
     return false;
   }
 
-  // TODO: make joints lookup
+  // ignoring req.robot_state.multi_dof_joint_state
 
-  // TODO: put joint angles from req.robot_state in the correct order into jointAngles
+  std::vector<int> lookup = makeJointsLookup(req.robot_state.joint_state.name);
+  if (lookup.size() == 0)
+    return false;
 
-  pose = getCoordinates(jointAngles);
+  for (size_t i = 0; i < joint_names_.size(); i++)
+  {
+    jointAngles.push_back(req.robot_state.joint_state.position[lookup[i]]);
+  }
+
+  coordinates = getCoordinates(jointAngles);
+
+  geometry_msgs::PoseStamped pose_in, pose_out;
+
+  pose_in.header.frame_id = "katana_base_frame";
+  pose_in.header.stamp = ros::Time(0);
+
+  pose_in.pose.position.x = coordinates[0];
+  pose_in.pose.position.y = coordinates[1];
+  pose_in.pose.position.z = coordinates[2];
+
+  pose_in.pose.orientation = tf::createQuaternionMsgFromRollPitchYaw(coordinates[3], coordinates[4], coordinates[5]);
 
   // The frame_id in the header message is the frame in which
-  // the forward kinematics poses will be returned; TODO: transform result to header frame_id
+  // the forward kinematics poses will be returned
+  try
+  {
+    bool success = tf_listener_.waitForTransform(req.header.frame_id, pose_in.header.frame_id, pose_in.header.stamp,
+                                                 ros::Duration(1.0));
 
-  // TODO: store in res
+    if (!success)
+    {
+      ROS_ERROR("Could not get transform");
+      return false;
+    }
+
+    tf_listener_.transformPose(req.header.frame_id, pose_in, pose_out);
+  }
+  catch (tf::TransformException ex)
+  {
+    ROS_ERROR("%s", ex.what());
+    return false;
+  }
+
+  res.pose_stamped.push_back(pose_out);
+  res.fk_link_names = req.fk_link_names;
+  res.error_code.val = res.error_code.SUCCESS;
+
   return true;
 }
 
-///// copied from joint_trajectory_action_controller
-//std::vector<int> KNIKinematics::makeJointsLookup(const trajectory_msgs::JointTrajectory &msg)
-//{
-//  std::vector<int> lookup(joints_.size(), -1); // Maps from an index in joints_ to an index in the msg
-//  for (size_t j = 0; j < joints_.size(); ++j)
-//  {
-//    for (size_t k = 0; k < msg.joint_names.size(); ++k)
-//    {
-//      if (msg.joint_names[k] == joints_[j])
-//      {
-//        lookup[j] = k;
-//        break;
-//      }
-//    }
-//
-//    if (lookup[j] == -1)
-//    {
-//      ROS_ERROR("Unable to locate joint %s in the commanded trajectory.", joints_[j].c_str());
-//      return std::vector<int>(); // return empty vector to signal error
-//    }
-//  }
-//
-//  return lookup;
-//}
-
-
-/**
- * Return the position of the tool center point as calculated by the KNI. Uses the current position as input.
- *
- * @return a vector <x, y, z, r, p, y>; xyz in [m], rpy in [rad]
- */
-std::vector<double> KNIKinematics::getCoordinates()
+/// copied from joint_trajectory_action_controller
+std::vector<int> KNIKinematics::makeJointsLookup(std::vector<std::string> &joint_names)
 {
-  const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
+  std::vector<int> lookup(joint_names_.size(), -1); // Maps from an index in joint_names_ to an index in the msg
+  for (size_t j = 0; j < joint_names_.size(); ++j)
+  {
+    for (size_t k = 0; k < joint_names.size(); ++k)
+    {
+      if (joint_names[k] == joint_names_[j])
+      {
+        lookup[j] = k;
+        break;
+      }
+    }
 
-  double kni_z, kni_x1, kni_z2;
-  std::vector<double> pose(6, 0.0);
+    if (lookup[j] == -1)
+    {
+      ROS_ERROR("Unable to locate joint %s in the commanded trajectory.", joint_names_[j].c_str());
+      return std::vector<int>(); // return empty vector to signal error
+    }
+  }
 
-  ikBase_.getCoordinates(pose[0], pose[1], pose[2], kni_z, kni_x1, kni_z2, false);
-
-  // zyx = yaw, pitch, roll = pose[5], pose[4], pose[3]
-  EulerTransformationMatrices::zxz_to_zyx_angles(kni_z, kni_x1, kni_z2, pose[5], pose[4], pose[3]);
-
-  pose[0] = pose[0] * KNI_TO_ROS_LENGTH;
-  pose[1] = pose[1] * KNI_TO_ROS_LENGTH;
-  pose[2] = pose[2] * KNI_TO_ROS_LENGTH;
-
-  return pose;
+  return lookup;
 }
 
 /**
@@ -174,10 +199,9 @@ std::vector<double> KNIKinematics::getCoordinates(std::vector<double> jointAngle
 
   std::vector<double> result(6, 0.0);
   std::vector<double> pose(6, 0.0);
-  std::vector<int> encoders;
-
+  std::vector<int> encoders(NUM_JOINTS + 1, 0.0);  // must be of size NUM_JOINTS + 1, otherwise KNI crashes
   for (size_t i = 0; i < jointAngles.size(); i++)
-    encoders.push_back(converter_->angle_rad2enc(i, jointAngles[i]));
+    encoders[i] = converter_->angle_rad2enc(i, jointAngles[i]);
 
   ikBase_.getCoordinatesFromEncoders(pose, encoders);
 
@@ -191,7 +215,7 @@ std::vector<double> KNIKinematics::getCoordinates(std::vector<double> jointAngle
   return result;
 }
 
-}
+} // end namespace
 
 int main(int argc, char** argv)
 {

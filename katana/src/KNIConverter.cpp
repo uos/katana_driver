@@ -41,23 +41,27 @@ KNIConverter::~KNIConverter()
 
 short KNIConverter::angle_rad2enc(int index, double angle)
 {
-  // no access to Katana hardware, so no locking required
-  const TMotInit* param = config_.getMOT().arr[index].GetInitialParameters();
+  // Attention:
+  //   - if you get TMotInit using config_.getMotInit(index), then angleOffset etc. will be in degrees
+  //   - if you get TMotInit using config_.getMOT().arr[index].GetInitialParameters(), all angles will be in radian.
+  //
+  // whoever coded the KNI has some serious issues...
+
+  const TMotInit param = config_.getMotInit(index);
 
   if (index == NUM_MOTORS - 1) // gripper
     angle = (angle - URDF_GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
 
-  return ((param->angleOffset - angle) * (double)param->encodersPerCycle * (double)param->rotationDirection) / (2.0
-      * M_PI) + param->encoderOffset;
+  return ((deg2rad(param.angleOffset) - angle) * (double)param.encodersPerCycle * (double)param.rotationDirection)
+      / (2.0 * M_PI) + param.encoderOffset;
 }
 
 double KNIConverter::angle_enc2rad(int index, int encoders)
 {
-  // no access to Katana hardware, so no locking required
-  const TMotInit* param = config_.getMOT().arr[index].GetInitialParameters();
+  const TMotInit param = config_.getMotInit(index);
 
-  double result = param->angleOffset - (((double)encoders - (double)param->encoderOffset) * 2.0 * M_PI)
-      / ((double)param->encodersPerCycle * (double)param->rotationDirection);
+  double result = deg2rad(param.angleOffset) - (((double)encoders - (double)param.encoderOffset) * 2.0 * M_PI)
+      / ((double)param.encodersPerCycle * (double)param.rotationDirection);
 
   if (index == NUM_MOTORS - 1) // gripper
   {
@@ -103,20 +107,19 @@ double KNIConverter::jerk_enc2rad(int index, short encoders)
 
 short KNIConverter::vel_acc_jerk_rad2enc(int index, double vel_acc_jerk)
 {
-  const TMotInit* param = config_.getMOT().arr[index].GetInitialParameters();
+  const TMotInit param = config_.getMotInit(index);
 
   if (index == NUM_MOTORS - 1) // gripper
     vel_acc_jerk = vel_acc_jerk / KNI_TO_URDF_GRIPPER_FACTOR;
 
-  return ((-vel_acc_jerk) * (double)param->encodersPerCycle * (double)param->rotationDirection) / (2.0 * M_PI);
+  return ((-vel_acc_jerk) * (double)param.encodersPerCycle * (double)param.rotationDirection) / (2.0 * M_PI);
 }
 
 double KNIConverter::vel_acc_jerk_enc2rad(int index, short encoders)
 {
-  const TMotInit* param = config_.getMOT().arr[index].GetInitialParameters();
+  const TMotInit param = config_.getMotInit(index);
 
-  double result = -((double)encoders * 2.0 * M_PI) / ((double)param->encodersPerCycle
-      * (double)param->rotationDirection);
+  double result = -((double)encoders * 2.0 * M_PI) / ((double)param.encodersPerCycle * (double)param.rotationDirection);
 
   if (index == NUM_MOTORS - 1) // gripper
   {
@@ -125,4 +128,10 @@ double KNIConverter::vel_acc_jerk_enc2rad(int index, short encoders)
 
   return result;
 }
+
+double KNIConverter::deg2rad(const double deg)
+{
+  return deg * (M_PI / 180.0);
+}
+
 }

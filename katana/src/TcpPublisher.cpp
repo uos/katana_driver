@@ -23,7 +23,6 @@
  */
 
 #include "katana/TcpPublisher.h"
-#include <LinearMath/btQuaternion.h>
 #include <geometry_msgs/PoseStamped.h>
 
 namespace katana
@@ -45,12 +44,10 @@ TcpPublisher::~TcpPublisher()
 
 void TcpPublisher::loopOnce()
 {
-  tf::Transform transform;
-
   /* ************** Publish tool center point calculated by the KNI ************** */
   if (publish_kni_tcp_frame)
   {
-    btQuaternion q;
+    tf::Transform transform;
 
     std::vector<double> pose ;
     // FIXME: std::vector<double> pose = katana->getCoordinates();
@@ -58,17 +55,6 @@ void TcpPublisher::loopOnce()
     transform.setOrigin(tf::Vector3(pose[0], pose[1], pose[2]));
     transform.setRotation(tf::createQuaternionFromRPY(pose[3], pose[4], pose[5]));
     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "katana_base_frame", "kni_tool_center_point"));
-
-    //    tf::StampedTransform transform2;
-    //    geometry_msgs::PoseStamped pose_in, pose_out;
-    //    try {
-    //      pose_in.header.frame_id = "kni_tool_center_point";
-    //      pose_in.pose.orientation.w = 1.0;
-    //      listener.transformPose("katana_gripper_tool_frame", ros::Time(0), pose_in, "katana_base_frame", pose_out);
-    //      ROS_INFO("difference: xyz(%f, %f, %f), quat(%f, %f, %f, %f)", pose_out.pose.position.x, pose_out.pose.position.y, pose_out.pose.position.z, pose_out.pose.orientation.x, pose_out.pose.orientation.y, pose_out.pose.orientation.z, pose_out.pose.orientation.w);
-    //
-    //    } catch (...) {
-    //    }
   }
 }
 

@@ -58,6 +58,8 @@ private:
   short vel_acc_jerk_rad2enc(int index, double vel_acc_jerk);
   double vel_acc_jerk_enc2rad(int index, short encoders);
 
+  double deg2rad(const double deg);
+
 };
 
 /**
