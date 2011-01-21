@@ -204,9 +204,8 @@ void Katana::refreshMotorStatus()
 }
 
 /**
- * Return the position of the tool center point as calculated by the KNI
+ * Return the position of the tool center point as calculated by the KNI. Uses the current position as input.
  *
- * @param refreshEncoders true = read the current encoders from the robot first, false = use cached values
  * @return a vector <x, y, z, r, p, y>; xyz in [m], rpy in [rad]
  */
 std::vector<double> Katana::getCoordinates()
@@ -247,6 +246,34 @@ std::vector<double> Katana::getCoordinates()
   }
 
   return pose;
+}
+
+/**
+ * Return the position of the tool center point as calculated by the KNI.
+ *
+ * @param jointAngles the joint angles to compute the pose for (direct kinematics)
+ * @return a vector <x, y, z, r, p, y>; xyz in [m], rpy in [rad]
+ */
+std::vector<double> Katana::getCoordinates(std::vector<double> jointAngles) {
+  const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
+
+  std::vector<double> result(6, 0.0);
+  std::vector<double> pose(6, 0.0);
+  std::vector<int> encoders;
+
+  for (size_t i = 0; i < jointAngles.size(); i++)
+    encoders.push_back(angle_rad2enc(i, jointAngles[i]));
+
+  kni->getCoordinatesFromEncoders(pose, encoders);
+
+  // zyx = yaw, pitch, roll = result[5], result[4], result[3]
+  EulerTransformationMatrices::zxz_to_zyx_angles(pose[3], pose[4], pose[5], result[5], result[4], result[3]);
+
+  result[0] = pose[0] * KNI_TO_ROS_LENGTH;
+  result[1] = pose[1] * KNI_TO_ROS_LENGTH;
+  result[2] = pose[2] * KNI_TO_ROS_LENGTH;
+
+  return result;
 }
 
 /**
@@ -410,7 +437,6 @@ void Katana::freezeRobot() {
   boost::recursive_mutex::scoped_lock lock(kni_mutex);
   kni->freezeRobot();
 }
-
 
 /* ******************************** conversions ******************************** */
 short Katana::angle_rad2enc(int index, double angle)

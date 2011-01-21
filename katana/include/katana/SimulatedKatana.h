@@ -39,6 +39,7 @@ public:
 
   virtual void refreshEncoders();
   virtual std::vector<double> getCoordinates();
+  std::vector<double> getCoordinates(std::vector<double> jointAngles);
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time);
 
 private:

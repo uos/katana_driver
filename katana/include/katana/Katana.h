@@ -52,6 +52,7 @@ public:
 
   void refreshEncoders();
   std::vector<double> getCoordinates();
+  std::vector<double> getCoordinates(std::vector<double> jointAngles);
   bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time);
   virtual void freezeRobot();
 

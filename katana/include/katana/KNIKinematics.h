@@ -41,11 +41,18 @@ public:
   KNIKinematics(boost::shared_ptr<AbstractKatana> katana);
   virtual ~KNIKinematics();
 
-void loopOnce();
+  void loopOnce();
 
 private:
   ros::NodeHandle nh;
   boost::shared_ptr<AbstractKatana> katana;
+
+  ros::ServiceServer get_kinematic_solver_info_server_;
+
+  bool get_kinematic_solver_info(kinematics_msgs::GetKinematicSolverInfo::Request &req,
+                                 kinematics_msgs::GetKinematicSolverInfo::Response &res);
+
+  bool get_position_fk(kinematics_msgs::GetPositionFK::Request &req, kinematics_msgs::GetPositionFK::Response &res);
 };
 
 }

@@ -75,9 +75,15 @@ void SimulatedKatana::refreshEncoders()
 
 std::vector<double> SimulatedKatana::getCoordinates()
 {
-  // TODO later: real implementation
+  ROS_WARN("getCoordinates() not implemented in SimulatedKatana!");
   return std::vector<double>(6, 0.0);
 }
+
+std::vector<double> SimulatedKatana::getCoordinates(std::vector<double> jointAngles) {
+  ROS_WARN("getCoordinates() not implemented in SimulatedKatana!");
+  return std::vector<double>(6, 0.0);
+}
+
 
 bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj_ptr, ros::Time start_time)
 {
