@@ -303,7 +303,9 @@ void CikBase::IKCalculate(double X, double Y, double Z, double phi, double theta
 		kin_enc2rad(&actPos, &prev);
 
 		FloatVector ikangle;
-		kin_IK(&pose, &prev, &ikangle, maxBisection);
+		int error = kin_IK(&pose, &prev, &ikangle, maxBisection);
+		if (error)
+		  throw KNI::NoSolutionException();
 
 		IntVector ikenc;
 		kin_rad2enc(&ikangle, &ikenc);
