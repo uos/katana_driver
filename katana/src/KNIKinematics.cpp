@@ -68,7 +68,6 @@ KNIKinematics::KNIKinematics()
     joint_names_[i] = (std::string)name_value;
   }
 
-
   // ------- set up the KNI stuff
   KNI::kmlFactory config;
   bool success = config.openFile(config_file_path.c_str());
@@ -83,8 +82,8 @@ KNIKinematics::KNIKinematics()
                                                            &KNIKinematics::get_kinematic_solver_info, this);
 
   get_fk_server_ = nh_.advertiseService("get_fk", &KNIKinematics::get_position_fk, this);
-  // TODO: register GetPositionIK
 
+  get_ik_server_ = nh_.advertiseService("get_ik", &KNIKinematics::get_position_ik, this);
 }
 
 KNIKinematics::~KNIKinematics()
@@ -96,6 +95,16 @@ bool KNIKinematics::get_kinematic_solver_info(kinematics_msgs::GetKinematicSolve
                                               kinematics_msgs::GetKinematicSolverInfo::Response &res)
 {
   res.kinematic_solver_info.joint_names = joint_names_;
+  res.kinematic_solver_info.limits.resize(joint_names_.size());
+  for (size_t i = 0; i < joint_names_.size(); i++) {
+    // TODO: we lie about the position limits here, fix this
+    res.kinematic_solver_info.limits[i].joint_name = joint_names_[i];
+    res.kinematic_solver_info.limits[i].has_position_limits = true;
+    res.kinematic_solver_info.limits[i].min_position = 0.0;
+    res.kinematic_solver_info.limits[i].max_position = 3.8;
+    res.kinematic_solver_info.limits[i].has_velocity_limits = false;
+    res.kinematic_solver_info.limits[i].has_acceleration_limits = false;
+  }
   return true;
 }
 
@@ -162,6 +171,84 @@ bool KNIKinematics::get_position_fk(kinematics_msgs::GetPositionFK::Request &req
   return true;
 }
 
+bool KNIKinematics::get_position_ik(kinematics_msgs::GetPositionIK::Request &req,
+                                    kinematics_msgs::GetPositionIK::Response &res)
+{
+  std::vector<double> kni_coordinates(6, 0.0);
+  std::vector<int> solution(NUM_JOINTS + 1);
+  std::vector<int> seed_encoders(NUM_JOINTS + 1);
+
+  if (req.ik_request.ik_link_name != "katana_gripper_tool_frame")
+  {
+    ROS_ERROR("The KNI kinematics solver can only solve requests for katana_gripper_tool_frame!");
+    return false;
+  }
+
+  // ------- convert req.ik_request.ik_seed_state into seed_encoders
+  std::vector<int> lookup = makeJointsLookup(req.ik_request.ik_seed_state.joint_state.name);
+  if (lookup.size() == 0)
+    return false;
+
+  for (size_t i = 0; i < joint_names_.size(); i++)
+  {
+    seed_encoders[i] = converter_->angle_rad2enc(i, req.ik_request.ik_seed_state.joint_state.position[lookup[i]]);
+  }
+
+  // ------- convert req.ik_request.pose_stamped into kni_coordinates
+  geometry_msgs::PoseStamped pose_out;
+  try
+  {
+    bool success = tf_listener_.waitForTransform("katana_base_frame", req.ik_request.pose_stamped.header.frame_id, req.ik_request.pose_stamped.header.stamp,
+                                                 ros::Duration(1.0));
+
+    if (!success)
+    {
+      ROS_ERROR("Could not get transform");
+      return false;
+    }
+
+    tf_listener_.transformPose("katana_base_frame", req.ik_request.pose_stamped, pose_out);
+  }
+  catch (tf::TransformException ex)
+  {
+    ROS_ERROR("%s", ex.what());
+    return false;
+  }
+
+  kni_coordinates[0] = pose_out.pose.position.x / KNI_TO_ROS_LENGTH;
+  kni_coordinates[1] = pose_out.pose.position.y / KNI_TO_ROS_LENGTH;
+  kni_coordinates[2] = pose_out.pose.position.z / KNI_TO_ROS_LENGTH;
+
+  btScalar roll, pitch, yaw;
+  btQuaternion bt_q;
+  tf::quaternionMsgToTF(pose_out.pose.orientation, bt_q);
+  btMatrix3x3(bt_q).getRPY(roll, pitch,yaw);
+
+  EulerTransformationMatrices::zyx_to_zxz_angles(yaw, pitch, roll, kni_coordinates[3], kni_coordinates[4], kni_coordinates[5]);
+
+  try
+  {
+    ikBase_.IKCalculate(kni_coordinates[0], kni_coordinates[1], kni_coordinates[2], kni_coordinates[3],
+                        kni_coordinates[4], kni_coordinates[5], solution.begin(), seed_encoders);
+  }
+  catch (KNI::NoSolutionException e)
+  {
+    res.error_code.val = res.error_code.NO_IK_SOLUTION;
+    return true; // this means that res is valid; the error code is stored inside
+  }
+
+
+  // ------- convert solution into radians
+  res.solution.joint_state.name = joint_names_;
+  res.solution.joint_state.position.resize(NUM_JOINTS);
+  for (size_t i = 0; i < NUM_JOINTS; i++) {
+    res.solution.joint_state.position[i] = converter_->angle_enc2rad(i, solution[i]);
+  }
+
+  res.error_code.val = res.error_code.SUCCESS;
+  return true;
+}
+
 /// copied from joint_trajectory_action_controller
 std::vector<int> KNIKinematics::makeJointsLookup(std::vector<std::string> &joint_names)
 {
@@ -195,11 +282,9 @@ std::vector<int> KNIKinematics::makeJointsLookup(std::vector<std::string> &joint
  */
 std::vector<double> KNIKinematics::getCoordinates(std::vector<double> jointAngles)
 {
-  const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
-
   std::vector<double> result(6, 0.0);
   std::vector<double> pose(6, 0.0);
-  std::vector<int> encoders(NUM_JOINTS + 1, 0.0);  // must be of size NUM_JOINTS + 1, otherwise KNI crashes
+  std::vector<int> encoders(NUM_JOINTS + 1, 0.0); // must be of size NUM_JOINTS + 1, otherwise KNI crashes
   for (size_t i = 0; i < jointAngles.size(); i++)
     encoders[i] = converter_->angle_rad2enc(i, jointAngles[i]);
 

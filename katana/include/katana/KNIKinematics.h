@@ -35,9 +35,12 @@
 
 #include <KNI_InvKin/ikBase.h>
 #include <KNI/kmlFactories.h>
+#include <KNI_InvKin/KatanaKinematics.h>
 
 #include <katana/KNIConverter.h>
 #include <katana/EulerTransformationMatrices.hh>
+
+#include "LinearMath/btTransform.h"
 
 namespace katana
 {
@@ -52,9 +55,12 @@ public:
   virtual ~KNIKinematics();
 
 private:
+  static const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
+
   ros::NodeHandle nh_;
   ros::ServiceServer get_kinematic_solver_info_server_;
   ros::ServiceServer get_fk_server_;
+  ros::ServiceServer get_ik_server_;
 
   std::vector<std::string> joint_names_;
 
@@ -66,6 +72,7 @@ private:
                                  kinematics_msgs::GetKinematicSolverInfo::Response &res);
 
   bool get_position_fk(kinematics_msgs::GetPositionFK::Request &req, kinematics_msgs::GetPositionFK::Response &res);
+  bool get_position_ik(kinematics_msgs::GetPositionIK::Request &req, kinematics_msgs::GetPositionIK::Response &res);
 
   std::vector<double> getCoordinates();
   std::vector<double> getCoordinates(std::vector<double> jointAngles);
