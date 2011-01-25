@@ -54,11 +54,17 @@ double KNIConverter::angle_rad2enc(int index, double angle)
 
   const TMotInit param = config_.getMotInit(index);
 
+  // normalize our input to [-pi, pi)
   while (angle < - M_PI)
     angle += 2 * M_PI;
 
-  while (angle > M_PI)
+  while (angle >= M_PI)
     angle -= 2 * M_PI;
+
+  // motors 0, 2, 3, 4 had to be shifted by Pi so that the range can be normalized
+  // into a range [-Pi ... 0 ... Pi]; now shift back
+  if (index == 0 || index == 2 || index == 3 || index == 4)
+    angle += M_PI;
 
   if (index == NUM_MOTORS - 1) // gripper
     angle = (angle - URDF_GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
@@ -79,11 +85,18 @@ double KNIConverter::angle_enc2rad(int index, int encoders)
     result = (result - KNI_GRIPPER_CLOSED_ANGLE) * KNI_TO_URDF_GRIPPER_FACTOR + URDF_GRIPPER_CLOSED_ANGLE;
   }
 
-  while (result > M_PI)
-    result -= 2 * M_PI;
+  // motors 0, 2, 3, 4 have to be shifted by Pi so that the range can be normalized
+  // into a range [-Pi ... 0 ... Pi]
+  // (the KNI normalizes these angles to [0, 2 * Pi])
+  if (index == 0 || index == 2 || index == 3 || index == 4)
+    result -= M_PI;
 
-  while (result < M_PI)
+  // normalize our output to [-pi, pi)
+  while (result < - M_PI)
     result += 2 * M_PI;
+
+  while (result >= M_PI)
+    result -= 2 * M_PI;
 
   return result;
 }
