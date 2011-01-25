@@ -54,11 +54,17 @@ double KNIConverter::angle_rad2enc(int index, double angle)
 
   const TMotInit param = config_.getMotInit(index);
 
+  while (angle < - M_PI)
+    angle += 2 * M_PI;
+
+  while (angle > M_PI)
+    angle -= 2 * M_PI;
+
   if (index == NUM_MOTORS - 1) // gripper
     angle = (angle - URDF_GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
 
   return ((deg2rad(param.angleOffset) - angle) * (double)param.encodersPerCycle * (double)param.rotationDirection)
-      / (2.0 * M_PI) + param.encoderOffset;
+  / (2.0 * M_PI) + param.encoderOffset;
 }
 
 double KNIConverter::angle_enc2rad(int index, int encoders)
@@ -72,6 +78,12 @@ double KNIConverter::angle_enc2rad(int index, int encoders)
   {
     result = (result - KNI_GRIPPER_CLOSED_ANGLE) * KNI_TO_URDF_GRIPPER_FACTOR + URDF_GRIPPER_CLOSED_ANGLE;
   }
+
+  while (result > M_PI)
+    result -= 2 * M_PI;
+
+  while (result < M_PI)
+    result += 2 * M_PI;
 
   return result;
 }
