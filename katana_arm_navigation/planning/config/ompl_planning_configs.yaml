@@ -30,12 +30,12 @@ planner_configs:
   
   KPIECEkConfig2l:
     type: kinematic::KPIECE
-    projection: link katana_motor5_wrist_roll_link
+    projection: link katana_gripper_tool_frame
     celldim: 0.1 0.1 0.1
 
   LBKPIECEkConfig2l:
     type: kinematic::LBKPIECE
-    projection: link katana_motor5_wrist_roll_link
+    projection: link katana_gripper_tool_frame
     celldim: 0.1 0.1 0.1
 
 ## the definition of the planners that go in each group
