@@ -1,0 +1,7 @@
+<launch>
+  <include file="$(find katana)/launch/katana_arm_kinematics.launch" />
+
+  <node pkg="katana_arm_kinematics_constraint_aware" type="non_constraint_aware_ik_adapter" name="non_constraint_aware_ik_adapter" output="screen">
+    <param name="ik_service" value="get_ik" />
+  </node>
+</launch>
