@@ -1,5 +1,5 @@
 <launch>
- <!-- katana node -->
+ <!-- katana arm kinematics node -->
   <node pkg="katana" type="katana_arm_kinematics" name="katana_arm_kinematics" output="screen">
     <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
   </node>

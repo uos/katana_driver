@@ -39,7 +39,12 @@ KNIConverter::~KNIConverter()
 {
 }
 
-short KNIConverter::angle_rad2enc(int index, double angle)
+/**
+ * Theoretically, all *_rad2enc functions should return integers (because encoder values are integer). However,
+ * because velocities, accelerations and jerks are divided by 100/100^2/100^3, they would return 0 most of the
+ * time. Therefore, return the values as double.
+ */
+double KNIConverter::angle_rad2enc(int index, double angle)
 {
   // Attention:
   //   - if you get TMotInit using config_.getMotInit(index), then angleOffset etc. will be in degrees
@@ -75,17 +80,17 @@ double KNIConverter::angle_enc2rad(int index, int encoders)
  * Conversions for velocity, acceleration and jerk (first derivative of acceleration).
  * Basically the same as for angle, but without the offsets.
  */
-short KNIConverter::vel_rad2enc(int index, double vel)
+double KNIConverter::vel_rad2enc(int index, double vel)
 {
   return vel_acc_jerk_rad2enc(index, vel) / KNI_TO_ROS_TIME;
 }
 
-short KNIConverter::acc_rad2enc(int index, double acc)
+double KNIConverter::acc_rad2enc(int index, double acc)
 {
   return vel_acc_jerk_rad2enc(index, acc) / pow(KNI_TO_ROS_TIME, 2);
 }
 
-short KNIConverter::jerk_rad2enc(int index, double jerk)
+double KNIConverter::jerk_rad2enc(int index, double jerk)
 {
   return vel_acc_jerk_rad2enc(index, jerk) / pow(KNI_TO_ROS_TIME, 3);
 }
@@ -105,7 +110,7 @@ double KNIConverter::jerk_enc2rad(int index, short encoders)
   return vel_acc_jerk_enc2rad(index, encoders) * pow(KNI_TO_ROS_TIME, 3);
 }
 
-short KNIConverter::vel_acc_jerk_rad2enc(int index, double vel_acc_jerk)
+double KNIConverter::vel_acc_jerk_rad2enc(int index, double vel_acc_jerk)
 {
   const TMotInit param = config_.getMotInit(index);
 

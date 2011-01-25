@@ -37,12 +37,12 @@ public:
   KNIConverter(std::string config_file_path);
   virtual ~KNIConverter();
 
-  short angle_rad2enc(int index, double angle);
+  double angle_rad2enc(int index, double angle);
   double angle_enc2rad(int index, int encoders);
 
-  short vel_rad2enc(int index, double vel);
-  short acc_rad2enc(int index, double acc);
-  short jerk_rad2enc(int index, double jerk);
+  double vel_rad2enc(int index, double vel);
+  double acc_rad2enc(int index, double acc);
+  double jerk_rad2enc(int index, double jerk);
 
   double vel_enc2rad(int index, short encoders);
   double acc_enc2rad(int index, short encoders);
@@ -55,7 +55,7 @@ private:
 
   KNI::kmlFactory config_;
 
-  short vel_acc_jerk_rad2enc(int index, double vel_acc_jerk);
+  double vel_acc_jerk_rad2enc(int index, double vel_acc_jerk);
   double vel_acc_jerk_enc2rad(int index, short encoders);
 
   double deg2rad(const double deg);

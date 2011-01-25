@@ -548,7 +548,7 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
 {
   const double MAX_SPEED = 4.0; // rad/s; TODO: should be same value as URDF
   const double MIN_TIME = 0.02; // seconds
-  const double EPSILON = 0.000001;
+  const double EPSILON = 0.0001;
 
   if (traj.size() > MOVE_BUFFER_SIZE)
     ROS_WARN("new trajectory has %zu segments (move buffer size: %zu)", traj.size(), MOVE_BUFFER_SIZE);
@@ -613,7 +613,7 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
       }
       if (std::abs(2.0 * traj[seg + 1].splines[j].coef[2] - acc_t) > EPSILON)
       {
-        ROS_WARN("Acceleration discontinuity (%f) at end of segment %zu (joint %zu)", std::abs(traj[seg + 1].splines[j].coef[2] - acc_t), seg, j);
+        ROS_WARN("Acceleration discontinuity (old segment: %f, new segment: %f, diff: %f) at end of segment %zu (joint %zu)", traj[seg + 1].splines[j].coef[2], acc_t, std::abs(2.0 * traj[seg + 1].splines[j].coef[2] - acc_t), seg, j);
         // return false;
       }
     }

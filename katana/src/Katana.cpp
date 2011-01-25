@@ -308,7 +308,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
 
         // the four spline coefficients
         // the actual position, round
-        polynomial.push_back(converter->angle_rad2enc(j, seg.splines[j].coef[0])); // p0
+        polynomial.push_back(round(converter->angle_rad2enc(j, seg.splines[j].coef[0]))); // p0
 
         // shift to be firmware compatible and round
         polynomial.push_back(round(64 * converter->vel_rad2enc(j, seg.splines[j].coef[1]))); // p1
