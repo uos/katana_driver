@@ -69,9 +69,9 @@
     <!-- Joint 1 in Katana Manual -->
     <parent link="katana_base_link"/>
     <child link="katana_motor1_pan_link" />
-    <origin xyz="0 0 ${base_height}"/>
+    <origin xyz="0 0 ${base_height}" rpy="0 0 ${M_PI}"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="0.120" upper="6.159"  velocity="0.5"/>  <!-- TODO:  give correct effort + velocity limits (lower + upper come from angleOffset, angleRange in config file) -->
+    <limit effort="1000.0" lower="${0.120 - M_PI}" upper="${6.159 - M_PI}"  velocity="0.5"/>  <!-- TODO:  give correct effort + velocity limits (lower + upper come from angleOffset, angleRange in config file) -->
   </joint>
 
   <link name="katana_motor1_pan_link">
@@ -126,9 +126,9 @@
     <!-- Joint 3 in Katana Manual -->
     <parent link="katana_motor2_lift_link" />
     <child  link="katana_motor3_lift_link" />
-    <origin xyz="${link2_length} 0 0" rpy="0 0 ${M_PI}"/>
+    <origin xyz="${link2_length} 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="0.935" upper="5.195"  velocity="0.5"/>  <!-- TODO: give correct limits -->
+    <limit effort="1000.0" lower="${0.935 - M_PI}" upper="${5.195 - M_PI}"  velocity="0.5"/>  <!-- TODO: give correct limits -->
   </joint>
 
   <link name="katana_motor3_lift_link">
@@ -156,9 +156,9 @@
     <!-- Joint 4 in Katana Manual -->
     <parent link="katana_motor3_lift_link" />
     <child  link="katana_motor4_lift_link" />
-    <origin rpy="${M_PI} 0 ${M_PI}" xyz="${link3_length} 0 0"/>
+    <origin rpy="${M_PI} 0 0" xyz="${link3_length} 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="1.116" upper="5.017"  velocity="0.5"/>  <!-- TODO: give correct limits -->
+    <limit effort="1000.0" lower="${1.116 - M_PI}" upper="${5.017 - M_PI}"  velocity="0.5"/>  <!-- TODO: give correct limits -->
   </joint>
 
   <link name="katana_motor4_lift_link">
@@ -187,9 +187,9 @@
     <!-- Joint 5 in Katana Manual -->
     <parent link="katana_motor4_lift_link" />
     <child  link="katana_motor5_wrist_roll_link" />
-    <origin rpy="${-M_PI/2} 0 ${M_PI/2}" xyz="${link4_length} 0 0"/>
+    <origin rpy="${M_PI/2} 0 ${-M_PI/2}" xyz="${link4_length} 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="0.152" upper="6.159"  velocity="0.5"/>  <!-- TODO: give correct limits -->
+    <limit effort="1000.0" lower="${0.152 - M_PI}" upper="${6.159 - M_PI}"  velocity="0.5"/>  <!-- TODO: give correct limits -->
   </joint>
 
   <link name="katana_motor5_wrist_roll_link">
