@@ -66,10 +66,11 @@ private:
  * constants for converting between the KNI gripper angle and the URDF gripper angle
  */
 static const double KNI_GRIPPER_CLOSED_ANGLE = 0.21652991032554647;
-static const double KNI_GRIPPER_OPEN_ANGLE = -2.0047969889958925;
+static const double KNI_GRIPPER_OPEN_ANGLE = -2.057443;
 
-static const double URDF_GRIPPER_CLOSED_ANGLE = -0.4; /// should be equal to the value in the urdf description
-static const double URDF_GRIPPER_OPEN_ANGLE = 0.4; /// should be equal to the value in the urdf description
+/// these should be equal to the value in the urdf description:
+static const double URDF_GRIPPER_CLOSED_ANGLE = -0.44;
+static const double URDF_GRIPPER_OPEN_ANGLE = 0.30;
 
 static const double KNI_TO_URDF_GRIPPER_FACTOR = (URDF_GRIPPER_OPEN_ANGLE - URDF_GRIPPER_CLOSED_ANGLE)
     / (KNI_GRIPPER_OPEN_ANGLE - KNI_GRIPPER_CLOSED_ANGLE);
