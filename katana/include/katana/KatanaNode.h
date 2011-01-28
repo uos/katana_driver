@@ -28,7 +28,6 @@
 #include <ros/ros.h>
 
 #include <katana/JointStatePublisher.h>
-#include <katana/TcpPublisher.h>
 #include <katana/joint_trajectory_action_controller.h>
 
 #include <katana/AbstractKatana.h>
