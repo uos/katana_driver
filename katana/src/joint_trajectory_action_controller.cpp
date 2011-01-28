@@ -33,11 +33,13 @@
 namespace katana
 {
 
-JointTrajectoryActionController::JointTrajectoryActionController(ros::NodeHandle &n,
-                                                                 boost::shared_ptr<AbstractKatana> katana) :
-  katana_(katana), node_(n), action_server_(n, "joint_trajectory_action",
-                                            boost::bind(&JointTrajectoryActionController::executeCB, this, _1))
+JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana) :
+  katana_(katana), action_server_(ros::NodeHandle(), "joint_trajectory_action",
+                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1))
+
 {
+  ros::NodeHandle node_;
+
   joints_ = katana_->getJointNames();
 
   // Trajectory and goal constraints

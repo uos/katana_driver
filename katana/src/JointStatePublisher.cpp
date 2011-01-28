@@ -27,9 +27,11 @@
 namespace katana
 {
 
-JointStatePublisher::JointStatePublisher(ros::NodeHandle n, boost::shared_ptr<AbstractKatana> katana) :
-  nh(n), katana(katana), pub(nh.advertise<sensor_msgs::JointState> ("joint_states", 1000))
+JointStatePublisher::JointStatePublisher(boost::shared_ptr<AbstractKatana> katana) :
+  katana(katana)
 {
+  ros::NodeHandle nh;
+  pub = nh.advertise<sensor_msgs::JointState> ("joint_states", 1000);
 }
 
 JointStatePublisher::~JointStatePublisher()
@@ -44,8 +46,8 @@ void JointStatePublisher::loopOnce()
   std::vector<double> angles = katana->getMotorAngles();
   std::vector<double> vels = katana->getMotorVelocities();
 
-
-  for (size_t i = 0; i < NUM_JOINTS; i++) {
+  for (size_t i = 0; i < NUM_JOINTS; i++)
+  {
     msg->name.push_back(joint_names[i]);
     msg->position.push_back(angles[i]);
     msg->velocity.push_back(vels[i]);
@@ -63,6 +65,5 @@ void JointStatePublisher::loopOnce()
   msg->header.stamp = ros::Time::now();
   pub.publish(msg); // NOTE: msg must not be changed after publishing; use reset() if necessary (http://www.ros.org/wiki/roscpp/Internals)
 }
-
 
 }

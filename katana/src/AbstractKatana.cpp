@@ -27,7 +27,7 @@
 namespace katana
 {
 
-AbstractKatana::AbstractKatana(ros::NodeHandle n)
+AbstractKatana::AbstractKatana()
 {
   // names and types: only the 5 "real" joints
   joint_names_.resize(NUM_JOINTS);

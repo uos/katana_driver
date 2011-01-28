@@ -37,7 +37,7 @@ KNIKinematics::KNIKinematics()
 
   std::string config_file_path;
 
-  ros::param::param("~/katana/config_file_path", config_file_path, ros::package::getPath("kni")
+  pn.param("config_file_path", config_file_path, ros::package::getPath("kni")
       + "/KNI_4.3.0/configfiles450/katana6M90A_G.cfg");
 
   converter_ = new KNIConverter(config_file_path);

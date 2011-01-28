@@ -47,7 +47,7 @@ namespace katana
 class Katana : public AbstractKatana
 {
 public:
-  Katana(ros::NodeHandle n);
+  Katana();
   virtual ~Katana();
 
   void refreshEncoders();

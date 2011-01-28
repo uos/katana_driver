@@ -28,18 +28,19 @@
 namespace katana
 {
 
-Katana::Katana(ros::NodeHandle n) :
-  AbstractKatana(n)
+Katana::Katana() :
+  AbstractKatana()
 {
+  ros::NodeHandle pn("~");
   motor_status_.resize(NUM_MOTORS);
 
   /* ********* get parameters ********* */
   std::string ip, config_file_path;
   int port;
 
-  ros::param::param<std::string>("~/katana/ip", ip, "192.168.1.1");
-  ros::param::param("~/katana/port", port, 5566);
-  ros::param::param("~/katana/config_file_path", config_file_path, ros::package::getPath("kni")
+  pn.param<std::string>("ip", ip, "192.168.1.1");
+  pn.param("port", port, 5566);
+  pn.param("config_file_path", config_file_path, ros::package::getPath("kni")
       + "/KNI_4.3.0/configfiles450/katana6M90A_G.cfg");
 
   converter = new KNIConverter(config_file_path);

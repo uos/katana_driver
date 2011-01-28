@@ -50,7 +50,7 @@ class JointTrajectoryActionController
   typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> JTAC;
 
 public:
-  JointTrajectoryActionController(ros::NodeHandle &n, boost::shared_ptr<AbstractKatana> katana);
+  JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana);
   virtual ~JointTrajectoryActionController();
 
   void reset_trajectory_and_stop();
@@ -66,9 +66,6 @@ private:
   double stopped_velocity_tolerance_;
   std::vector<double> goal_constraints_;
 //  std::vector<double> trajectory_constraints_;
-
-  // node handle
-  ros::NodeHandle node_;
 
   // subscriber to "command" topic
   void commandCB(const trajectory_msgs::JointTrajectory::ConstPtr &msg);

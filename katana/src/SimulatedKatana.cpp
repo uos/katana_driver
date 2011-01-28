@@ -27,8 +27,8 @@
 namespace katana
 {
 
-SimulatedKatana::SimulatedKatana(ros::NodeHandle n) :
-  AbstractKatana(n)
+SimulatedKatana::SimulatedKatana() :
+  AbstractKatana()
 {
   // Creates a "hold current position" trajectory.
   boost::shared_ptr<SpecifiedTrajectory> hold_ptr(new SpecifiedTrajectory(1));

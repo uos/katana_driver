@@ -39,7 +39,7 @@ const size_t NUM_JOINTS = NUM_MOTORS - 1;
 class AbstractKatana
 {
 public:
-  AbstractKatana(ros::NodeHandle n);
+  AbstractKatana();
   virtual ~AbstractKatana();
 
   virtual void refreshEncoders() = 0;
@@ -54,8 +54,6 @@ public:
   virtual std::vector<double> getMotorVelocities();
 
 protected:
-  ros::NodeHandle nh;
-
   // only the 5 "real" joints:
   std::vector<std::string> joint_names_;
   std::vector<int> joint_types_;

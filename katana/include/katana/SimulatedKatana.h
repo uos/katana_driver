@@ -34,7 +34,7 @@ namespace katana
 class SimulatedKatana : public katana::AbstractKatana
 {
 public:
-  SimulatedKatana(ros::NodeHandle n);
+  SimulatedKatana();
   virtual ~SimulatedKatana();
 
   virtual void refreshEncoders();

@@ -45,12 +45,11 @@ namespace katana
 class KatanaNode
 {
 public:
-  KatanaNode(ros::NodeHandle n);
+  KatanaNode();
   virtual ~KatanaNode();
   int loop();
 
 private:
-  ros::NodeHandle nh;
   boost::shared_ptr<katana::AbstractKatana> katana;
 
 };

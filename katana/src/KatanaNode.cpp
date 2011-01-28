@@ -27,17 +27,16 @@
 namespace katana
 {
 
-KatanaNode::KatanaNode(ros::NodeHandle n) :
-      nh(n)
+KatanaNode::KatanaNode()
 {
   bool simulation;
   ros::NodeHandle pn("~");
   pn.param("simulation", simulation, false);
 
   if (simulation)
-    katana.reset(new SimulatedKatana(nh));
+    katana.reset(new SimulatedKatana());
   else
-    katana.reset(new Katana(nh));
+    katana.reset(new Katana());
 }
 
 KatanaNode::~KatanaNode()
@@ -48,8 +47,8 @@ int KatanaNode::loop()
 {
   ros::Rate loop_rate(25);
 
-  JointStatePublisher jointStatePublisher(nh, katana);
-  JointTrajectoryActionController jointTrajectoryActionController(nh, katana);
+  JointStatePublisher jointStatePublisher(katana);
+  JointTrajectoryActionController jointTrajectoryActionController(katana);
 
   while (ros::ok())
   {
@@ -69,8 +68,7 @@ int KatanaNode::loop()
 int main(int argc, char** argv)
 {
   ros::init(argc, argv, "katana");
-  ros::NodeHandle n;
-  katana::KatanaNode katana_node(n);
+  katana::KatanaNode katana_node;
 
   katana_node.loop();
 

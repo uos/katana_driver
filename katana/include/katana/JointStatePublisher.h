@@ -38,12 +38,11 @@ namespace katana
 class JointStatePublisher
 {
 public:
-  JointStatePublisher(ros::NodeHandle, boost::shared_ptr<AbstractKatana>);
+  JointStatePublisher(boost::shared_ptr<AbstractKatana>);
   virtual ~JointStatePublisher();
   void loopOnce();
 
 private:
-  ros::NodeHandle nh;
   boost::shared_ptr<AbstractKatana> katana;
   ros::Publisher pub;
 
