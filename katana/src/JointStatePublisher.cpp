@@ -39,42 +39,29 @@ JointStatePublisher::~JointStatePublisher()
 void JointStatePublisher::loopOnce()
 {
   /* ************** Publish joint angles ************** */
-  sensor_msgs::JointStatePtr jsMsg = boost::make_shared<sensor_msgs::JointState>();
+  sensor_msgs::JointStatePtr msg = boost::make_shared<sensor_msgs::JointState>();
+  std::vector<std::string> joint_names = katana->getJointNames();
   std::vector<double> angles = katana->getMotorAngles();
   std::vector<double> vels = katana->getMotorVelocities();
 
-  // TODO later: read joint names from katana, for the fingers use dependent_joints like the joint_state_publisher does
 
-  jsMsg->name.push_back("katana_motor1_pan_joint");
-  jsMsg->position.push_back(angles[0]);
-  jsMsg->velocity.push_back(vels[0]);
+  for (size_t i = 0; i < NUM_JOINTS; i++) {
+    msg->name.push_back(joint_names[i]);
+    msg->position.push_back(angles[i]);
+    msg->velocity.push_back(vels[i]);
+  }
 
-  jsMsg->name.push_back("katana_motor2_lift_joint");
-  jsMsg->position.push_back(angles[1]);
-  jsMsg->velocity.push_back(vels[1]);
+  // TODO later: read finger joint names from katana
+  msg->name.push_back("katana_r_finger_joint");
+  msg->position.push_back(angles[5]);
+  msg->velocity.push_back(vels[5]);
 
-  jsMsg->name.push_back("katana_motor3_lift_joint");
-  jsMsg->position.push_back(angles[2]);
-  jsMsg->velocity.push_back(vels[2]);
+  msg->name.push_back("katana_l_finger_joint");
+  msg->position.push_back(angles[5]); // both right and left finger are controlled by motor 6
+  msg->velocity.push_back(vels[5]);
 
-  jsMsg->name.push_back("katana_motor4_lift_joint");
-  jsMsg->position.push_back(angles[3]);
-  jsMsg->velocity.push_back(vels[3]);
-
-  jsMsg->name.push_back("katana_motor5_wrist_roll_joint");
-  jsMsg->position.push_back(angles[4]);
-  jsMsg->velocity.push_back(vels[4]);
-
-  jsMsg->name.push_back("katana_r_finger_joint");
-  jsMsg->position.push_back(angles[5]);
-  jsMsg->velocity.push_back(vels[5]);
-
-  jsMsg->name.push_back("katana_l_finger_joint");
-  jsMsg->position.push_back(angles[5]); // both right and left finger are controlled by motor 6
-  jsMsg->velocity.push_back(vels[5]);
-
-  jsMsg->header.stamp = ros::Time::now();
-  pub.publish(jsMsg); // NOTE: jsMsg must not be changed after publishing; use reset() if necessary (http://www.ros.org/wiki/roscpp/Internals)
+  msg->header.stamp = ros::Time::now();
+  pub.publish(msg); // NOTE: msg must not be changed after publishing; use reset() if necessary (http://www.ros.org/wiki/roscpp/Internals)
 }
 
 
