@@ -37,13 +37,16 @@ SimulatedKatana::SimulatedKatana(ros::NodeHandle n) :
   hold[0].duration = 0.0;
   hold[0].splines.resize(NUM_JOINTS);
 
-  hold[0].splines[0].coef[0] = 0.12;
+  hold[0].splines[0].coef[0] = -3.022;
   hold[0].splines[1].coef[0] = 2.163;
-  hold[0].splines[2].coef[0] = 0.935;
-  hold[0].splines[3].coef[0] = 1.116;
-  hold[0].splines[4].coef[0] = 0.152;
+  hold[0].splines[2].coef[0] = -2.207;
+  hold[0].splines[3].coef[0] = -2.026;
+  hold[0].splines[4].coef[0] = -2.990;
 
   current_trajectory_ = hold_ptr;
+
+  motor_angles_[5] = 0.30;
+  motor_velocities_[5] = 0.0;
 }
 
 SimulatedKatana::~SimulatedKatana()
