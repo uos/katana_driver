@@ -43,7 +43,7 @@ public:
   virtual ~AbstractKatana();
 
   virtual void refreshEncoders() = 0;
-  virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time) = 0;
+  virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj) = 0;
   virtual void freezeRobot();
 
   virtual int getJointIndex(std::string joint_name);

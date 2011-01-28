@@ -38,7 +38,7 @@ public:
   virtual ~SimulatedKatana();
 
   virtual void refreshEncoders();
-  virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time);
+  virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
 
 private:
   boost::shared_ptr<SpecifiedTrajectory> current_trajectory_;

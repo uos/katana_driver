@@ -196,10 +196,8 @@ void JointTrajectoryActionController::commandCB(const trajectory_msgs::JointTraj
 }
 
 boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculateTrajectory(
-                                                                                            const trajectory_msgs::JointTrajectory &msg,
-                                                                                            ros::Time start_time,
-                                                                                            std::vector<double> initialJointAngles)
-{// TODO: remove initialJointAngles, start_time
+                                                                                            const trajectory_msgs::JointTrajectory &msg)
+{
   boost::shared_ptr<SpecifiedTrajectory> new_traj_ptr;
 
   bool allPointsHaveVelocities = true;
@@ -259,7 +257,7 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
 
     for (size_t i = 0; i < steps + 1; i++)
     {
-      times[i] = start_time.toSec() + msg.points[i].time_from_start.toSec();
+      times[i] = msg.header.stamp.toSec() + msg.points[i].time_from_start.toSec();
       positions[i] = msg.points[i].positions[lookup[j]];
       if (allPointsHaveVelocities)
         velocities[i] = msg.points[i].velocities[lookup[j]];
@@ -438,28 +436,26 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     return;
   }
 
-  // the time to start the trajectory
-  ros::Time start_time = ros::Time::now() + ros::Duration(0.1); // we need at least 0.1 seconds for calculation and transmission of trajectory
-  if (goal->trajectory.header.stamp != ros::Time(0.0) && goal->trajectory.header.stamp > start_time)
-  {
-    // trajectory is timed to start later
-    start_time = goal->trajectory.header.stamp;
-  }
-
   // calculate new trajectory
-  std::vector<double> jointAngles = katana_->getMotorAngles();
-  boost::shared_ptr<SpecifiedTrajectory> new_traj = calculateTrajectory(goal->trajectory, start_time, jointAngles);
+  boost::shared_ptr<SpecifiedTrajectory> new_traj = calculateTrajectory(goal->trajectory);
   if (!new_traj)
   {
     ROS_ERROR("Could not calculate new trajectory, aborting");
     action_server_.setAborted();
     return;
   }
+  if (!validTrajectory(*new_traj))
+  {
+    ROS_ERROR("Computed trajectory did not fulfill all constraints!");
+    action_server_.setAborted();
+    return;
+  }
   current_trajectory_ = new_traj;
 
   // sleep until 0.5 seconds before scheduled start
+  ROS_DEBUG("Sleeping for %f seconds before start of trajectory", (goal->trajectory.header.stamp - ros::Time::now()).toSec());
   ros::Rate rate(10);
-  while ((start_time - ros::Time::now()).toSec() > 0.5)
+  while ((goal->trajectory.header.stamp - ros::Time::now()).toSec() > 0.5)
   {
     if (action_server_.isPreemptRequested() || !ros::ok())
     {
@@ -470,14 +466,7 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     rate.sleep();
   }
 
-  if (!validTrajectory(*new_traj))
-  {
-    ROS_ERROR("Computed trajectory did not fulfill all constraints!");
-    action_server_.setAborted();
-    return;
-  }
-
-  bool success = katana_->executeTrajectory(new_traj, start_time); // TODO: doesn't need start_time, is in header stamp
+  bool success = katana_->executeTrajectory(new_traj);
   if (!success)
   {
     ROS_ERROR("Problem while transferring trajectory to Katana arm, aborting");

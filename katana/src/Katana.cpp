@@ -25,7 +25,6 @@
 
 #include "katana/Katana.h"
 
-
 namespace katana
 {
 
@@ -111,9 +110,12 @@ void Katana::refreshEncoders()
       double current_angle = converter->angle_enc2rad(i, pvp->pos);
       double time_since_update = (ros::Time::now() - last_encoder_update_).toSec();
 
-      if (last_encoder_update_ == ros::Time(0.0) || time_since_update == 0.0) {
+      if (last_encoder_update_ == ros::Time(0.0) || time_since_update == 0.0)
+      {
         motor_velocities_[i] = 0.0;
-      } else {
+      }
+      else
+      {
         motor_velocities_[i] = (current_angle - motor_angles_[i]) / time_since_update;
       }
       //  // only necessary when using recvPVP():
@@ -211,8 +213,10 @@ void Katana::refreshMotorStatus()
  *
  * @param traj
  */
-bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time)
+bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
 {
+  assert(traj->size() > 0);
+
   try
   {
     refreshMotorStatus();
@@ -237,7 +241,6 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
 
     //// ------- move to start position
     //{
-    //  assert(traj->size() > 0);
     //  assert(traj->at(0).splines.size() == NUM_JOINTS);
     //
     //  boost::recursive_mutex::scoped_lock lock(kni_mutex);
@@ -257,9 +260,18 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
     //}
 
     // ------- wait until start time
-    ros::Time::sleepUntil(start_time);
-    if ((ros::Time::now() - start_time).toSec() > 0.01)
-      ROS_WARN("Trajectory started %f s too late! Scheduled: %f, started: %f", (ros::Time::now() - start_time).toSec(), start_time.toSec(), ros::Time::now().toSec());
+    ros::Time start_time = ros::Time(traj->at(0).start_time);
+    double time_until_start = (start_time - ros::Time::now()).toSec();
+
+    if (time_until_start < -0.01)
+    {
+      ROS_WARN("Trajectory started %f s too late! Scheduled: %f, started: %f", -time_until_start, start_time.toSec(), ros::Time::now().toSec());
+    }
+    else if (time_until_start > 0.0)
+    {
+      ROS_DEBUG("Sleeping %f seconds until scheduled start of trajectory", time_until_start);
+      ros::Time::sleepUntil(start_time);
+    }
 
     // ------- start trajectory
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
@@ -355,12 +367,11 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros:
   return false;
 }
 
-void Katana::freezeRobot() {
+void Katana::freezeRobot()
+{
   boost::recursive_mutex::scoped_lock lock(kni_mutex);
   kni->freezeRobot();
 }
-
-
 
 /* ******************************** helper functions ******************************** */
 

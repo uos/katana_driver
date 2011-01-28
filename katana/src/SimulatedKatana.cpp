@@ -73,23 +73,10 @@ void SimulatedKatana::refreshEncoders()
   }
 }
 
-bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj_ptr, ros::Time start_time)
+bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj_ptr)
 {
   // ------- wait until start time
-  ros::Time::sleepUntil(start_time);
-
-  // TODO later: I modify traj now, copy first because it's shared, make const
-
-  SpecifiedTrajectory &traj = *traj_ptr;
-
-  // ------- fix start time
-  if (traj[0].start_time == 0.0)
-  {
-    for (size_t i = 0; i < traj.size(); ++i)
-    {
-      traj[i].start_time += start_time.toSec();
-    }
-  }
+  ros::Time::sleepUntil(ros::Time(traj_ptr->at(0).start_time));
 
   current_trajectory_ = traj_ptr;
   return true;

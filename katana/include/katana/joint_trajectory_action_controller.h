@@ -88,9 +88,7 @@ private:
 
   boost::shared_ptr<SpecifiedTrajectory> current_trajectory_;
 
-  boost::shared_ptr<SpecifiedTrajectory> calculateTrajectory(const trajectory_msgs::JointTrajectory &msg,
-                                                             ros::Time start_time,
-                                                             std::vector<double> initialJointAngles);
+  boost::shared_ptr<SpecifiedTrajectory> calculateTrajectory(const trajectory_msgs::JointTrajectory &msg);
 
   bool validJoints(std::vector<std::string> new_joint_names);
 

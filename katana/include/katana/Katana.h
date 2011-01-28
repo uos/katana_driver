@@ -51,7 +51,7 @@ public:
   virtual ~Katana();
 
   void refreshEncoders();
-  bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, ros::Time start_time);
+  bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
   virtual void freezeRobot();
 
 private:
