@@ -39,7 +39,7 @@
 
 #include <katana/AbstractKatana.h>
 #include <katana/SpecifiedTrajectory.h>
-#include "spline_functions.h"
+#include <katana/spline_functions.h>
 
 namespace katana
 {
