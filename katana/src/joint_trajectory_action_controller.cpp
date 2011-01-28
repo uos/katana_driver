@@ -485,14 +485,22 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     return;
   }
 
+  ROS_INFO("Waiting until goal reached...");
   // wait until goal reached
   ros::Rate goalWait(25);
   while (!goalReached())
   {
     goalWait.sleep();
+    if (action_server_.isPreemptRequested() || !ros::ok())
+    {
+      ROS_WARN("Goal canceled by client, aborting!");
+      action_server_.setPreempted();
+      return;
+    }
   }
 
   // that worked out nicely
+  ROS_INFO("Goal reached.");
   action_server_.setSucceeded();
 }
 
@@ -566,8 +574,8 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
   {
     if (traj[seg].duration < MIN_TIME)
     {
-      ROS_ERROR("duration of segment %zu is too small: %f", seg, traj[seg].duration);
-      return false;
+      ROS_WARN("duration of segment %zu is too small: %f", seg, traj[seg].duration);
+      // return false;
     }
   }
 
