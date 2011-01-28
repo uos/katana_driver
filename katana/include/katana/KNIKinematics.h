@@ -32,6 +32,7 @@
 #include <kinematics_msgs/GetKinematicSolverInfo.h>
 #include <kinematics_msgs/GetPositionFK.h>
 #include <kinematics_msgs/GetPositionIK.h>
+#include <urdf/model.h>
 
 #include <KNI_InvKin/ikBase.h>
 #include <KNI/kmlFactories.h>
@@ -63,6 +64,7 @@ private:
   ros::ServiceServer get_ik_server_;
 
   std::vector<std::string> joint_names_;
+  std::vector<motion_planning_msgs::JointLimits> joint_limits_;
 
   CikBase ikBase_;
   KNIConverter* converter_;

@@ -33,6 +33,7 @@ KNIKinematics::KNIKinematics()
 
   // ------- get parameters
   ros::NodeHandle pn("~");
+  ros::NodeHandle n;
 
   std::string config_file_path;
 
@@ -43,7 +44,7 @@ KNIKinematics::KNIKinematics()
 
   XmlRpc::XmlRpcValue joint_names;
 
-  // Gets all of the joints
+  // ------- get joint names
   if (!pn.getParam("joints", joint_names))
   {
     ROS_ERROR("No joints given. (namespace: %s)", pn.getNamespace().c_str());
@@ -67,6 +68,29 @@ KNIKinematics::KNIKinematics()
 
     joint_names_[i] = (std::string)name_value;
   }
+
+
+  // ------- get joint limits
+  std::string robot_desc_string;
+  if (!n.getParam("robot_description", robot_desc_string)) {
+    ROS_FATAL("Couldn't get a robot_description from the param server");
+    return;
+  }
+
+  urdf::Model model;
+  model.initString(robot_desc_string);
+
+  joint_limits_.resize(joint_names_.size());
+  for (size_t i = 0; i < joint_names_.size(); i++)
+  {
+    joint_limits_[i].joint_name = joint_names_[i];
+    joint_limits_[i].has_position_limits = true;
+    joint_limits_[i].min_position = model.getJoint(joint_names_[i])->limits->lower;
+    joint_limits_[i].max_position = model.getJoint(joint_names_[i])->limits->upper;
+    joint_limits_[i].has_velocity_limits = false;
+    joint_limits_[i].has_acceleration_limits = false;
+  }
+
 
   // ------- set up the KNI stuff
   KNI::kmlFactory config;
@@ -95,16 +119,8 @@ bool KNIKinematics::get_kinematic_solver_info(kinematics_msgs::GetKinematicSolve
                                               kinematics_msgs::GetKinematicSolverInfo::Response &res)
 {
   res.kinematic_solver_info.joint_names = joint_names_;
-  res.kinematic_solver_info.limits.resize(joint_names_.size());
-  for (size_t i = 0; i < joint_names_.size(); i++) {
-    // TODO: we lie about the position limits here, fix this
-    res.kinematic_solver_info.limits[i].joint_name = joint_names_[i];
-    res.kinematic_solver_info.limits[i].has_position_limits = true;
-    res.kinematic_solver_info.limits[i].min_position = 0.0;
-    res.kinematic_solver_info.limits[i].max_position = 3.8;
-    res.kinematic_solver_info.limits[i].has_velocity_limits = false;
-    res.kinematic_solver_info.limits[i].has_acceleration_limits = false;
-  }
+  res.kinematic_solver_info.limits = joint_limits_;
+
   return true;
 }
 
