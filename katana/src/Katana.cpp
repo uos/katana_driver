@@ -380,8 +380,28 @@ bool Katana::moveGripper(double openingAngle) {
     return false;
   }
 
-  boost::recursive_mutex::scoped_lock lock(kni_mutex);
-  kni->moveMotorToEnc(GRIPPER_INDEX, converter->angle_rad2enc(GRIPPER_INDEX, openingAngle), true, 100);
+  try {
+    boost::recursive_mutex::scoped_lock lock(kni_mutex);
+    kni->moveMotorToEnc(GRIPPER_INDEX, converter->angle_rad2enc(GRIPPER_INDEX, openingAngle), true, 100);
+    return true;
+  }
+  catch (WrongCRCException e)
+  {
+    ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in moveGripper(): %s)", e.message().c_str());
+  }
+  catch (ReadNotCompleteException e)
+  {
+    ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in moveGripper(): %s)", e.message().c_str());
+  }
+  catch (Exception e)
+  {
+    ROS_ERROR("Unhandled exception in moveGripper(): %s", e.message().c_str());
+  }
+  catch (...)
+  {
+    ROS_ERROR("Unhandled exception in moveGripper()");
+  }
+  return false;
 }
 
 
