@@ -49,6 +49,7 @@ int KatanaNode::loop()
 
   JointStatePublisher jointStatePublisher(katana);
   JointTrajectoryActionController jointTrajectoryActionController(katana);
+  KatanaGripperGraspController katanaGripperGraspController(katana);
 
   while (ros::ok())
   {
