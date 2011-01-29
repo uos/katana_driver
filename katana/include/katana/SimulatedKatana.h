@@ -39,6 +39,7 @@ public:
 
   virtual void refreshEncoders();
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
+  virtual bool moveGripper(double openingAngle);
 
 private:
   boost::shared_ptr<SpecifiedTrajectory> current_trajectory_;

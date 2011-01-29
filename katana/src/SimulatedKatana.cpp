@@ -35,23 +35,20 @@ SimulatedKatana::SimulatedKatana() :
   SpecifiedTrajectory &hold = *hold_ptr;
   hold[0].start_time = ros::Time::now().toSec() - 0.001;
   hold[0].duration = 0.0;
-  hold[0].splines.resize(NUM_JOINTS);
+  hold[0].splines.resize(NUM_MOTORS);
 
   hold[0].splines[0].coef[0] = -3.022;
   hold[0].splines[1].coef[0] = 2.163;
   hold[0].splines[2].coef[0] = -2.207;
   hold[0].splines[3].coef[0] = -2.026;
   hold[0].splines[4].coef[0] = -2.990;
+  hold[0].splines[5].coef[0] = GRIPPER_OPEN_ANGLE;
 
   current_trajectory_ = hold_ptr;
-
-  motor_angles_[5] = 0.30;
-  motor_velocities_[5] = 0.0;
 }
 
 SimulatedKatana::~SimulatedKatana()
 {
-
 }
 
 void SimulatedKatana::refreshEncoders()
@@ -65,7 +62,7 @@ void SimulatedKatana::refreshEncoders()
     seg++;
   }
 
-  for (size_t j = 0; j < NUM_JOINTS; j++)
+  for (size_t j = 0; j < traj[seg].splines.size(); j++)
   {
     double pos_t, vel_t, acc_t;
     sampleSplineWithTimeBounds(traj[seg].splines[j].coef, traj[seg].duration, ros::Time::now().toSec()
@@ -82,6 +79,38 @@ bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> t
   ros::Time::sleepUntil(ros::Time(traj_ptr->at(0).start_time));
 
   current_trajectory_ = traj_ptr;
+  return true;
+}
+
+bool SimulatedKatana::moveGripper(double openingAngle)
+{
+  static const double DURATION = 2.0;
+
+  if (openingAngle < GRIPPER_CLOSED_ANGLE || GRIPPER_OPEN_ANGLE < openingAngle)
+  {
+    ROS_ERROR("Desired opening angle %f is out of range [%f, %f]", openingAngle, GRIPPER_CLOSED_ANGLE, GRIPPER_OPEN_ANGLE);
+    return false;
+  }
+
+  // create a new trajectory
+  boost::shared_ptr<SpecifiedTrajectory> new_traj_ptr(new SpecifiedTrajectory(1));
+  SpecifiedTrajectory &new_traj = *new_traj_ptr;
+  new_traj[0].start_time = ros::Time::now().toSec();
+  new_traj[0].duration = DURATION;
+  new_traj[0].splines.resize(NUM_MOTORS);
+
+  // hold all joints at their current position
+  for (size_t j = 0; j < NUM_MOTORS; ++j)
+    new_traj[0].splines[j].coef[0] = motor_angles_[j];
+
+  // move the gripper to the desired angle
+  new_traj[0].splines[GRIPPER_INDEX].target_position = openingAngle;
+  getCubicSplineCoefficients(motor_angles_[GRIPPER_INDEX], 0.0, openingAngle, 0.0, DURATION,
+                             new_traj[0].splines[GRIPPER_INDEX].coef);
+
+  current_trajectory_ = new_traj_ptr;
+
+  ros::Duration(DURATION).sleep();
   return true;
 }
 

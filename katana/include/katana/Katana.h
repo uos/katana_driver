@@ -53,6 +53,7 @@ public:
   void refreshEncoders();
   bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
   virtual void freezeRobot();
+  virtual bool moveGripper(double openingAngle);
 
 private:
   boost::shared_ptr<CLMBase> kni;
