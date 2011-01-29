@@ -546,7 +546,7 @@ std::vector<int> JointTrajectoryActionController::makeJointsLookup(const traject
 bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory &traj)
 {
   const double MAX_SPEED = 4.0; // rad/s; TODO: should be same value as URDF
-  const double MIN_TIME = 0.02; // seconds
+  const double MIN_TIME = 0.01; // seconds; the KNI calculates time in 10ms units, so this is the minimum duration of a spline
   const double EPSILON = 0.0001;
 
   if (traj.size() > MOVE_BUFFER_SIZE)

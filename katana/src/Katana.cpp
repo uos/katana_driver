@@ -311,11 +311,14 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
       }
 
       std::vector<short> polynomial;
-      double s_time = seg.duration * KNI_TO_ROS_TIME;
+      short s_time = round(seg.duration * KNI_TO_ROS_TIME);
+      if (s_time <= 0)
+        s_time = 1;
+
       for (size_t j = 0; j < seg.splines.size(); j++)
       {
         // some parts taken from CLMBase::movLM2P
-        polynomial.push_back(round(s_time)); // duration
+        polynomial.push_back(s_time); // duration
 
         polynomial.push_back(converter->angle_rad2enc(j, seg.splines[j].target_position)); // target position
 
@@ -330,7 +333,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
       }
 
       // gripper: hold current position
-      polynomial.push_back((short)floor(s_time + 0.5)); // duration
+      polynomial.push_back(s_time); // duration
       polynomial.push_back(converter->angle_rad2enc(5, motor_angles_[5])); // target position (angle)
       polynomial.push_back(converter->angle_rad2enc(5, motor_angles_[5])); // p0
       polynomial.push_back(0); // p1
