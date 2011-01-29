@@ -46,9 +46,6 @@
 namespace katana
 {
 
-static const size_t NUM_JOINTS = 5;
-
-
 class KNIKinematics
 {
 public:
@@ -56,8 +53,6 @@ public:
   virtual ~KNIKinematics();
 
 private:
-  static const double KNI_TO_ROS_LENGTH = 0.001; // the conversion factor from KNI coordinates (in mm) to ROS coordinates (in m)
-
   ros::NodeHandle nh_;
   ros::ServiceServer get_kinematic_solver_info_server_;
   ros::ServiceServer get_fk_server_;

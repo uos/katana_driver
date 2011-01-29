@@ -22,7 +22,7 @@
  *      Author: Martin Günther <mguenthe@uos.de>
  */
 
-#include "../include/katana/KNIConverter.h"
+#include <katana/KNIConverter.h>
 
 namespace katana
 {
@@ -66,8 +66,8 @@ double KNIConverter::angle_rad2enc(int index, double angle)
   if (index == 0 || index == 2 || index == 3 || index == 4)
     angle += M_PI;
 
-  if (index == NUM_MOTORS - 1) // gripper
-    angle = (angle - URDF_GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
+  if (index == GRIPPER_INDEX)
+    angle = (angle - GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
 
   return ((deg2rad(param.angleOffset) - angle) * (double)param.encodersPerCycle * (double)param.rotationDirection)
   / (2.0 * M_PI) + param.encoderOffset;
@@ -80,9 +80,9 @@ double KNIConverter::angle_enc2rad(int index, int encoders)
   double result = deg2rad(param.angleOffset) - (((double)encoders - (double)param.encoderOffset) * 2.0 * M_PI)
       / ((double)param.encodersPerCycle * (double)param.rotationDirection);
 
-  if (index == NUM_MOTORS - 1) // gripper
+  if (index == GRIPPER_INDEX)
   {
-    result = (result - KNI_GRIPPER_CLOSED_ANGLE) * KNI_TO_URDF_GRIPPER_FACTOR + URDF_GRIPPER_CLOSED_ANGLE;
+    result = (result - KNI_GRIPPER_CLOSED_ANGLE) * KNI_TO_URDF_GRIPPER_FACTOR + GRIPPER_CLOSED_ANGLE;
   }
 
   // motors 0, 2, 3, 4 have to be shifted by Pi so that the range can be normalized
@@ -139,7 +139,7 @@ double KNIConverter::vel_acc_jerk_rad2enc(int index, double vel_acc_jerk)
 {
   const TMotInit param = config_.getMotInit(index);
 
-  if (index == NUM_MOTORS - 1) // gripper
+  if (index == GRIPPER_INDEX)
     vel_acc_jerk = vel_acc_jerk / KNI_TO_URDF_GRIPPER_FACTOR;
 
   return ((-vel_acc_jerk) * (double)param.encodersPerCycle * (double)param.rotationDirection) / (2.0 * M_PI);
@@ -151,7 +151,7 @@ double KNIConverter::vel_acc_jerk_enc2rad(int index, short encoders)
 
   double result = -((double)encoders * 2.0 * M_PI) / ((double)param.encodersPerCycle * (double)param.rotationDirection);
 
-  if (index == NUM_MOTORS - 1) // gripper
+  if (index == GRIPPER_INDEX)
   {
     result = result * KNI_TO_URDF_GRIPPER_FACTOR;
   }

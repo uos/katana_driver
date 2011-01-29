@@ -311,7 +311,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
       }
 
       std::vector<short> polynomial;
-      double s_time = seg.duration * 100;
+      double s_time = seg.duration * KNI_TO_ROS_TIME;
       for (size_t j = 0; j < seg.splines.size(); j++)
       {
         // some parts taken from CLMBase::movLM2P

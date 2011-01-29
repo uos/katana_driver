@@ -28,6 +28,8 @@
 #include <ros/ros.h>
 #include <KNI/kmlFactories.h>
 
+#include <katana/katana_constants.h>
+
 namespace katana
 {
 
@@ -49,10 +51,6 @@ public:
   double jerk_enc2rad(int index, short encoders);
 
 private:
-  /// KNI time is in 10 milliseconds (most of the time), ROS time is in seconds
-  static const double KNI_TO_ROS_TIME = 100.0;
-  static const size_t NUM_MOTORS = 6;
-
   KNI::kmlFactory config_;
 
   double vel_acc_jerk_rad2enc(int index, double vel_acc_jerk);
@@ -61,20 +59,6 @@ private:
   double deg2rad(const double deg);
 
 };
-
-/**
- * constants for converting between the KNI gripper angle and the URDF gripper angle
- */
-static const double KNI_GRIPPER_CLOSED_ANGLE = 0.21652991032554647;
-static const double KNI_GRIPPER_OPEN_ANGLE = -2.057443;
-
-/// these should be equal to the value in the urdf description:
-static const double URDF_GRIPPER_CLOSED_ANGLE = -0.44;
-static const double URDF_GRIPPER_OPEN_ANGLE = 0.30;
-
-static const double KNI_TO_URDF_GRIPPER_FACTOR = (URDF_GRIPPER_OPEN_ANGLE - URDF_GRIPPER_CLOSED_ANGLE)
-    / (KNI_GRIPPER_OPEN_ANGLE - KNI_GRIPPER_CLOSED_ANGLE);
-
 
 }
 

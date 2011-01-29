@@ -29,12 +29,10 @@
 #include <urdf/joint.h>
 
 #include <katana/SpecifiedTrajectory.h>
+#include <katana/katana_constants.h>
 
 namespace katana
 {
-
-const size_t NUM_MOTORS = 6;
-const size_t NUM_JOINTS = NUM_MOTORS - 1;
 
 class AbstractKatana
 {
