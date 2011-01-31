@@ -19,17 +19,20 @@
     <!-- TODO: use map frame here -->
     <param name="fixed_frame" type="string" value="/katana_base_link" />
 
-    <!-- define a box of size 2x3x4 around (0,  0, 0) in the robot frame -->
+    <!-- Define a clipping box for the collision map; the operating range of the Katana
+         is [-0.12, 0.68] in the z direction and [-0.48, 0.48] in both x and y direction.
+         Let's be a little generous and define a box of size 1.20x1.20x1.00 around
+         (0,0,0.28) -->
     <!-- TODO: use map frame here -->
     <param name="robot_frame" type="string" value="/katana_base_link" />
 
     <param name="origin_x" type="double" value="0.0" />
     <param name="origin_y" type="double" value="0.0" />
-    <param name="origin_z" type="double" value="0.0" />
+    <param name="origin_z" type="double" value="0.28" />
     
-    <param name="dimension_x" type="double" value="1.0" />
-    <param name="dimension_y" type="double" value="1.5" />
-    <param name="dimension_z" type="double" value="2.0" />
+    <param name="dimension_x" type="double" value="0.6" />
+    <param name="dimension_y" type="double" value="0.6" />
+    <param name="dimension_z" type="double" value="0.5" />
 
     <!-- set the resolution (1.0 cm) -->
     <param name="resolution" type="double" value="0.01" />
