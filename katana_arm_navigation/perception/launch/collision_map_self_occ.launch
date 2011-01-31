@@ -1,12 +1,5 @@
 <launch>
   <node pkg="collision_map" type="collision_map_self_occ_node" name="collision_map_self_occ_node" respawn="true" output="screen">
-    
-    <!-- The default padding to be added for the body parts the robot can see -->
-    <param name="self_see_default_padding" type="double" value="0.04" />
-
-    <!-- The default scaling to be added for the body parts the robot can see -->
-    <param name="self_see_default_scale" type="double" value="1.0" />
-     
     <rosparam command="load" file="$(find katana_arm_navigation)/perception/config/self_filter.yaml" />
 
     <!-- if someone asks for a stable map, publish the static map on the dynamic
@@ -23,7 +16,6 @@
          is [-0.12, 0.68] in the z direction and [-0.48, 0.48] in both x and y direction.
          Let's be a little generous and define a box of size 1.20x1.20x1.00 around
          (0,0,0.28) -->
-    <!-- TODO: use map frame here -->
     <param name="robot_frame" type="string" value="/katana_base_link" />
 
     <param name="origin_x" type="double" value="0.0" />
@@ -36,6 +28,9 @@
 
     <!-- set the resolution (1.0 cm) -->
     <param name="resolution" type="double" value="0.01" />
+
+    <!-- minimum number of points for a box to be considered occupied (default: 1) -->
+    <!-- <param name="min_nr_points" type="int" value="5" /> -->
     
     <!-- cloud sources -->
     <rosparam command="load" file="$(find katana_arm_navigation)/perception/config/collision_map_sources.yaml" />	
