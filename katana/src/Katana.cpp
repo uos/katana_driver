@@ -377,16 +377,15 @@ void Katana::freezeRobot()
   kni->freezeRobot();
 }
 
-bool Katana::moveGripper(double openingAngle) {
+void Katana::moveGripper(double openingAngle) {
   if (openingAngle < GRIPPER_CLOSED_ANGLE || GRIPPER_OPEN_ANGLE < openingAngle) {
     ROS_ERROR("Desired opening angle %f is out of range [%f, %f]", openingAngle, GRIPPER_CLOSED_ANGLE, GRIPPER_OPEN_ANGLE);
-    return false;
+    return;
   }
 
   try {
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
-    kni->moveMotorToEnc(GRIPPER_INDEX, converter->angle_rad2enc(GRIPPER_INDEX, openingAngle), true, 100);
-    return true;
+    kni->moveMotorToEnc(GRIPPER_INDEX, converter->angle_rad2enc(GRIPPER_INDEX, openingAngle), false, 100);
   }
   catch (WrongCRCException e)
   {
@@ -404,7 +403,7 @@ bool Katana::moveGripper(double openingAngle) {
   {
     ROS_ERROR("Unhandled exception in moveGripper()");
   }
-  return false;
+  return;
 }
 
 

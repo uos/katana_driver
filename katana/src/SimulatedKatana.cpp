@@ -82,14 +82,14 @@ bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> t
   return true;
 }
 
-bool SimulatedKatana::moveGripper(double openingAngle)
+void SimulatedKatana::moveGripper(double openingAngle)
 {
-  static const double DURATION = 2.0;
+  static const double DURATION = 2.877065;   // time to open/close gripper, measured on real Katana
 
   if (openingAngle < GRIPPER_CLOSED_ANGLE || GRIPPER_OPEN_ANGLE < openingAngle)
   {
     ROS_ERROR("Desired opening angle %f is out of range [%f, %f]", openingAngle, GRIPPER_CLOSED_ANGLE, GRIPPER_OPEN_ANGLE);
-    return false;
+    return;
   }
 
   // create a new trajectory
@@ -109,9 +109,7 @@ bool SimulatedKatana::moveGripper(double openingAngle)
                              new_traj[0].splines[GRIPPER_INDEX].coef);
 
   current_trajectory_ = new_traj_ptr;
-
-  ros::Duration(DURATION).sleep();
-  return true;
+  return;
 }
 
 }

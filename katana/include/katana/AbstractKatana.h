@@ -45,13 +45,10 @@ public:
   virtual void freezeRobot();
 
   /**
-   * Open/close the gripper to the desired opening angle, and wait for result.
-   *
-   * @return true if desired opening angle was reached, false otherwise
-   *   (e.g., when an object was gripped and the gripper couldn't close
-   *   completely)
+   * Open/close the gripper to the desired opening angle. Do not wait for result,
+   * but return immediately.
    */
-  virtual bool moveGripper(double openingAngle) = 0;
+  virtual void moveGripper(double openingAngle) = 0;
 
   virtual int getJointIndex(std::string joint_name);
   virtual std::vector<std::string> getJointNames();

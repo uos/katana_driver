@@ -56,7 +56,6 @@ KatanaGripperGraspController::~KatanaGripperGraspController()
 
 void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::GraspHandPostureExecutionGoalConstPtr &goal)
 {
-  bool move_gripper_success;
   switch (goal->goal)
   {
     case object_manipulation_msgs::GraspHandPostureExecutionGoal::GRASP:
@@ -70,7 +69,7 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
       // well, we don't really use the grasp_posture.position value here, we just instruct
       // the gripper to close all the way...
       // that might change in the future and we might do something more interesting
-      move_gripper_success = katana_->moveGripper(GRIPPER_CLOSED_ANGLE);
+      katana_->moveGripper(GRIPPER_CLOSED_ANGLE);
       last_command_was_close_ = true;
       break;
 
@@ -85,12 +84,12 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
       // well, we don't really use the grasp_posture.position value here, we just instruct
       // the gripper to open  all the way...
       // that might change in the future and we might do something more interesting
-      move_gripper_success = katana_->moveGripper(GRIPPER_OPEN_ANGLE);
+      katana_->moveGripper(GRIPPER_OPEN_ANGLE);
       last_command_was_close_ = false;
       break;
 
     case object_manipulation_msgs::GraspHandPostureExecutionGoal::RELEASE:
-      move_gripper_success = katana_->moveGripper(GRIPPER_OPEN_ANGLE);
+      katana_->moveGripper(GRIPPER_OPEN_ANGLE);
       last_command_was_close_ = false;
       break;
 
@@ -99,6 +98,13 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
       action_server_->setAborted();
       return;
   }
+
+  // wait for gripper to open/close
+  ros::Duration(GRIPPER_OPENING_CLOSING_DURATION).sleep();
+
+  // If we ever do anything else than setSucceeded() in the future, we will have to really
+  // check if the desired opening angle was reached by the gripper here.
+  static const bool move_gripper_success = true;
 
   // process the result
   if (move_gripper_success)
