@@ -3,7 +3,7 @@
   <include file="$(find katana_arm_navigation)/config/launch/katana_planning_environment.launch" />
 
   <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
-    args="-0.64 -0.28 0.12 -1.57 0 -1.57 /katana_base_link /kinect_rgb 10" />
+    args="-1.20 -0.02 0.15 -1.57 0 -1.57 /katana_base_link /kinect_rgb 10" />
   <node pkg="tf" type="static_transform_publisher" name="kinect_rgb_to_kinect_depth"
     args="-0.03 0.0 0.0 0.0 0.0 0.0 /kinect_rgb /kinect_depth 10" />
 
