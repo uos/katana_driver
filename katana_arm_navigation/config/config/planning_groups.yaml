@@ -19,7 +19,7 @@ groups:
       katana_motor2_lift_link
       katana_motor3_lift_link
       katana_motor4_lift_link
-      katana_gripper_tool_frame
+#      katana_gripper_tool_frame
 
   - name: end_effector
     links: 
@@ -31,8 +31,6 @@ groups:
 ## katana_motor5_wrist_roll_link is included in end_effector group so that
 ## self-collisions with the arm group are checked (it can physically collide 
 ## with katana_motor1_pan_link).
-##
-## katana_gripper_tool_frame is included in arm group because it is required for planning
 ##
 ## all links and joints from the URDF are listed here, except for
 ## - the two fixed joints
