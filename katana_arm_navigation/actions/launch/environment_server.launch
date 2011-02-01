@@ -13,6 +13,9 @@
     <!-- TODO: change back to 200 when no longer needed to prevent self-preemption due to non-moving joints -->
     <param name="velocity_history_size" type="int" value="20000" />
 
+    <!-- not quite sure what this does; the source code of collision_models says:
+      - a list of static planes bounding the environment
+      - bounding_planes must be a list of 4-tuples (a b c d) that define planes ax+by+cz+d=0 --> 
     <param name="bounding_planes" type="string" value="0 0 1 -0.01" />
 
     <param name="pointcloud_padd" type="double" value="0.00" />

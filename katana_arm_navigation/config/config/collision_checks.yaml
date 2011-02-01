@@ -32,9 +32,3 @@ default_collision_operations:
     object2: end_effector
     operation: disable
 
-# disable collision checks between links that cannot physically collide
-# (to speed up computation)
-  - object1: katana_motor1_pan_link
-    object2: robot_body
-    operation: disable
-

@@ -13,6 +13,8 @@
     <!-- planner configs -->
     <rosparam command="load" file="$(find katana_arm_navigation)/planning/config/ompl_planning_configs.yaml" />
 
+    <!-- the time interval assumed between states on the solution path. 
+         A lower value of this parameter makes the path execution faster. -->
     <param name="state_delay" type="double" value="0.01" />
     <param name="pointcloud_padd" type="double" value="0.00" />
     

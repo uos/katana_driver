@@ -7,13 +7,11 @@
 
   <!-- katana node -->
   <node pkg="katana" type="katana" name="katana" output="screen">
-    <param name="simulation" value="false" />
     <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
 
     <!-- for katana_gripper_grasp_controller -->
     <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
     <remap from="grasp_query_name" to="/gripper_grasp_status" />
-	<param name="gripper_object_presence_threshold" value="-0.4" />
   </node>
 
 </launch>

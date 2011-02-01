@@ -5,10 +5,10 @@ link_padding:
   - link: arm
     padding: 0.02
   - link: end_effector
-    padding: 0.01
+    padding: 0.02
   - link: katana_l_finger_link 
-    padding: 0.0
+    padding: 0.02
   - link: katana_r_finger_link 
-    padding: 0.0
+    padding: 0.02
   - link: attached
-    padding: 0.01
+    padding: 0.02

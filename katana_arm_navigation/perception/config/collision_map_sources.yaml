@@ -1,8 +1,8 @@
 cloud_sources:
   - name: tilt_scan_cloud_filtered
     # take every nth frame (1 is no discards)
-    frame_subsample: 30
+    frame_subsample: 1
     # take every nth point from the frames you do process
-    point_subsample: 2 
+    point_subsample: 1 
     sensor_frame: kinect_depth
 

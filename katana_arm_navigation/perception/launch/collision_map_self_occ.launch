@@ -26,8 +26,8 @@
     <param name="dimension_y" type="double" value="0.6" />
     <param name="dimension_z" type="double" value="0.5" />
 
-    <!-- set the resolution (1.0 cm) -->
-    <param name="resolution" type="double" value="0.01" />
+    <!-- set the resolution -->
+    <param name="resolution" type="double" value="0.005" />
 
     <!-- minimum number of points for a box to be considered occupied (default: 1) -->
     <!-- <param name="min_nr_points" type="int" value="5" /> -->
