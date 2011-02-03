@@ -69,6 +69,8 @@ static const int KNI_MAX_VELOCITY = 180;
 /// acceleration limit = 1 or 2 [enc / (10 ms)^2]
 static const int KNI_MAX_ACCELERATION = 2;
 
+static const size_t MOVE_BUFFER_SIZE = 16;  // TODO: find out exact value
+
 } // namespace katana
 
 

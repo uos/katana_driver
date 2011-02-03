@@ -95,8 +95,6 @@ private:
 
   bool goalReached();
 };
-
-static const size_t MOVE_BUFFER_SIZE = 16; // or 18 or so; TODO: find out correct value
 }
 
 #endif /* JOINT_TRAJECTORY_ACTION_CONTROLLER_H_ */

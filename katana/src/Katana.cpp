@@ -259,7 +259,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
     //  std::vector<int> encoders;
     //
     //  for (size_t i = 0; i < NUM_JOINTS; i++) {
-    //    encoders.push_back(angle_rad2enc(i, traj->at(0).splines[i].coef[0]));
+    //    encoders.push_back(converter->angle_rad2enc(i, traj->at(0).splines[i].coef[0]));
     //  }
     //
     //  std::vector<int> current_encoders = kni->getRobotEncoders(true);
@@ -267,8 +267,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
     //  ROS_INFO("target encoders:  %d %d %d %d %d", encoders[0], encoders[1], encoders[2], encoders[3], encoders[4]);
     //
     //  kni->moveRobotToEnc(encoders, false);
-    //  ros::Time move_time = ros::Time::now() + ros::Duration(2.0);
-    //  ros::Time::sleepUntil(move_time);
+    //  ros::Duration(2.0).sleep();
     //}
 
     // ------- wait until start time
@@ -385,6 +384,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
 void Katana::freezeRobot()
 {
   boost::recursive_mutex::scoped_lock lock(kni_mutex);
+  kni->flushMoveBuffers();
   kni->freezeRobot();
 }
 

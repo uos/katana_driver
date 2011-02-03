@@ -455,7 +455,7 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   current_trajectory_ = new_traj;
 
   // sleep until 0.5 seconds before scheduled start
-  ROS_DEBUG("Sleeping for %f seconds before start of trajectory", (goal->trajectory.header.stamp - ros::Time::now()).toSec());
+  ROS_DEBUG_COND(goal->trajectory.header.stamp > ros::Time::now(), "Sleeping for %f seconds before start of trajectory", (goal->trajectory.header.stamp - ros::Time::now()).toSec());
   ros::Rate rate(10);
   while ((goal->trajectory.header.stamp - ros::Time::now()).toSec() > 0.5)
   {
