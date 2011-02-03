@@ -3,27 +3,28 @@
 ## exist, acceleration parameters however must still be specified in yaml since
 ## they are not usually found in the urdf 
 
-## TODO: use the correct acceleration limits
-
+## the acceleration limits have been calculated using acc_enc2rad(2). The 
+## acceleration can be either 1 or 2 [encoders / (10 ms)^2]
 joint_limits:
   katana_motor1_pan_joint:
     has_acceleration_limits: true
-    max_acceleration: 2.0
+    max_acceleration: 4.908739    
     angle_wraparound: false
   katana_motor2_lift_joint:
     has_acceleration_limits: true
-    max_acceleration: 2.0
+    max_acceleration: 2.646220
     angle_wraparound: false
   katana_motor3_lift_joint:
     has_acceleration_limits: true
-    max_acceleration: 2.0
+    ## unexplicably, the acceleration limits seem to be exactly half of what acc_enc2rad(2) says
+    max_acceleration: 2.646220
     angle_wraparound: false
   katana_motor4_lift_joint:
     has_acceleration_limits: true
-    max_acceleration: 2.0
+    max_acceleration: 4.908739
     angle_wraparound: false
   katana_motor5_wrist_roll_joint:
     has_acceleration_limits: true
-    max_acceleration: 2.0
+    max_acceleration: 4.908739
     angle_wraparound: false
 

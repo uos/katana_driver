@@ -6,7 +6,7 @@
        xmlns:xacro="http://ros.org/wiki/xacro"
        name="katana">
 
-  <property name="M_PI" value="3.1415926535897931" />  <!-- only approximately correct ;-) -->
+  <property name="M_PI" value="3.1415926535897931" />
 
   <!-- all values from the katana manual -->
   <property name="controlbox_height" value="0.08" />
@@ -22,7 +22,7 @@
         <geometry>
           <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" />
         </geometry>
-        
+
         <material name="grey">
           <color rgba="0.8 0.8 0.8 1"/>
         </material>
@@ -54,7 +54,7 @@
         <geometry>
           <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"/>
         </geometry>
-        
+
         <material name="grey" />
       </visual>
       <collision>
@@ -71,7 +71,10 @@
     <child link="katana_motor1_pan_link" />
     <origin xyz="0 0 ${base_height}" rpy="0 0 ${M_PI}"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-3.025528" upper="2.891097"  velocity="0.5"/>  <!-- TODO:  give correct effort + velocity limits (lower + upper come from GetEncoderMinPos(), GetEncoderMaxPos()) -->
+    <!-- lower + upper limit have been calculated using the KNI's GetEncoderMinPos(), GetEncoderMaxPos();
+         the velocity limit has been calculated by vel_enc2rad(180); 180 encoders / 10ms is the maximum
+         speed limit for all joints, according to the Katana 4D documentation -->
+    <limit effort="1000.0" lower="-3.025528" upper="2.891097" velocity="2.208932"/>  <!-- TODO:  give correct effort limits -->
   </joint>
 
   <link name="katana_motor1_pan_link">
@@ -80,7 +83,7 @@
         <geometry>
           <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"/>
         </geometry>
-        
+
         <material name="grey" />
       </visual>
       <collision>
@@ -97,7 +100,7 @@
     <child link="katana_motor2_lift_link" />
     <origin xyz="0 0 0" rpy="${M_PI/2} 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-0.135228" upper="2.168572"  velocity="0.5"/>  <!-- TODO: give correct effort + velocity limits -->
+    <limit effort="1000.0" lower="-0.135228" upper="2.168572"  velocity="1.190799"/>  <!-- TODO: give correct effort limits -->
   </joint>
 
   <link name="katana_motor2_lift_link">
@@ -128,7 +131,8 @@
     <child  link="katana_motor3_lift_link" />
     <origin xyz="${link2_length} 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-2.221804" upper="2.054223"  velocity="0.5"/>  <!-- TODO: give correct effort + velocity limits -->
+    <!-- unexplicably, the measured velocity limit of this motor is exactly half of what vel_enc2rad(180) says -->
+    <limit effort="1000.0" lower="-2.221804" upper="2.054223"  velocity="1.190799"/>  <!-- TODO: give correct effort limits -->
   </joint>
 
   <link name="katana_motor3_lift_link">
@@ -158,7 +162,7 @@
     <child  link="katana_motor4_lift_link" />
     <origin rpy="${M_PI} 0 0" xyz="${link3_length} 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-2.033309" upper="1.876133"  velocity="0.5"/>  <!-- TODO: give correct effort + velocity limits -->
+    <limit effort="1000.0" lower="-2.033309" upper="1.876133"  velocity="2.208932"/>  <!-- TODO: give correct effort limits -->
   </joint>
 
   <link name="katana_motor4_lift_link">
@@ -189,7 +193,7 @@
     <child  link="katana_motor5_wrist_roll_link" />
     <origin rpy="${M_PI/2} 0 ${-M_PI/2}" xyz="${link4_length} 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-2.993240" upper="2.870985"  velocity="0.5"/>  <!-- TODO: give correct effort + velocity limits -->
+    <limit effort="1000.0" lower="-2.993240" upper="2.870985"  velocity="2.208932"/>  <!-- TODO: give correct effort limits -->
   </joint>
 
   <link name="katana_motor5_wrist_roll_link">
@@ -243,16 +247,16 @@
       <child  link="katana_${prefix}_finger_link" />
       <origin rpy="${rotate} 0 0" xyz="0.034 0 0"/>
       <axis xyz="0 0 1"/>
-      <limit effort="1000.0" lower="-0.44" upper="0.30"  velocity="0.5"/>  <!-- TODO: give correct effort + velocity limits -->
+      <limit effort="1000.0" lower="-0.44" upper="0.30"  velocity="0.718834"/>  <!-- TODO: give correct effort limits -->
    </joint>
-  
+
     <link name="katana_${prefix}_finger_link">
         <visual>
           <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
           <geometry>
             <mesh filename="package://katana_description/meshes/katana/katana_gripper_${prefix}_finger.stl"/>
           </geometry>
-  
+
           <material name="grey" />
         </visual>
         <collision>
@@ -277,8 +281,8 @@
   </joint>
 
   <link name="katana_gripper_tool_frame">
-    <!-- This is the coordinate system of the tool (this is the position 
-         used in IK etc., relative to the base frame); there is no actual 
+    <!-- This is the coordinate system of the tool (this is the position
+         used in IK etc., relative to the base frame); there is no actual
          arm part attached to this link -->
   </link>
 
@@ -293,7 +297,7 @@
   </joint>
 
   <link name="katana_base_frame">
-    <!-- This is the reference coordinate system of the arm (all IK etc. are specified 
+    <!-- This is the reference coordinate system of the arm (the KNI kinematics are specified
          in this frame); there is no actual arm part attached to this link -->
   </link>
 
