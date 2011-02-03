@@ -139,7 +139,7 @@ double KNIConverter::vel_acc_jerk_rad2enc(int index, double vel_acc_jerk)
 {
   const TMotInit param = config_.getMotInit(index);
 
-  if (index == GRIPPER_INDEX)
+  if (index == (int)GRIPPER_INDEX)
     vel_acc_jerk = vel_acc_jerk / KNI_TO_URDF_GRIPPER_FACTOR;
 
   return ((-vel_acc_jerk) * (double)param.encodersPerCycle * (double)param.rotationDirection) / (2.0 * M_PI);
@@ -151,7 +151,7 @@ double KNIConverter::vel_acc_jerk_enc2rad(int index, short encoders)
 
   double result = -((double)encoders * 2.0 * M_PI) / ((double)param.encodersPerCycle * (double)param.rotationDirection);
 
-  if (index == GRIPPER_INDEX)
+  if (index == (int)GRIPPER_INDEX)
   {
     result = result * KNI_TO_URDF_GRIPPER_FACTOR;
   }

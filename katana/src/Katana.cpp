@@ -38,7 +38,7 @@ Katana::Katana() :
   std::string ip, config_file_path;
   int port;
 
-  pn.param<std::string>("ip", ip, "192.168.1.1");
+  pn.param<std::string> ("ip", ip, "192.168.1.1");
   pn.param("port", port, 5566);
   pn.param("config_file_path", config_file_path, ros::package::getPath("kni")
       + "/KNI_4.3.0/configfiles450/katana6M90A_G.cfg");
@@ -71,11 +71,22 @@ Katana::Katana() :
     return;
   }
 
+  for (size_t i = 0; i < NUM_MOTORS; i++)
+  {
+    // These two settings probably only influence KNI functions like moveRobotToEnc(),
+    // openGripper() and so on, and not the spline trajectories. We still set them
+    // just to be sure.
+    kni->setMotorAccelerationLimit(i, KNI_MAX_ACCELERATION);
+    kni->setMotorVelocityLimit(i, KNI_MAX_VELOCITY);
+  }
+
   /* ********* calibrate ********* */
   calibrate();
   ROS_INFO("success: katana calibrated");
 
   refreshEncoders();
+
+  // boost::thread worker_thread(&Katana::test_speed, this);
 }
 
 Katana::~Katana()
@@ -233,7 +244,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
     }
 
     // ------- wait until all motors idle
-    ros::Rate idleWait(100);
+    ros::Rate idleWait(10);
     while (!allJointsReady())
     {
       idleWait.sleep();
@@ -377,13 +388,16 @@ void Katana::freezeRobot()
   kni->freezeRobot();
 }
 
-void Katana::moveGripper(double openingAngle) {
-  if (openingAngle < GRIPPER_CLOSED_ANGLE || GRIPPER_OPEN_ANGLE < openingAngle) {
+void Katana::moveGripper(double openingAngle)
+{
+  if (openingAngle < GRIPPER_CLOSED_ANGLE || GRIPPER_OPEN_ANGLE < openingAngle)
+  {
     ROS_ERROR("Desired opening angle %f is out of range [%f, %f]", openingAngle, GRIPPER_CLOSED_ANGLE, GRIPPER_OPEN_ANGLE);
     return;
   }
 
-  try {
+  try
+  {
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
     kni->moveMotorToEnc(GRIPPER_INDEX, converter->angle_rad2enc(GRIPPER_INDEX, openingAngle), false, 100);
   }
@@ -405,7 +419,6 @@ void Katana::moveGripper(double openingAngle) {
   }
   return;
 }
-
 
 /* ******************************** helper functions ******************************** */
 
@@ -480,6 +493,95 @@ bool Katana::allJointsReady()
   }
 
   return true;
+}
+
+bool Katana::allMotorsReady()
+{
+  for (size_t i = 0; i < NUM_MOTORS; i++)
+  {
+    if ((motor_status_[i] != MSF_DESPOS) && (motor_status_[i] != (MSF_NLINMOV)))
+      return false;
+  }
+
+  return true;
+}
+
+void Katana::test_speed()
+{
+  ros::Rate idleWait(5);
+  std::vector<double> pos1_angles(NUM_MOTORS);
+  std::vector<double> pos2_angles(NUM_MOTORS);
+
+  // these are safe values, i.e., no self-collision is possible
+  pos1_angles[0] = 2.88;
+  pos2_angles[0] = -3.02;
+
+  pos1_angles[1] = 0.15;
+  pos2_angles[1] = 2.16;
+
+  pos1_angles[2] = 1.40;
+  pos2_angles[2] = -2.21;
+
+  pos1_angles[3] = 0.50;
+  pos2_angles[3] = -2.02;
+
+  pos1_angles[4] = 2.86;
+  pos2_angles[4] = -2.98;
+
+  pos1_angles[5] = -0.44;
+  pos2_angles[5] = 0.30;
+
+  while (ros::ok())
+  {
+    for (size_t i = 0; i < NUM_MOTORS; i++)
+    {
+      int pos1_encoders = (int)converter->angle_rad2enc(i, pos1_angles[i]);
+      int pos2_encoders = (int)converter->angle_rad2enc(i, pos2_angles[i]);
+
+      int accel = kni->getMotorAccelerationLimit(i);
+      int max_vel = kni->getMotorVelocityLimit(i);
+
+      ROS_INFO("Motor %zu - acceleration: %d (= %f), max speed: %d (=%f)", i, accel, 2.0 * converter->acc_enc2rad(i, accel), max_vel, converter->vel_enc2rad(i, max_vel));
+      ROS_INFO("KNI encoders: %d, %d", kni->GetBase()->GetMOT()->arr[i].GetEncoderMinPos(), kni->GetBase()->GetMOT()->arr[i].GetEncoderMaxPos());
+      ROS_INFO("moving to encoders: %d, %d", pos1_encoders, pos2_encoders);
+      ROS_INFO("current encoders: %d", kni->getMotorEncoders(i, true));
+
+      ROS_INFO("Moving to min");
+      {
+        boost::recursive_mutex::scoped_lock lock(kni_mutex);
+        kni->moveMotorToEnc(i, pos1_encoders);
+      }
+
+      do
+      {
+        idleWait.sleep();
+        refreshMotorStatus();
+      } while (!allMotorsReady());
+
+      ROS_INFO("Moving to max");
+      {
+        boost::recursive_mutex::scoped_lock lock(kni_mutex);
+        kni->moveMotorToEnc(i, pos2_encoders);
+      }
+
+      do
+      {
+        idleWait.sleep();
+        refreshMotorStatus();
+      } while (!allMotorsReady());
+    }
+  }
+
+  // Result:
+  //  Motor 0 - acceleration: 2 (= -4.908739), max speed: 180 (=-2.208932)
+  //  Motor 1 - acceleration: 2 (= -2.646220), max speed: 180 (=-1.190799)
+  //  Motor 2 - acceleration: 2 (= 5.292440), max speed: 180 (=2.381598)
+  //     --> wrong! the measured values are more like 2.6, 1.2
+  //
+  //  Motor 3 - acceleration: 2 (= -4.908739), max speed: 180 (=-2.208932)
+  //  Motor 4 - acceleration: 2 (= -4.908739), max speed: 180 (=-2.208932)
+  //  Motor 5 - acceleration: 2 (= 1.597410), max speed: 180 (=0.718834)
+  //     (TODO: the gripper duration can be calculated from this)
 }
 
 }

@@ -28,6 +28,7 @@
 #include <ros/ros.h>
 #include <ros/package.h>
 #include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread.hpp>
 
 #include <kniBase.h>
 
@@ -74,6 +75,10 @@ private:
   void refreshMotorStatus();
   bool someMotorCrashed();
   bool allJointsReady();
+  bool allMotorsReady();
+
+  void test_speed();
+
 };
 
 }
