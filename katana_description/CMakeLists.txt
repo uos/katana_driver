@@ -64,13 +64,22 @@ foreach(it ${katana_stl_files})
       #COMMAND ${CMAKE_COMMAND} -E make_directory
       COMMAND mkdir -p
       ARGS ${basepath}/iv)
+  
+    # copy *.stl files to *.stlb so that ivcon recognizes them as binary stl files
+    add_custom_command(
+      OUTPUT ${it}b
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy_if_different ${it} ${it}b
+      DEPENDS )
+
+    set(katana_gen_files ${katana_gen_files} ${it}b)
 
     #create obj files for convex decomposition from stl files
     add_custom_command(
       OUTPUT ${basepath}/convex/${basename}.obj
       COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
-      ARGS ${it} ${basepath}/convex/${basename}.obj
-      DEPENDS ${it} ${basepath}/convex)
+      ARGS ${it}b ${basepath}/convex/${basename}.obj
+      DEPENDS ${it} ${it}b ${basepath}/convex)
 
     set(katana_gen_files ${katana_gen_files} ${basepath}/convex/${basename}.obj)
 
@@ -105,8 +114,8 @@ foreach(it ${katana_stl_files})
     add_custom_command(
       OUTPUT ${basepath}/iv/${basename}.iv
       COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
-      ARGS ${it} ${basepath}/iv/${basename}.iv
-      DEPENDS ${basepath}/iv ${it})
+      ARGS ${it}b ${basepath}/iv/${basename}.iv
+      DEPENDS ${basepath}/iv ${it} ${it}b)
     add_custom_command(
       OUTPUT ${basepath}/convex/${basename}_convex.iv
       COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
@@ -123,5 +132,5 @@ endforeach(it)
 # TODO: add_custom_target(media_files ALL DEPENDS ${pr2urdf} ${pr2robot_expanded} ${prfrobot_expanded} ${prgrobot_expanded} ${pr2prototype1_expanded} ${pr2larm_expanded} ${pr2rarm_expanded} ${pr2lgripper_expanded} ${pr2rgripper_expanded} ${pr2_gen_files} )
 add_custom_target(media_files ALL DEPENDS ${katana_gen_files} )
 
-#TODO; stop bin and lib from being generated
+#TODO: stop bin and lib from being generated
 
