@@ -1,10 +1,21 @@
 service_type: FilterJointTrajectoryWithConstraints
 filter_chain:
-  - 
-    name: unnormalize_trajectory
-    type: UnNormalizeFilterJointTrajectoryWithConstraints
-  -
+## We don't need this filter, because the Katana has no continuous joints.
+#  -
+#    name: unnormalize_trajectory
+#    type: UnNormalizeFilterJointTrajectoryWithConstraints
+   -
     name: cubic_spline_short_cutter_smoother
     type: CubicSplineShortCutterFilterJointTrajectoryWithConstraints
     params: {discretization: 0.30}
-# if discretization is set too high, too many trajectory segments will be generated (the Katana can only process ~16 or so)
+    # If discretization is set too high, too many trajectory segments will be
+    # generated (the Katana can only process ~16 or so).
+    #
+    # Discretization does NOT mean time discretization any more!
+    # Instead, the new meaning of this parameter is that a new trajectory point
+    # is added whenever "max_diff > discretization", where
+    # max_diff = the maximum over all joints of the position difference (in rad)
+    #            between the previous trajectory point and now
+  -
+    name: katana_trajectory_filter
+    type: KatanaTrajectoryFilterFilterJointTrajectory

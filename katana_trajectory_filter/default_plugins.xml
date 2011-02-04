@@ -1,0 +1,24 @@
+<class_libraries>
+  <library path="lib/libkatana_trajectory_filter">
+    <class name="KatanaTrajectoryFilterFilterJointTrajectory" type="katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::FilterJointTrajectory::Request>"
+	    base_class_type="filters::FilterBase<motion_planning_msgs::FilterJointTrajectory::Request>">
+      <description>
+          TODO
+      </description>
+    </class>
+
+    <class name="KatanaTrajectoryFilterJointTrajectoryWithLimits" type="katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::JointTrajectoryWithLimits>"
+	    base_class_type="filters::FilterBase<motion_planning_msgs::JointTrajectoryWithLimits>">
+      <description>
+          TODO
+      </description>
+    </class>
+
+    <class name="KatanaTrajectoryFilterFilterJointTrajectoryWithConstraints" type="katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::FilterJointTrajectoryWithConstraints::Request>"
+	    base_class_type="filters::FilterBase<motion_planning_msgs::FilterJointTrajectoryWithConstraints::Request>">
+      <description>
+          TODO
+      </description>
+    </class>
+  </library>
+</class_libraries>

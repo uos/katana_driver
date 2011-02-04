@@ -1,0 +1,21 @@
+<package>
+  <description brief="katana_trajectory_filter">
+
+     katana_trajectory_filter
+
+  </description>
+  <author>Martin Günther</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_trajectory_filter</url>
+  <depend package="roscpp"/>
+  <depend package="filters"/>
+  <depend package="spline_smoother"/>
+  <depend package="trajectory_msgs"/>
+  <depend package="motion_planning_msgs"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lkatana_trajectory_filter"/>
+    <filters plugin="${prefix}/default_plugins.xml" />
+  </export>
+</package>

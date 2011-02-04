@@ -35,6 +35,7 @@
   <depend package="ompl_search"/>
   <!-- <depend package="chomp_motion_planner"/> -->
 
+  <depend package="katana_trajectory_filter"/>
 </package>
 
 
