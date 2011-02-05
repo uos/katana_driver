@@ -57,6 +57,12 @@ public:
   virtual std::vector<double> getMotorAngles();
   virtual std::vector<double> getMotorVelocities();
 
+  virtual void refreshMotorStatus();
+  virtual bool someMotorCrashed() = 0;
+  virtual bool allJointsReady() = 0;
+  virtual bool allMotorsReady() = 0;
+
+
 protected:
   // only the 5 "real" joints:
   std::vector<std::string> joint_names_;

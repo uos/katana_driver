@@ -112,4 +112,17 @@ void SimulatedKatana::moveGripper(double openingAngle)
   return;
 }
 
+bool SimulatedKatana::someMotorCrashed() {
+  return false;
+}
+
+bool SimulatedKatana::allJointsReady() {
+  return true;
+}
+
+bool SimulatedKatana::allMotorsReady() {
+  return true;
+}
+
+
 }

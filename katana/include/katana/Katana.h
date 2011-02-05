@@ -56,6 +56,11 @@ public:
   virtual void freezeRobot();
   virtual void moveGripper(double openingAngle);
 
+  virtual void refreshMotorStatus();
+  virtual bool someMotorCrashed();
+  virtual bool allJointsReady();
+  virtual bool allMotorsReady();
+
 private:
   boost::shared_ptr<CLMBase> kni;
   CCplSerialCRC* protocol;
@@ -72,10 +77,6 @@ private:
   void calibrate();
 
   short round(const double x);
-  void refreshMotorStatus();
-  bool someMotorCrashed();
-  bool allJointsReady();
-  bool allMotorsReady();
 
   void test_speed();
 

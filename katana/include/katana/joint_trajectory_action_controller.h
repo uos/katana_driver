@@ -67,6 +67,8 @@ private:
   std::vector<double> goal_constraints_;
 //  std::vector<double> trajectory_constraints_;
 
+  bool trajectory_executing_;
+
   // subscriber to "command" topic
   void commandCB(const trajectory_msgs::JointTrajectory::ConstPtr &msg);
   ros::Subscriber sub_command_;

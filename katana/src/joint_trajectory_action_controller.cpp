@@ -34,9 +34,9 @@ namespace katana
 {
 
 JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana) :
-  katana_(katana), action_server_(ros::NodeHandle(), "joint_trajectory_action",
-                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1))
-
+  katana_(katana), trajectory_executing_(false),
+      action_server_(ros::NodeHandle(), "joint_trajectory_action",
+                     boost::bind(&JointTrajectoryActionController::executeCB, this, _1))
 {
   ros::NodeHandle node_;
 
@@ -430,6 +430,19 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     return;
   }
 
+  if (action_server_.isPreemptRequested())
+  {
+    ROS_WARN("New action goal already seems to have been cancelled!");
+    action_server_.setPreempted();
+    return;
+  }
+
+  if (trajectory_executing_)
+  {
+    ROS_WARN("Already executing a trajectory!");
+    // I don't know if this can even happen with the simple action server, but let's make sure...
+  }
+
   // make sure the katana is stopped
   reset_trajectory_and_stop();
 
@@ -441,18 +454,22 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     return;
   }
 
+  trajectory_executing_ = true;
+
   // calculate new trajectory
   boost::shared_ptr<SpecifiedTrajectory> new_traj = calculateTrajectory(goal->trajectory);
   if (!new_traj)
   {
     ROS_ERROR("Could not calculate new trajectory, aborting");
     action_server_.setAborted();
+    trajectory_executing_ = false;
     return;
   }
   if (!validTrajectory(*new_traj))
   {
     ROS_ERROR("Computed trajectory did not fulfill all constraints!");
     action_server_.setAborted();
+    trajectory_executing_ = false;
     return;
   }
   current_trajectory_ = new_traj;
@@ -464,38 +481,70 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   {
     if (action_server_.isPreemptRequested() || !ros::ok())
     {
-      ROS_WARN("Goal canceled by client, aborting");
+      ROS_WARN("Goal canceled by client while waiting until scheduled start, aborting!");
       action_server_.setPreempted();
+      trajectory_executing_ = false;
       return;
     }
     rate.sleep();
   }
 
+  ROS_INFO("Sending trajectory to Katana arm...");
   bool success = katana_->executeTrajectory(new_traj);
   if (!success)
   {
     ROS_ERROR("Problem while transferring trajectory to Katana arm, aborting");
     action_server_.setAborted();
+    trajectory_executing_ = false;
     return;
   }
 
   ROS_INFO("Waiting until goal reached...");
-  // wait until goal reached
-  ros::Rate goalWait(25);
-  while (!goalReached())
+  ros::Rate goalWait(10);
+  while (ros::ok())
   {
-    goalWait.sleep();
-    if (action_server_.isPreemptRequested() || !ros::ok())
+    // always have to call this before calling someMotorCrashed() or allJointsReady()
+    katana_->refreshMotorStatus();
+
+    if (katana_->someMotorCrashed())
     {
-      ROS_WARN("Goal canceled by client, aborting!");
-      action_server_.setPreempted();
+      ROS_ERROR("Some motor has crashed! Aborting trajectory...");
+      action_server_.setAborted();
+      trajectory_executing_ = false;
       return;
     }
-  }
 
-  // that worked out nicely
-  ROS_INFO("Goal reached.");
-  action_server_.setSucceeded();
+    // all joints are idle
+    if (katana_->allJointsReady())
+    {
+      // make sure the joint positions are updated before checking for goalReached()
+      katana_->refreshEncoders();
+
+      if (goalReached())
+      {
+        // joints are idle and we are inside goal constraints. yippie!
+        ROS_INFO("Goal reached.");
+        action_server_.setSucceeded();
+      }
+      else
+      {
+        ROS_ERROR("Joints are idle and motors are not crashed, but we did not reach the goal position! WTF?");
+        action_server_.setAborted();
+      }
+      trajectory_executing_ = false;
+      return;
+    }
+
+    if (action_server_.isPreemptRequested())
+    {
+      ROS_WARN("Goal canceled by client while waiting for trajectory to finish, aborting!");
+      action_server_.setPreempted();
+      trajectory_executing_ = false;
+      return;
+    }
+
+    goalWait.sleep();
+  }
 }
 
 /**

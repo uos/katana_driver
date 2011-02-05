@@ -420,6 +420,39 @@ void Katana::moveGripper(double openingAngle)
   return;
 }
 
+bool Katana::someMotorCrashed()
+{
+  for (size_t i = 0; i < NUM_MOTORS; i++)
+  {
+    if (motor_status_[i] == MSF_MOTCRASHED)
+      return true;
+  }
+
+  return false;
+}
+
+bool Katana::allJointsReady()
+{
+  for (size_t i = 0; i < NUM_JOINTS; i++)
+  {
+    if ((motor_status_[i] != MSF_DESPOS) && (motor_status_[i] != (MSF_NLINMOV)))
+      return false;
+  }
+
+  return true;
+}
+
+bool Katana::allMotorsReady()
+{
+  for (size_t i = 0; i < NUM_MOTORS; i++)
+  {
+    if ((motor_status_[i] != MSF_DESPOS) && (motor_status_[i] != (MSF_NLINMOV)))
+      return false;
+  }
+
+  return true;
+}
+
 /* ******************************** helper functions ******************************** */
 
 /**
@@ -471,39 +504,6 @@ void Katana::calibrate()
     kni->calibrate();
     kni->enableCrashLimits();
   }
-}
-
-bool Katana::someMotorCrashed()
-{
-  for (size_t i = 0; i < NUM_MOTORS; i++)
-  {
-    if (motor_status_[i] == MSF_MOTCRASHED)
-      return true;
-  }
-
-  return false;
-}
-
-bool Katana::allJointsReady()
-{
-  for (size_t i = 0; i < NUM_JOINTS; i++)
-  {
-    if ((motor_status_[i] != MSF_DESPOS) && (motor_status_[i] != (MSF_NLINMOV)))
-      return false;
-  }
-
-  return true;
-}
-
-bool Katana::allMotorsReady()
-{
-  for (size_t i = 0; i < NUM_MOTORS; i++)
-  {
-    if ((motor_status_[i] != MSF_DESPOS) && (motor_status_[i] != (MSF_NLINMOV)))
-      return false;
-  }
-
-  return true;
 }
 
 void Katana::test_speed()

@@ -41,6 +41,10 @@ public:
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
   virtual void moveGripper(double openingAngle);
 
+  virtual bool someMotorCrashed();
+  virtual bool allJointsReady();
+  virtual bool allMotorsReady();
+
 private:
   boost::shared_ptr<SpecifiedTrajectory> current_trajectory_;
 };
