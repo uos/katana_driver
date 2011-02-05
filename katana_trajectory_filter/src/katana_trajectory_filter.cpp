@@ -93,32 +93,53 @@ template<typename T>
                                                            const size_t num_points_delete) const
   {
     size_t num_points = trajectory_in.trajectory.points.size();
-    std::vector<std::pair<size_t, double> > segment_durations(num_points - 2);
+    std::vector<std::pair<size_t, double> > segment_durations(num_points - 1);
 
-    // calculate segment_durations, leave out the first and last point to keep them intact
-    for (size_t i = 1; i < num_points - 1; ++i)
+    // calculate segment_durations
+    for (size_t i = 0; i < num_points - 1; ++i)
     {
       double duration = (trajectory_in.trajectory.points[i + 1].time_from_start
           - trajectory_in.trajectory.points[i].time_from_start).toSec();
 
-      segment_durations[i - 1] = std::pair<size_t, double>(i, duration);
+      segment_durations[i] = std::pair<size_t, double>(i, duration);
     }
 
     for (size_t i = 0; i < segment_durations.size(); i++)
       ROS_DEBUG("segment_durations[%3zu] = <%3zu, %f>", i, segment_durations[i].first, segment_durations[i].second);
 
     // sort segment_durations by their duration, in ascending order
-    std::sort(segment_durations.begin(), segment_durations.end(), boost::bind(&std::pair<size_t, double>::second, _1)
+    std::vector<std::pair<size_t, double> > sorted_segment_durations = segment_durations;
+    std::sort(sorted_segment_durations.begin(), sorted_segment_durations.end(), boost::bind(&std::pair<size_t, double>::second, _1)
         < boost::bind(&std::pair<size_t, double>::second, _2));
 
-    for (size_t i = 0; i < segment_durations.size(); i++)
-      ROS_DEBUG("segment_durations[%3zu] = <%3zu, %f>", i, segment_durations[i].first, segment_durations[i].second);
+    for (size_t i = 0; i < sorted_segment_durations.size(); i++)
+      ROS_DEBUG("sorted_segment_durations[%3zu] = <%3zu, %f>", i, sorted_segment_durations[i].first, sorted_segment_durations[i].second);
 
     // delete the smallest segments
     std::set<size_t> delete_set;
     for (size_t i = 0; i < num_points_delete; i++)
     {
-      delete_set.insert(segment_durations[i].first);
+      size_t point_to_delete = sorted_segment_durations[i].first;
+      if (point_to_delete == 0)
+      {
+        // first segment too small --> merge right
+        point_to_delete = 1;
+      }
+      else if (point_to_delete == num_points - 1)
+      {
+        // last segment too small --> merge left (default)
+      }
+      else
+      {
+        // some segment in the middle too small --> merge towards smaller segment
+        if (segment_durations[point_to_delete - 1] > segment_durations[point_to_delete + 1])
+          point_to_delete++;
+
+        // note: this can lead to a situation where less than num_points_delete are actually deleted,
+        // but we don't care
+      }
+
+      delete_set.insert(point_to_delete);
     }
 
     for (std::set<size_t>::iterator it = delete_set.begin(); it != delete_set.end(); it++)
