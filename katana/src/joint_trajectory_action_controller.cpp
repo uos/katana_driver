@@ -184,6 +184,7 @@ void JointTrajectoryActionController::update()
  */
 void JointTrajectoryActionController::commandCB(const trajectory_msgs::JointTrajectory::ConstPtr &msg)
 {
+  ROS_WARN("commandCB() called, this is not tested yet");
   // just creates an action from the message and sends it on to the action server
 
   // create an action client spinning its own thread
@@ -356,6 +357,8 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
 bool JointTrajectoryActionController::queryStateService(pr2_controllers_msgs::QueryTrajectoryState::Request &req,
                                                         pr2_controllers_msgs::QueryTrajectoryState::Response &resp)
 {
+  ROS_WARN("queryStateService() called, this is not tested yet");
+
   boost::shared_ptr<const SpecifiedTrajectory> traj_ptr;
   traj_ptr = current_trajectory_;
   if (!traj_ptr)
