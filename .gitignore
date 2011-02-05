@@ -3,5 +3,6 @@
 .pydevproject
 build/
 bin/
+lib/
 cmake_install.cmake
 
