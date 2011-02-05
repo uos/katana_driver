@@ -30,6 +30,16 @@ namespace katana_trajectory_filter
 /// the maximum number of points that the output trajectory should have
 static const size_t MAX_NUM_POINTS = 16;
 
+/**
+ *  How many points to delete at once?
+ *
+ *  The two extreme cases are:
+ *   - DELETE_CHUNK_SIZE = 1:   each point will be deleted separately, then
+ *                              the durations will be recomputed (most accurate)
+ *   - DELETE_CHUNK_SIZE = INF: all points will be deleted at once (fastest)
+ */
+static const size_t DELETE_CHUNK_SIZE = 10;
+
 template<typename T>
   KatanaTrajectoryFilter<T>::KatanaTrajectoryFilter()
   {
@@ -43,7 +53,6 @@ template<typename T>
 template<typename T>
   bool KatanaTrajectoryFilter<T>::smooth(const T& trajectory_in, T& trajectory_out) const
   {
-    bool success = true;
     size_t num_points = trajectory_in.trajectory.points.size();
     trajectory_out = trajectory_in;
 
@@ -54,9 +63,39 @@ template<typename T>
       // nothing to do
       return true;
 
+    while (true)
+    {
+      const T trajectory_mid = trajectory_out;
+
+      size_t num_points_delete = num_points - MAX_NUM_POINTS;
+
+      if (num_points_delete > DELETE_CHUNK_SIZE)
+        num_points_delete = DELETE_CHUNK_SIZE;
+      else if (num_points_delete <= 0)
+        break;
+
+      remove_smallest_segments(trajectory_mid, trajectory_out, num_points_delete);
+      num_points = trajectory_out.trajectory.points.size();
+    }
+
+    // delete all velocities and accelerations so they will be re-computed by Katana
+    for (size_t i = 0; i < trajectory_out.trajectory.points.size(); ++i)
+    {
+      trajectory_out.trajectory.points[i].velocities.resize(0);
+      trajectory_out.trajectory.points[i].accelerations.resize(0);
+    }
+
+    return true;
+  }
+
+template<typename T>
+  void KatanaTrajectoryFilter<T>::remove_smallest_segments(const T& trajectory_in, T& trajectory_out,
+                                                           const size_t num_points_delete) const
+  {
+    size_t num_points = trajectory_in.trajectory.points.size();
     std::vector<std::pair<size_t, double> > segment_durations(num_points - 2);
 
-    // calculate segment_durations, leave out the first segment to keep it intact
+    // calculate segment_durations, leave out the first and last point to keep them intact
     for (size_t i = 1; i < num_points - 1; ++i)
     {
       double duration = (trajectory_in.trajectory.points[i + 1].time_from_start
@@ -75,9 +114,9 @@ template<typename T>
     for (size_t i = 0; i < segment_durations.size(); i++)
       ROS_DEBUG("segment_durations[%3zu] = <%3zu, %f>", i, segment_durations[i].first, segment_durations[i].second);
 
-    // delete the smallest segments until only MAX_NUM_POINTS remain
+    // delete the smallest segments
     std::set<size_t> delete_set;
-    for (size_t i = 0; i < num_points - MAX_NUM_POINTS; i++)
+    for (size_t i = 0; i < num_points_delete; i++)
     {
       delete_set.insert(segment_durations[i].first);
     }
@@ -94,15 +133,6 @@ template<typename T>
         trajectory_out.trajectory.points.push_back(trajectory_in.trajectory.points[i]);
       }
     }
-
-    // delete all velocities and accelerations so they will be re-computed by Katana
-    for (size_t i = 0; i < trajectory_out.trajectory.points.size(); ++i)
-    {
-      trajectory_out.trajectory.points[i].velocities.resize(0);
-      trajectory_out.trajectory.points[i].accelerations.resize(0);
-    }
-
-    return success;
   }
 
 } // namespace katana_trajectory_filter

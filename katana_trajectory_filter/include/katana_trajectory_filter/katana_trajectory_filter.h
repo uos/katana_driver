@@ -45,18 +45,21 @@ namespace katana_trajectory_filter
 {
 
 /**
- * \brief Generates velocities at waypoints by finite differencing. Accelerations are set to zero.
+ * \brief Removes the smallest segments until only MAX_NUM_POINTS remain (currently 16).
  */
-template <typename T>
-class KatanaTrajectoryFilter: public spline_smoother::SplineSmoother<T>
-{
-public:
-  KatanaTrajectoryFilter();
-  virtual ~KatanaTrajectoryFilter();
+template<typename T>
+  class KatanaTrajectoryFilter : public spline_smoother::SplineSmoother<T>
+  {
+  public:
+    KatanaTrajectoryFilter();
+    virtual ~KatanaTrajectoryFilter();
 
-  virtual bool smooth(const T& trajectory_in,
-                      T& trajectory_out) const;
-};
+    virtual bool smooth(const T& trajectory_in, T& trajectory_out) const;
+
+  private:
+    void remove_smallest_segments(const T& trajectory_in, T& trajectory_out, const size_t num_points_delete) const;
+
+  };
 
 }
 
