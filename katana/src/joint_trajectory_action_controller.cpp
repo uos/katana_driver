@@ -600,6 +600,7 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
   const double MAX_SPEED = 4.0; // rad/s; TODO: should be same value as URDF
   const double MIN_TIME = 0.01; // seconds; the KNI calculates time in 10ms units, so this is the minimum duration of a spline
   const double EPSILON = 0.0001;
+  const double POSITION_TOLERANCE = 0.1; // rad
 
   if (traj.size() > MOVE_BUFFER_SIZE)
     ROS_WARN("new trajectory has %zu segments (move buffer size: %zu)", traj.size(), MOVE_BUFFER_SIZE);
@@ -619,6 +620,16 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
     {
       ROS_WARN("duration of segment %zu is too small: %f", seg, traj[seg].duration);
       // return false;
+    }
+  }
+
+  // ------- check start position
+  for (size_t j = 0; j < traj[0].splines.size(); j++)
+  {
+    if (std::abs(traj[0].splines[j].coef[0] - katana_->getMotorAngles()[j]) > POSITION_TOLERANCE)
+    {
+      ROS_ERROR("Initial joint angle of trajectory (%f) does not match current joint angle (%f) (joint %zu)", traj[0].splines[j].coef[0], katana_->getMotorAngles()[j], j);
+      return false;
     }
   }
 
