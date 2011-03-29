@@ -96,6 +96,7 @@ private:
   bool validTrajectory(const SpecifiedTrajectory &traj);
 
   bool goalReached();
+  bool allJointsStopped();
 };
 }
 
