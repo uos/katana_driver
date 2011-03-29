@@ -16,6 +16,6 @@ filter_chain:
     # is added whenever "max_diff > discretization", where
     # max_diff = the maximum over all joints of the position difference (in rad)
     #            between the previous trajectory point and now
-  -
+   -
     name: katana_trajectory_filter
     type: KatanaTrajectoryFilterFilterJointTrajectory
