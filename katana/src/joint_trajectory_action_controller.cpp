@@ -515,7 +515,7 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     }
 
     // all joints are idle
-    if (katana_->allJointsReady())
+    if (katana_->allJointsReady() && allJointsStopped())
     {
       // make sure the joint positions are updated before checking for goalReached()
       katana_->refreshEncoders();
@@ -557,7 +557,17 @@ bool JointTrajectoryActionController::goalReached()
     double error = current_trajectory_->back().splines[i].target_position - katana_->getMotorAngles()[i];
     if (goal_constraints_[i] > 0 && fabs(error) > goal_constraints_[i])
       return false;
+  }
+  return true;
+}
 
+/**
+ * Checks that all joint velocities are zero.
+ */
+bool JointTrajectoryActionController::allJointsStopped()
+{
+  for (size_t i = 0; i < joints_.size(); i++)
+  {
     // It's important to be stopped if that's desired.
     if (fabs(katana_->getMotorVelocities()[i]) > stopped_velocity_tolerance_)
       return false;
