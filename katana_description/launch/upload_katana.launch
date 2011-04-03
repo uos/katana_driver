@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <!-- send katana urdf to param server -->
   <param name="robot_description" command="$(find xacro)/xacro.py '$(find katana_description)/urdf/katana.urdf.xacro'" />

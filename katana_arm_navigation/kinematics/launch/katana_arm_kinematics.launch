@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <include file="$(find katana)/launch/katana_arm_kinematics.launch" />
 

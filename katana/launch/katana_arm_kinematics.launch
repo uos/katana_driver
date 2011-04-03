@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
  <!-- katana arm kinematics node -->
   <node pkg="katana" type="katana_arm_kinematics" name="katana_arm_kinematics" output="screen">

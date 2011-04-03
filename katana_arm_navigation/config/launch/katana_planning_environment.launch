@@ -1,4 +1,4 @@
-
+<?xml version="1.0"?>
 <launch> 
 	<!-- send parameters for collision checking for Katana; this includes parameters for the self filter -->
 	<rosparam command="load" ns="robot_description_collision" file="$(find katana_arm_navigation)/config/config/collision_checks.yaml" />

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <node pkg="collision_map" type="collision_map_self_occ_node" name="collision_map_self_occ_node" respawn="true" output="screen">
     <rosparam command="load" file="$(find katana_arm_navigation)/perception/config/self_filter.yaml" />
