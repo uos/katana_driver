@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <!-- Provides forward and inverse kinematics using the generic arm_kinematics
      package from urdf_tools. This is the easiest way to provide FK and IK,
      but it is rather slow. Two alternatives could be implemented:

@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <!-- send planning environment parameters -->
   <include file="$(find katana_arm_navigation)/config/launch/katana_planning_environment.launch" />

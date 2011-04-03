@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <node pkg="move_arm" type="move_arm_simple_action" output="screen" name="move_arm">    
 

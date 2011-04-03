@@ -1,3 +1,4 @@
+<?xml version="1.0"?>
 <launch>
   <node pkg="planning_environment" type="environment_server" output="screen" name="environment_server">      
     <remap from="collision_map" to="collision_map_occ" />
