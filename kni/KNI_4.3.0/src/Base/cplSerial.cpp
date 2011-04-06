@@ -110,13 +110,14 @@ void CCplSerialCRC::comm(const byte* pack, byte* buf, byte* size) {
 
 
 		try {
-                        if (pack[0] != 'N') {
-                          // N = Get all axis's positions at once
-                          printf("KNI >>> %c", pack[0]);
-                          for (size_t i = 1; i < cmd[pack[0]].send_sz; i++)
-                            printf(" %d", pack[i]);
-                          printf("\n");
-                        }
+			// uncomment to get debug output:
+			// if (pack[0] != 'N') {
+			//	// N = Get all axis's positions at once
+			//	printf("KNI >>> %c", pack[0]);
+			//	for (size_t i = 1; i < cmd[pack[0]].send_sz; i++)
+			//	printf(" %d", pack[i]);
+			//	printf("\n");
+			// }
 			send(send_buf, bufsz, NUMBER_OF_RETRIES_SEND); // pass exceptions from this since already retried
 		}
 		catch(...){
@@ -126,14 +127,14 @@ void CCplSerialCRC::comm(const byte* pack, byte* buf, byte* size) {
 		try {
 			recv(read_buf,read_sz,size);
 
-			if (read_buf[0] != 'n')
-			{
-	                        printf("KNI <<< %c", read_buf[0]);
-	                        for (size_t i = 1; i < *size; i++)
-	                          printf(" %d", read_buf[i]);
-	                        printf("\n");
-			}
-			//For  comm DEBUG only: std::cout << "receive OK\n";
+			// uncomment to get debug output:
+			// if (read_buf[0] != 'n')
+			// {
+			// 	printf("KNI <<< %c", read_buf[0]);
+			// 	for (size_t i = 1; i < *size; i++)
+			// 	printf(" %d", read_buf[i]);
+			// 	printf("\n");
+			// }
 			memcpy(buf,read_buf,*size); // copy read_buf to _buf
 		} catch ( ReadNotCompleteException & ) {
 			if(tries_recv < NUMBER_OF_RETRIES_RECV) {
