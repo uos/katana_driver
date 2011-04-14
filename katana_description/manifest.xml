@@ -1,7 +1,7 @@
 <package>
-  <description brief="katana_description">
+  <description brief="URDF description of the Katana arm">
 
-     katana_description
+     This package contains an URDF description of the Katana arm and all supporting mesh files.
 
   </description>
   <author>Martin Günther</author>

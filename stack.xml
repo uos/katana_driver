@@ -1,9 +1,14 @@
 <stack>
-  <description brief="katana_driver">katana_driver</description>
+  <description brief="Drivers and arm navigation for Neuronics Katana 450 robot arm">
+
+    This stack contains hardware drivers for the
+    <a href="http://neuronics.ch/cms_en/web/index.php?lid=54">Neuronics Katana 450 robot arm</a>,
+    along with a port of the arm navigation pipeline.
+
+  </description>
   <author>Maintained by Martin Günther</author>
   <license>BSD</license>  
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana_driver</url>
   <depend stack="ros" />
-
 </stack>

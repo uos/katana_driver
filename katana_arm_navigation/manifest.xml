@@ -1,7 +1,15 @@
 <package>
   <description brief="katana_arm_navigation">
 
-     katana_arm_navigation
+     <p>
+     This package contains the launch files for arm navigation with the Katana robot arm.
+     It is modeled after the <a href="/wiki/pr2_arm_navigation">pr2_arm_navigation</a>
+     stack. All packages inside that stack are represented as subdirectories here.
+     </p>
+
+     <p>
+     The complete arm navigation pipeline can be launched via the katana_arm_navigation.launch file.
+     </p>
 
   </description>
   <author>Martin Günther</author>
