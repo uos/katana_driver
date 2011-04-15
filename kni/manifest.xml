@@ -8,7 +8,7 @@
      package should be used for communication with the Katana arm.
 
   </description>
-  <author>Martin Günther</author>
+  <author>Neuronics AG (see AUTHORS.txt); ROS wrapper by Martin Günther</author>
   <license>GPL</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/kni</url>
