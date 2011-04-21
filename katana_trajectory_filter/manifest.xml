@@ -1,7 +1,25 @@
 <package>
-  <description brief="katana_trajectory_filter">
+  <description brief="Filters a trajectory to have at most 16 segments">
 
-     katana_trajectory_filter
+     <p>
+     This filter removes the smallest segments from a trajectory until at most
+     MAX_NUM_POINTS (currently 16) are left. The reason for doing this is that
+     the Katana arm only supports trajectories with at most MAX_NUM_POINTS.
+     </p>
+
+     <p>
+     All desired velocities and accelerations are removed from the trajectory.
+     This works if this filter is used in conjunction with the
+     JointTrajectoryActionController from the <a href="/wiki/katana">katana</a>
+     package, because it recomputes splines for velocities and accelerations
+     anyway. It would not work with PR2's JointTrajectoryActionController,
+     which only computes linear segments if the velocities are missing.
+     </p>
+
+     <p>
+     Also, this filter does not check if the resulting trajectory is collision-free,
+     although it should.
+     </p>
 
   </description>
   <author>Martin Günther</author>

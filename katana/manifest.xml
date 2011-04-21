@@ -1,9 +1,15 @@
 <package>
-  <description brief="katana">
+  <description brief="Driver for the Neuronics Katana 450 arm">
 
-    katana
+    <p>
+    This package provides ROS interfaces to the the Neuronics Katana 450 arm.
+    It wraps the <a href="/wiki/kni">KNI</a> library for low-level communication
+    with the Katana arm.
+    </p>
 
-    GPL license due to KNI library
+    <p>
+    GPL license due to the KNI library.
+    </p>
 
   </description>
   <author>Martin Günther</author>
