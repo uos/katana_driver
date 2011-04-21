@@ -33,9 +33,12 @@ const size_t NUM_MOTORS = 6;
 /// The number of joints in the katana (= only the 5 "real" joints)
 const size_t NUM_JOINTS = NUM_MOTORS - 1;
 
+// The number of gripper_joints in the katana (= the two gripper finger joints)
+
+const size_t NUM_GRIPPER_JOINTS = NUM_MOTORS + 1 - NUM_JOINTS;
+
 /// The motor index of the gripper (used in all vectors -- e.g., motor_angles_)
 const size_t GRIPPER_INDEX = NUM_MOTORS - 1;
-
 
 /// Constants for gripper fully open or fully closed (should be equal to the value in the urdf description)
 static const double GRIPPER_OPEN_ANGLE = 0.30;

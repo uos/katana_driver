@@ -20,7 +20,7 @@
  *
  *  Created on: 06.12.2010
  *      Author: Martin Günther <mguenthe@uos.de>
- *
+ *      Co-Author: Henning Deeken <hdeeken@uos.de>
  */
 
 #include "katana/Katana.h"
@@ -48,6 +48,7 @@ Katana::Katana() :
   try
   {
     /* ********* open device: a network transport is opened in this case ********* */
+    ROS_INFO("trying to connect to katana...");
     char* nonconst_ip = strdup(ip.c_str());
     device = new CCdlSocket(nonconst_ip, port);
     free(nonconst_ip);
@@ -64,6 +65,11 @@ Katana::Katana() :
     kni.reset(new CLMBase());
     kni->create(config_file_path.c_str(), protocol);
     ROS_INFO("success: katana initialized");
+
+    for(unsigned int i = 0; i < motor_limits_.size();i++){
+      ROS_INFO("%s", motor_limits_[i].joint_name.c_str());
+    }
+
   }
   catch (Exception &e)
   {
@@ -87,6 +93,7 @@ Katana::Katana() :
   refreshEncoders();
 
   // boost::thread worker_thread(&Katana::test_speed, this);
+
 }
 
 Katana::~Katana()
@@ -247,6 +254,7 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
     ros::Rate idleWait(10);
     while (!allJointsReady())
     {
+      // TODO: we should check here that no motor has crashed to prevent getting stuck here
       idleWait.sleep();
       refreshMotorStatus();
     }
@@ -287,7 +295,9 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
     // ------- start trajectory
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
 
-    // fix start times
+    // fix start times: set the trajectory start time to now(); since traj is a shared pointer,
+    // this fixes the current_trajectory_ in joint_trajectory_action_controller, which synchronizes
+    // the "state" publishing to the actual start time (more or less)
     double delay = ros::Time::now().toSec() - traj->at(0).start_time;
     for (size_t i = 0; i < traj->size(); i++)
     {
@@ -388,36 +398,39 @@ void Katana::freezeRobot()
   kni->freezeRobot();
 }
 
-void Katana::moveGripper(double openingAngle)
-{
-  if (openingAngle < GRIPPER_CLOSED_ANGLE || GRIPPER_OPEN_ANGLE < openingAngle)
+void Katana::moveJoint(int motorIndex, double desiredAngle){
+
+  if (desiredAngle < motor_limits_[motorIndex].min_position || motor_limits_[motorIndex].max_position < desiredAngle)
   {
-    ROS_ERROR("Desired opening angle %f is out of range [%f, %f]", openingAngle, GRIPPER_CLOSED_ANGLE, GRIPPER_OPEN_ANGLE);
+    ROS_ERROR("Desired angle %f is out of range [%f, %f]", desiredAngle, motor_limits_[motorIndex].min_position, motor_limits_[motorIndex].max_position);
     return;
   }
 
   try
   {
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
-    kni->moveMotorToEnc(GRIPPER_INDEX, converter->angle_rad2enc(GRIPPER_INDEX, openingAngle), false, 100);
+    kni->moveMotorToEnc(motorIndex, converter->angle_rad2enc(motorIndex, desiredAngle), false, 100);
   }
   catch (WrongCRCException e)
   {
-    ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in moveGripper(): %s)", e.message().c_str());
+    ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in moveJoint(): %s)", e.message().c_str());
   }
   catch (ReadNotCompleteException e)
   {
-    ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in moveGripper(): %s)", e.message().c_str());
+    ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in moveJoint(): %s)", e.message().c_str());
   }
   catch (Exception e)
   {
-    ROS_ERROR("Unhandled exception in moveGripper(): %s", e.message().c_str());
+    ROS_ERROR("Unhandled exception in moveJoint(): %s", e.message().c_str());
   }
   catch (...)
   {
-    ROS_ERROR("Unhandled exception in moveGripper()");
+    ROS_ERROR("Unhandled exception in moveJoint()");
   }
   return;
+
+
+
 }
 
 bool Katana::someMotorCrashed()

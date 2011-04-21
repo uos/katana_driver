@@ -1,0 +1,13 @@
+(defpackage katana-msg
+  (:use cl
+        roslisp-msg-protocol)
+  (:export
+   "<JOINTMOVEMENTGOAL>"
+   "<JOINTMOVEMENTACTION>"
+   "<JOINTMOVEMENTRESULT>"
+   "<JOINTMOVEMENTACTIONGOAL>"
+   "<JOINTMOVEMENTFEEDBACK>"
+   "<JOINTMOVEMENTACTIONRESULT>"
+   "<JOINTMOVEMENTACTIONFEEDBACK>"
+  ))
+

@@ -1,0 +1,20 @@
+<package>
+  <description brief="katana_teleop">
+
+     katana_teleop
+
+  </description>
+  <author>hdeeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_teleop</url>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="rospy"/>
+  <depend package="joy"/>
+  <depend package="roscpp"/>
+  <depend package="katana"/>
+
+</package>
+
+

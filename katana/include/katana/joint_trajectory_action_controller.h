@@ -46,8 +46,9 @@ namespace katana
 
 class JointTrajectoryActionController
 {
-  typedef actionlib::SimpleActionServer<pr2_controllers_msgs::JointTrajectoryAction> JTAS;
-  typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> JTAC;
+
+typedef actionlib::SimpleActionServer<pr2_controllers_msgs::JointTrajectoryAction> JTAS;
+typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> JTAC;
 
 public:
   JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana);
@@ -65,7 +66,7 @@ private:
 //  double goal_time_constraint_;
   double stopped_velocity_tolerance_;
   std::vector<double> goal_constraints_;
-//  std::vector<double> trajectory_constraints_;
+
 
   bool trajectory_executing_;
 

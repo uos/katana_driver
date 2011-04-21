@@ -6,7 +6,10 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ *std::vector<double> AbstractKatana::getMotorVelocities()
+{
+  return motor_velocities_;
+}
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -29,16 +32,33 @@ namespace katana
 
 AbstractKatana::AbstractKatana()
 {
-  // names and types: only the 5 "real" joints
+  // names and types for the 5 "real" joints
   joint_names_.resize(NUM_JOINTS);
   joint_types_.resize(NUM_JOINTS);
 
-  // angles and velocities: the 5 "real" joints + gripper
+  // names and types for the 2 "finger" joints
+
+  gripper_joint_names_.resize(NUM_GRIPPER_JOINTS);
+  gripper_joint_types_.resize(NUM_GRIPPER_JOINTS);
+
+  // angles and velocities and limits: the 5 "real" joints + gripper
   motor_angles_.resize(NUM_MOTORS);
   motor_velocities_.resize(NUM_MOTORS);
+  motor_limits_.resize(NUM_MOTORS);
 
   /* ********* get parameters ********* */
   ros::NodeHandle pn("~");
+  ros::NodeHandle n;
+
+  std::string robot_desc_string;
+
+  if (!n.getParam("robot_description", robot_desc_string)) {
+      ROS_FATAL("Couldn't get a robot_description from the param server");
+      return;
+  }
+
+  urdf::Model model;
+  model.initString(robot_desc_string);
 
   XmlRpc::XmlRpcValue joint_names;
 
@@ -66,6 +86,44 @@ AbstractKatana::AbstractKatana()
 
     joint_names_[i] = (std::string)name_value;
     joint_types_[i] = urdf::Joint::REVOLUTE; // all of our joints are of type revolute
+
+    motor_limits_[i].joint_name = (std::string)name_value;
+    motor_limits_[i].min_position = model.getJoint(joint_names_[i])->limits->lower;
+    motor_limits_[i].max_position = model.getJoint(joint_names_[i])->limits->upper;
+  }
+
+  // TODO: repeat for gripper_joints (gripper joint names)
+
+  XmlRpc::XmlRpcValue gripper_joint_names;
+
+  // Gets all of the joints
+  if (!pn.getParam("gripper_joints", gripper_joint_names))
+  {
+    ROS_ERROR("No gripper_joints given. (namespace: %s)", pn.getNamespace().c_str());
+  }
+  if (gripper_joint_names.getType() != XmlRpc::XmlRpcValue::TypeArray)
+  {
+    ROS_ERROR("Malformed gripper_joint specification.  (namespace: %s)", pn.getNamespace().c_str());
+  }
+  if (gripper_joint_names.size() != (size_t)NUM_GRIPPER_JOINTS)
+  {
+    ROS_ERROR("Wrong number of gripper_joints! was: %zu, expected: %zu", gripper_joint_names.size(), NUM_GRIPPER_JOINTS);
+  }
+  for (size_t i = 0; i < NUM_GRIPPER_JOINTS; ++i)
+  {
+    XmlRpc::XmlRpcValue &name_value = gripper_joint_names[i];
+    if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
+    {
+      ROS_ERROR("Array of gripper joint names should contain all strings.  (namespace: %s)",
+          pn.getNamespace().c_str());
+    }
+
+    gripper_joint_names_[i] = (std::string)name_value;
+    gripper_joint_types_[i] = urdf::Joint::REVOLUTE; // all of our joints are of type revolute
+
+    motor_limits_[i].joint_name = (std::string)name_value;
+    motor_limits_[i].min_position = model.getJoint(gripper_joint_names_[i])->limits->lower;
+    motor_limits_[i].max_position = model.getJoint(gripper_joint_names_[i])->limits->upper;
   }
 }
 
@@ -93,6 +151,12 @@ int AbstractKatana::getJointIndex(std::string joint_name)
       return i;
   }
 
+  for(int i =0; i< (int) gripper_joint_names_.size(); i++)
+  {
+    if(gripper_joint_names_[i] == joint_name)
+      return joint_names_.size();
+  }
+
   ROS_ERROR("Joint not found: %s.", joint_name.c_str());
   return -1;
 }
@@ -107,6 +171,16 @@ std::vector<int> AbstractKatana::getJointTypes()
   return joint_types_;
 }
 
+std::vector<std::string> AbstractKatana::getGripperJointNames()
+{
+  return gripper_joint_names_;
+}
+
+std::vector<int> AbstractKatana::getGripperJointTypes()
+{
+  return gripper_joint_types_;
+}
+
 std::vector<double> AbstractKatana::getMotorAngles()
 {
   return motor_angles_;
@@ -116,5 +190,41 @@ std::vector<double> AbstractKatana::getMotorVelocities()
 {
   return motor_velocities_;
 }
+
+std::vector<motion_planning_msgs::JointLimits> AbstractKatana::getMotorLimits()
+{
+  return motor_limits_;
+}
+
+double AbstractKatana::getMotorLimitMax(std::string joint_name){
+
+  for(size_t i = 0; i < motor_limits_.size(); i++){
+
+    if(motor_limits_[i].joint_name == joint_name){
+
+      return motor_limits_[i].max_position;
+
+    }
+  }
+
+  return -1;
+}
+
+double AbstractKatana::getMotorLimitMin(std::string joint_name){
+
+  for(size_t i = 0; i < motor_limits_.size(); i++){
+
+    if(motor_limits_[i].joint_name == joint_name){
+
+      return motor_limits_[i].min_position;
+
+    }
+  }
+
+  return -1;
+}
+
+
+
 
 }

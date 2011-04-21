@@ -40,7 +40,7 @@ class JointStatePublisher
 public:
   JointStatePublisher(boost::shared_ptr<AbstractKatana>);
   virtual ~JointStatePublisher();
-  void loopOnce();
+  void update();
 
 private:
   boost::shared_ptr<AbstractKatana> katana;

@@ -4,4 +4,6 @@ joints:
   - katana_motor3_lift_joint
   - katana_motor4_lift_joint
   - katana_motor5_wrist_roll_joint
-
+gripper_joints:
+  - katana_r_finger_joint
+  - katana_l_finger_joint

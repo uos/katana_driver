@@ -66,10 +66,8 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
         return;
       }
 
-      // well, we don't really use the grasp_posture.position value here, we just instruct
-      // the gripper to close all the way...
-      // that might change in the future and we might do something more interesting
-      katana_->moveGripper(GRIPPER_CLOSED_ANGLE);
+      katana_->moveJoint(GRIPPER_INDEX,GRIPPER_CLOSED_ANGLE);
+
       last_command_was_close_ = true;
       break;
 
@@ -81,15 +79,18 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
         return;
       }
 
-      // well, we don't really use the grasp_posture.position value here, we just instruct
-      // the gripper to open  all the way...
-      // that might change in the future and we might do something more interesting
-      katana_->moveGripper(GRIPPER_OPEN_ANGLE);
+      for(unsigned int i = 0 ; i <  goal->grasp.pre_grasp_posture.position.size(); i++){
+
+              katana_->moveJoint(katana_->jointNameToIndex(goal->grasp.pre_grasp_posture.name[i]),goal->grasp.grasp_posture.position[i]);
+
+      }
+
       last_command_was_close_ = false;
       break;
 
     case object_manipulation_msgs::GraspHandPostureExecutionGoal::RELEASE:
-      katana_->moveGripper(GRIPPER_OPEN_ANGLE);
+
+      katana_->moveJoint(GRIPPER_INDEX,GRIPPER_OPEN_ANGLE);
       last_command_was_close_ = false;
       break;
 
