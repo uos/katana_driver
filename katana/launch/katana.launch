@@ -6,10 +6,11 @@
   <!-- robot state publisher -->
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" />
 
+  <!-- which joints does this katana instance control? -->
+  <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
+  
   <!-- katana node -->
   <node pkg="katana" type="katana" name="katana" output="screen">
-    <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
-
     <!-- for katana_gripper_grasp_controller -->
     <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
     <remap from="grasp_query_name" to="/gripper_grasp_status" />
