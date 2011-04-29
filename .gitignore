@@ -5,4 +5,4 @@ build/
 bin/
 lib/
 cmake_install.cmake
-
+msg_gen/
