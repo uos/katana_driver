@@ -81,7 +81,7 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
 
       for(unsigned int i = 0 ; i <  goal->grasp.pre_grasp_posture.position.size(); i++){
 
-              katana_->moveJoint(katana_->jointNameToIndex(goal->grasp.pre_grasp_posture.name[i]),goal->grasp.grasp_posture.position[i]);
+              katana_->moveJoint(katana_->getJointIndex(goal->grasp.pre_grasp_posture.name[i]),goal->grasp.grasp_posture.position[i]);
 
       }
 

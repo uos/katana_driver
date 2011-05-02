@@ -46,19 +46,30 @@ typedef actionlib::SimpleActionClient<katana::JointMovementAction> JMAC;
 #define KEYCODE_D 0x64
 #define KEYCODE_S 0x73
 #define KEYCODE_W 0x77
+
+#define KEYCODE_R 0x72
 #define KEYCODE_Q 0x71
-#define KEYCODE_E 0x65
+#define KEYCODE_I 0x69
 
-#define KEYCODE_A_CAP 0x41
-#define KEYCODE_D_CAP 0x44
-#define KEYCODE_S_CAP 0x53
-#define KEYCODE_W_CAP 0x57
-#define KEYCODE_Q_CAP 0x51
-#define KEYCODE_E_CAP 0x45
+#define KEYCODE_PLUS 0x2B
+#define KEYCODE_NUMBER 0x23
+#define KEYCODE_POINT 0x2E
+#define KEYCODE_COMMA 0x2C
 
+#define KEYCODE_0 0x30
+#define KEYCODE_1 0x31
+#define KEYCODE_2 0x32
+#define KEYCODE_3 0x33
+#define KEYCODE_4 0x34
+#define KEYCODE_5 0x35
+#define KEYCODE_6 0x36
+#define KEYCODE_7 0x37
+#define KEYCODE_8 0x38
+#define KEYCODE_9 0x39
 
 struct termios cooked, raw;
 int kfd = 0;
+bool set_initial;
 
 
 namespace katana{
@@ -71,16 +82,28 @@ class KatanaTeleopKey
     KatanaTeleopKey();
 
     void jointStateCallback(const sensor_msgs::JointState::ConstPtr& js);
-
+    bool matchJointGoalRequest(double increment);
     void keyboardLoop();
+    void giveInfo();
 
     ~KatanaTeleopKey()   { }
 
   private:
 
-    sensor_msgs::JointState movement_goal_;
-    JMAC action_client;
+    int jointIndex;
+    double increment;
+    double increment_step;
+    double increment_step_scaling;
 
+    std::vector<std::string> joint_names_;
+    std::vector<std::string> gripper_joint_names_;
+    std::vector<std::string> combined_joints_;
+
+    sensor_msgs::JointState movement_goal_;
+    sensor_msgs::JointState current_pose_;
+    sensor_msgs::JointState initial_pose_;
+    JMAC action_client;
+    ros::Subscriber js_sub_;
 };
 }
 

@@ -1,8 +1,4 @@
 #goal definition
 sensor_msgs/JointState jointGoal
 ---
-#result definition
-string result
 ---
-#feedback definition
-string feedback

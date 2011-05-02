@@ -36,8 +36,9 @@ namespace katana
 {
 
 JointMovementActionController::JointMovementActionController(boost::shared_ptr<AbstractKatana> katana) :
-  katana_(katana), movement_executing_(false),
-  action_server_(ros::NodeHandle(), "joint_movement_action", boost::bind(&JointMovementActionController::executeCB, this, _1))
+  katana_(katana), movement_executing_(false), action_server_(ros::NodeHandle(), "joint_movement_action",
+                                                              boost::bind(&JointMovementActionController::executeCB,
+                                                                          this, _1))
 
 {
   ros::NodeHandle node_;
@@ -49,66 +50,89 @@ JointMovementActionController::JointMovementActionController(boost::shared_ptr<A
 
 JointMovementActionController::~JointMovementActionController()
 {
-
 }
 
 /**
  * Checks if all joints in the joint goal match a among joints of the katana
  */
-bool JointMovementActionController::suitableJointGoal(std::vector<std::string> &jointGoalNames){
+bool JointMovementActionController::suitableJointGoal(const std::vector<std::string> &jointGoalNames)
+{
 
   bool suitableJointGoal = true;
 
-    for(size_t i = 0; i < jointGoalNames.size(); i++){
+  for (size_t i = 0; i < jointGoalNames.size(); i++)
+  {
 
-      bool exists = false;
+    bool exists = false;
 
-      for(size_t j = 0; j < joints_.size(); j++){
+    for (size_t j = 0; j < joints_.size(); j++)
+    {
 
-          if(jointGoalNames[i] == joints_[j]) exists = true;
-
-      }
-
-      for(size_t k = 0; k < gripper_joints_.size(); k++){
-
-        if(jointGoalNames[i]  == gripper_joints_[k]) exists = true;
-
-      }
-
-     if(exists == false) suitableJointGoal = false;
+      if (jointGoalNames[i] == joints_[j])
+        exists = true;
 
     }
+
+    for (size_t k = 0; k < gripper_joints_.size(); k++)
+    {
+
+      if (jointGoalNames[i] == gripper_joints_[k])
+        exists = true;
+
+    }
+
+    if (exists == false)
+      suitableJointGoal = false;
+
+  }
 
   return suitableJointGoal;
 
 }
 
-void adjustJointGoalPositionsToMotorLimits(sensor_msgs::JointState jointGoal){
+sensor_msgs::JointState JointMovementActionController::adjustJointGoalPositionsToMotorLimits(
+                                                                                             const sensor_msgs::JointState &jointGoal)
+{
 
-  for(size_t i = 0; i < jointGoal.name.size(); i++)
+  sensor_msgs::JointState adjustedJointGoal;
+
+  adjustedJointGoal.name = jointGoal.name;
+  adjustedJointGoal.position = jointGoal.position;
+
+  ROS_INFO("Checking incoming JointGoal with respect to the following motor limits:");
+  for (size_t i = 0; i < jointGoal.name.size(); i++)
   {
 
-    if(jointGoal.position[i] < katana_->getMotorLimitMin(jointGoal.name[i])){
-
-      jointGoal.position[i] = katana_->getMotorLimitMin(jointGoal.name[i]);
-
-      ROS_INFO("%s - requested JointGoalPosition: %f exceeded MotorLimit: %f  - adjusted JointGoalPosition to MotorLimit", jointGoal.name[i], jointGoal.position[i], katana_->getMotorLimitsMin(jointGoal.name[i]));
-
-    }
-
-
-    if(jointGoal.position[i] > katana_->getMotorLimitMax(jointGoal.name[i])){
-
-          jointGoal.position[i] = katana_->getMotorLimitMax(jointGoal.name[i]);
-
-          ROS_INFO("%s - requested JointGoalPosition: %f exceeded MotorLimit: %f  - adjusted JointGoalPosition to MotorLimit", jointGoal.name[i], jointGoal.position[i], katana_->getMotorLimitsMax(jointGoal.name[i]));
-
-   }
+    ROS_INFO("%s - min: %f - max: %f - curr: % f - req: %f", jointGoal.name[i].c_str(), katana_->getMotorLimitMin(jointGoal.name[i]), katana_->getMotorLimitMax(jointGoal.name[i]), katana_->getMotorAngles()[katana_->getJointIndex(jointGoal.name[i])], jointGoal.position[i]);
 
   }
 
-}
+  for (size_t i = 0; i < jointGoal.name.size(); i++)
+  {
 
+    if (jointGoal.position[i] < katana_->getMotorLimitMin(jointGoal.name[i]))
+    {
+
+      adjustedJointGoal.position[i] = katana_->getMotorLimitMin(jointGoal.name[i]);
+
+      ROS_INFO("%s - requested JointGoalPosition: %f exceeded MotorLimit: %f  - adjusted JointGoalPosition to MotorLimit", jointGoal.name[i].c_str(), jointGoal.position[i], katana_->getMotorLimitMin(jointGoal.name[i]));
+
+    }
+
+    if (jointGoal.position[i] > katana_->getMotorLimitMax(jointGoal.name[i]))
+    {
+
+      adjustedJointGoal.position[i] = katana_->getMotorLimitMax(jointGoal.name[i]);
+
+      ROS_INFO("%s - requested JointGoalPosition: %f exceeded MotorLimit: %f  - adjusted JointGoalPosition to MotorLimit", jointGoal.name[i].c_str(), jointGoal.position[i], katana_->getMotorLimitMax(jointGoal.name[i]));
+
+    }
+
+  }
+
+  return adjustedJointGoal;
+
+}
 
 void JointMovementActionController::executeCB(const JMAS::GoalConstPtr &goal)
 {
@@ -128,9 +152,9 @@ void JointMovementActionController::executeCB(const JMAS::GoalConstPtr &goal)
     }
 
     for (size_t i = 0; i < gripper_joints_.size(); i++)
-        {
-          ROS_INFO("  our gripper_joint      %d: %s", (int)i, gripper_joints_[i].c_str());
-        }
+    {
+      ROS_INFO("  our gripper_joint      %d: %s", (int)i, gripper_joints_[i].c_str());
+    }
     action_server_.setAborted();
     return;
   }
@@ -144,25 +168,84 @@ void JointMovementActionController::executeCB(const JMAS::GoalConstPtr &goal)
 
   if (movement_executing_)
   {
-    ROS_WARN("Already executing a movement!");
+    ROS_WARN("Already executing a movement! Aborting..");
+    action_server_.setAborted();
     // I don't know if this can even happen with the simple action server, but let's make sure...
+    return;
   }
-
 
   movement_executing_ = true;
 
   // adjust all goal positions to match the given motor limits
 
-  adjustJointGoalPositionsToMotorLimits(goal->jointGoal.position);
+  sensor_msgs::JointState adjustedJointGoal = adjustJointGoalPositionsToMotorLimits(goal->jointGoal);
 
   ROS_INFO("Sending movement to Katana arm...");
 
-  for(unsigned int i = 0; i < goal->jointGoal.name.size();i++){
+  bool movement_suceeded = true;
 
-    katana_->moveJoint(katana_->getJointIndex(goal->jointGoal.name[i]), goal->jointGoal.position[i]);
+  for (unsigned int i = 0; i < adjustedJointGoal.name.size(); i++)
+  {
+    if (!katana_->moveJoint(katana_->getJointIndex(adjustedJointGoal.name[i]), adjustedJointGoal.position[i]))
+    {
+      movement_suceeded = false;
+    }
+  }
+
+  if (!movement_suceeded)
+  {
+    ROS_ERROR("Problem while transferring movement to Katana arm, aborting");
+    action_server_.setAborted();
+    movement_executing_ = false;
+    return;
+  }
+
+  ros::Rate goalWait(1.0);
+
+  while (ros::ok())
+  {
+    // always have to call this before calling someMotorCrashed() or allJointsReady()
+    katana_->refreshMotorStatus();
+
+    if (katana_->someMotorCrashed())
+    {
+      ROS_ERROR("Some motor has crashed! Aborting movement...");
+      action_server_.setAborted();
+      movement_executing_ = false;
+      return;
+    }
+
+    // all joints are idle
+    if (katana_->allJointsReady())
+    {
+      // make sure the joint positions are updated before checking for goalReached()
+      katana_->refreshEncoders();
+
+      if (movement_suceeded)
+      {
+        // joints are idle and we are inside goal constraints. yippie!
+        ROS_INFO("Goal reached.");
+        action_server_.setSucceeded();
+      }
+      else
+      {
+        ROS_ERROR("Joints are idle and motors are not crashed, but we did not reach the goal position! WTF?");
+        action_server_.setAborted();
+      }
+      movement_executing_ = false;
+      return;
+    }
+
+    if (action_server_.isPreemptRequested())
+    {
+      ROS_WARN("Goal canceled by client while waiting for movement to finish, aborting!");
+      action_server_.setPreempted();
+      movement_executing_ = false;
+      return;
+    }
 
   }
 }
 
-
 }
+

@@ -64,9 +64,9 @@ private:
   void executeCB(const JMAS::GoalConstPtr &goal);
   JMAS action_server_;
 
-  bool suitableJointGoal(std::vector<std::string> jointGoalNames);
+  bool suitableJointGoal(const std::vector<std::string>& jointGoalNames);
 
-  void adjustJointGoalPositionsToMotorLimits(sensor_msgs::JointState &jointGoal);
+  sensor_msgs::JointState adjustJointGoalPositionsToMotorLimits(const sensor_msgs::JointState &jointGoal);
 
 };
 }

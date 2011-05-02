@@ -51,7 +51,7 @@ public:
    * Open/close the gripper to the desired opening angle. Do not wait for result,
    * but return immediately.
    */
-  virtual void moveJoint(int jointIndex, double turningAngle) = 0;
+  virtual bool moveJoint(int jointIndex, double turningAngle) = 0;
 
   virtual int getJointIndex(std::string joint_name);
 

@@ -114,7 +114,7 @@ void SimulatedKatana::moveGripper(double openingAngle)
   return;
 }
 
-void SimulatedKatana::moveJoint(int jointIndex, double turningAngle){
+bool SimulatedKatana::moveJoint(int jointIndex, double turningAngle){
   // TODO send to Joint Position Controller
 
 }

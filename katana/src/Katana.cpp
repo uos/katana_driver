@@ -398,18 +398,19 @@ void Katana::freezeRobot()
   kni->freezeRobot();
 }
 
-void Katana::moveJoint(int motorIndex, double desiredAngle){
+bool Katana::moveJoint(int motorIndex, double desiredAngle){
 
   if (desiredAngle < motor_limits_[motorIndex].min_position || motor_limits_[motorIndex].max_position < desiredAngle)
   {
     ROS_ERROR("Desired angle %f is out of range [%f, %f]", desiredAngle, motor_limits_[motorIndex].min_position, motor_limits_[motorIndex].max_position);
-    return;
+    return false;
   }
 
   try
   {
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
     kni->moveMotorToEnc(motorIndex, converter->angle_rad2enc(motorIndex, desiredAngle), false, 100);
+    return true;
   }
   catch (WrongCRCException e)
   {
@@ -427,7 +428,7 @@ void Katana::moveJoint(int motorIndex, double desiredAngle){
   {
     ROS_ERROR("Unhandled exception in moveJoint()");
   }
-  return;
+  return false;
 
 
 

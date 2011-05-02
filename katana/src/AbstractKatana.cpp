@@ -6,10 +6,7 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *std::vector<double> AbstractKatana::getMotorVelocities()
-{
-  return motor_velocities_;
-}
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -44,7 +41,7 @@ AbstractKatana::AbstractKatana()
   // angles and velocities and limits: the 5 "real" joints + gripper
   motor_angles_.resize(NUM_MOTORS);
   motor_velocities_.resize(NUM_MOTORS);
-  motor_limits_.resize(NUM_MOTORS);
+  motor_limits_.resize(NUM_MOTORS+1);
 
   /* ********* get parameters ********* */
   // ros::NodeHandle pn("~");
@@ -90,6 +87,9 @@ AbstractKatana::AbstractKatana()
     motor_limits_[i].joint_name = (std::string)name_value;
     motor_limits_[i].min_position = model.getJoint(joint_names_[i])->limits->lower;
     motor_limits_[i].max_position = model.getJoint(joint_names_[i])->limits->upper;
+
+    ROS_INFO("Setting MOTOR LIMITS for %s to min: %f - max: %f", motor_limits_[i].joint_name.c_str(), motor_limits_[i].min_position, motor_limits_[i].max_position);
+
   }
 
   // TODO: repeat for gripper_joints (gripper joint names)
@@ -121,9 +121,11 @@ AbstractKatana::AbstractKatana()
     gripper_joint_names_[i] = (std::string)name_value;
     gripper_joint_types_[i] = urdf::Joint::REVOLUTE; // all of our joints are of type revolute
 
-    motor_limits_[i].joint_name = (std::string)name_value;
-    motor_limits_[i].min_position = model.getJoint(gripper_joint_names_[i])->limits->lower;
-    motor_limits_[i].max_position = model.getJoint(gripper_joint_names_[i])->limits->upper;
+    motor_limits_[NUM_JOINTS + i].joint_name = (std::string)name_value;
+    motor_limits_[NUM_JOINTS + i].min_position = model.getJoint(gripper_joint_names_[i])->limits->lower;
+    motor_limits_[NUM_JOINTS + i].max_position = model.getJoint(gripper_joint_names_[i])->limits->upper;
+
+    ROS_INFO("Setting MOTOR LIMITS for %s to min: %f - max: %f", motor_limits_[NUM_JOINTS + i].joint_name.c_str(), motor_limits_[NUM_JOINTS + i].min_position, motor_limits_[NUM_JOINTS + i].max_position);
   }
 }
 

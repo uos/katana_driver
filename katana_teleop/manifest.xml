@@ -1,9 +1,18 @@
 <package>
-  <description brief="katana_teleop">
+  <description brief="Katana Teleoperation Node">
 
-     katana_teleop
+    <p>
+    This package provides a tele-operation node to control a Neuronics Katana 450 arm via keyboard commands.
+    
+    The package is still under construction and shall support futher input devices (such as an PS3 controller) soon
+    </p>
 
-  </description>
+    <p>
+    GPL license
+    </p>
+    
+  </description>  
+  
   <author>hdeeken</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
