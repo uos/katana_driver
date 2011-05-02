@@ -23,8 +23,6 @@
  *
  * based on joint_trajectory_action_controller.cpp by Stuart Glaser,
  * from the package robot_mechanism_controllers
- *
- * TODO header information
  */
 
 #include "katana/joint_movement_action_controller.h"
@@ -99,11 +97,10 @@ sensor_msgs::JointState JointMovementActionController::adjustJointGoalPositionsT
   adjustedJointGoal.name = jointGoal.name;
   adjustedJointGoal.position = jointGoal.position;
 
-  ROS_INFO("Checking incoming JointGoal with respect to the following motor limits:");
-  for (size_t i = 0; i < jointGoal.name.size(); i++)
+   for (size_t i = 0; i < jointGoal.name.size(); i++)
   {
 
-    ROS_INFO("%s - min: %f - max: %f - curr: % f - req: %f", jointGoal.name[i].c_str(), katana_->getMotorLimitMin(jointGoal.name[i]), katana_->getMotorLimitMax(jointGoal.name[i]), katana_->getMotorAngles()[katana_->getJointIndex(jointGoal.name[i])], jointGoal.position[i]);
+    // ROS_INFO("%s - min: %f - max: %f - curr: % f - req: %f", jointGoal.name[i].c_str(), katana_->getMotorLimitMin(jointGoal.name[i]), katana_->getMotorLimitMax(jointGoal.name[i]), katana_->getMotorAngles()[katana_->getJointIndex(jointGoal.name[i])], jointGoal.position[i]);
 
   }
 
@@ -115,7 +112,7 @@ sensor_msgs::JointState JointMovementActionController::adjustJointGoalPositionsT
 
       adjustedJointGoal.position[i] = katana_->getMotorLimitMin(jointGoal.name[i]);
 
-      ROS_INFO("%s - requested JointGoalPosition: %f exceeded MotorLimit: %f  - adjusted JointGoalPosition to MotorLimit", jointGoal.name[i].c_str(), jointGoal.position[i], katana_->getMotorLimitMin(jointGoal.name[i]));
+      // ROS_INFO("%s - requested JointGoalPosition: %f exceeded MotorLimit: %f  - adjusted JointGoalPosition to MotorLimit", jointGoal.name[i].c_str(), jointGoal.position[i], katana_->getMotorLimitMin(jointGoal.name[i]));
 
     }
 
@@ -124,7 +121,7 @@ sensor_msgs::JointState JointMovementActionController::adjustJointGoalPositionsT
 
       adjustedJointGoal.position[i] = katana_->getMotorLimitMax(jointGoal.name[i]);
 
-      ROS_INFO("%s - requested JointGoalPosition: %f exceeded MotorLimit: %f  - adjusted JointGoalPosition to MotorLimit", jointGoal.name[i].c_str(), jointGoal.position[i], katana_->getMotorLimitMax(jointGoal.name[i]));
+      // ROS_INFO("%s - requested JointGoalPosition: %f exceeded MotorLimit: %f  - adjusted JointGoalPosition to MotorLimit", jointGoal.name[i].c_str(), jointGoal.position[i], katana_->getMotorLimitMax(jointGoal.name[i]));
 
     }
 
@@ -194,7 +191,7 @@ void JointMovementActionController::executeCB(const JMAS::GoalConstPtr &goal)
 
   if (!movement_suceeded)
   {
-    ROS_ERROR("Problem while transferring movement to Katana arm, aborting");
+    ROS_ERROR("Problem while transferring movement to Katana arm. Aborting...");
     action_server_.setAborted();
     movement_executing_ = false;
     return;
@@ -209,22 +206,19 @@ void JointMovementActionController::executeCB(const JMAS::GoalConstPtr &goal)
 
     if (katana_->someMotorCrashed())
     {
-      ROS_ERROR("Some motor has crashed! Aborting movement...");
+      ROS_ERROR("Some motor has crashed! Aborting...");
       action_server_.setAborted();
       movement_executing_ = false;
       return;
     }
 
-    // all joints are idle
     if (katana_->allJointsReady())
     {
-      // make sure the joint positions are updated before checking for goalReached()
       katana_->refreshEncoders();
 
       if (movement_suceeded)
       {
-        // joints are idle and we are inside goal constraints. yippie!
-        ROS_INFO("Goal reached.");
+        ROS_INFO("...movement successfully executed.");
         action_server_.setSucceeded();
       }
       else

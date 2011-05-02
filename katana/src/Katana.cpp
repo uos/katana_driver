@@ -66,10 +66,6 @@ Katana::Katana() :
     kni->create(config_file_path.c_str(), protocol);
     ROS_INFO("success: katana initialized");
 
-    for(unsigned int i = 0; i < motor_limits_.size();i++){
-      ROS_INFO("%s", motor_limits_[i].joint_name.c_str());
-    }
-
   }
   catch (Exception &e)
   {

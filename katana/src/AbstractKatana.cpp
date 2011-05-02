@@ -88,11 +88,9 @@ AbstractKatana::AbstractKatana()
     motor_limits_[i].min_position = model.getJoint(joint_names_[i])->limits->lower;
     motor_limits_[i].max_position = model.getJoint(joint_names_[i])->limits->upper;
 
-    ROS_INFO("Setting MOTOR LIMITS for %s to min: %f - max: %f", motor_limits_[i].joint_name.c_str(), motor_limits_[i].min_position, motor_limits_[i].max_position);
+    //ROS_INFO("Setting MotorLimit for %s to min: %f - max: %f", motor_limits_[i].joint_name.c_str(), motor_limits_[i].min_position, motor_limits_[i].max_position);
 
   }
-
-  // TODO: repeat for gripper_joints (gripper joint names)
 
   XmlRpc::XmlRpcValue gripper_joint_names;
 
@@ -125,7 +123,7 @@ AbstractKatana::AbstractKatana()
     motor_limits_[NUM_JOINTS + i].min_position = model.getJoint(gripper_joint_names_[i])->limits->lower;
     motor_limits_[NUM_JOINTS + i].max_position = model.getJoint(gripper_joint_names_[i])->limits->upper;
 
-    ROS_INFO("Setting MOTOR LIMITS for %s to min: %f - max: %f", motor_limits_[NUM_JOINTS + i].joint_name.c_str(), motor_limits_[NUM_JOINTS + i].min_position, motor_limits_[NUM_JOINTS + i].max_position);
+    // ROS_INFO("Setting MotorLimit for %s to min: %f - max: %f", motor_limits_[NUM_JOINTS + i].joint_name.c_str(), motor_limits_[NUM_JOINTS + i].min_position, motor_limits_[NUM_JOINTS + i].max_position);
   }
 }
 

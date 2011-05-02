@@ -1,36 +1,28 @@
 /*
- * based on teleop_pr2_keyboard
- * Copyright (c) 2008, Willow Garage, Inc.
- * All rights reserved.
- * 
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the <ORGANIZATION> nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
-// Author: Kevin Watts
-
-//TODO adjust author and licence, specific format needed?
+ * UOS-ROS packages - Robot Operating System code by the University of Osnabrück
+ * Copyright (C) 2011  University of Osnabrück
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * katana_teleop_key.cpp
+ *
+ *  Created on: 21.04.2011
+ *  Author: Henning Deeken <hdeeken@uos.de>
+ *
+ * based on a pr2 teleop by Kevin Watts
+*/
 
 #include <katana_teleop/katana_teleop_key.h>
 
@@ -171,14 +163,14 @@ void KatanaTeleopKey::giveInfo()
 void KatanaTeleopKey::jointStateCallback(const sensor_msgs::JointState::ConstPtr& js)
 {
 
-  ROS_INFO("KatanaTeleopKeyboard received a new JointState");
+  // ROS_INFO("KatanaTeleopKeyboard received a new JointState");
 
   current_pose_.name = js->name;
   current_pose_.position = js->position;
 
   if (!set_initial)
   {
-    ROS_INFO("KatanaTeleopKeyboard received initial JointState");
+    // ROS_INFO("KatanaTeleopKeyboard received initial JointState");
     initial_pose_.name = js->name;
     initial_pose_.position = js->position;
     set_initial = true;
@@ -196,7 +188,7 @@ bool KatanaTeleopKey::matchJointGoalRequest(double increment)
     if (current_pose_.name[i] == combined_joints_[jointIndex])
     {
 
-      ROS_WARN("incoming inc: %f - curren_pose: %f - resulting pose: %f ",increment, current_pose_.position[i], current_pose_.position[i] + increment);
+      //ROS_DEBUG("incoming inc: %f - curren_pose: %f - resulting pose: %f ",increment, current_pose_.position[i], current_pose_.position[i] + increment);
       movement_goal_.position.push_back(current_pose_.position[i] + increment);
       found_match = true;
       break;
@@ -294,7 +286,7 @@ void KatanaTeleopKey::keyboardLoop()
           break;
 
         case KEYCODE_R:
-          ROS_INFO("resetting arm to it's initial pose..");
+          ROS_INFO("Resetting arm to it's initial pose..");
 
           movement_goal_.name = initial_pose_.name;
           movement_goal_.position = initial_pose_.position;
@@ -305,7 +297,7 @@ void KatanaTeleopKey::keyboardLoop()
           // in case fo shutting down the teleop node the arm is moved back into it's initial pose
           // assuming that this is a proper resting pose for the arm
 
-          ROS_INFO("Shutting down Katana Tele Operation");
+          ROS_INFO("Shutting down the Katana Teleoperation node...");
           movement_goal_.name = initial_pose_.name;
           movement_goal_.position = initial_pose_.position;
           dirty = true;
@@ -551,7 +543,7 @@ void KatanaTeleopKey::keyboardLoop()
         for (size_t i = 0; i < goal.jointGoal.name.size(); i++)
         {
 
-          ROS_INFO("Joint: %s to %f rad", goal.jointGoal.name[i].c_str(), goal.jointGoal.position[i]);
+          ROS_DEBUG("Joint: %s to %f rad", goal.jointGoal.name[i].c_str(), goal.jointGoal.position[i]);
 
         }
 
@@ -584,10 +576,7 @@ void KatanaTeleopKey::keyboardLoop()
         dirty = false;
       }
 
-    } // if set initial end
-
-   // ROS_INFO("Listen to joint_state");jointIndex
-   // ros::spinOnce();
+    } // if set_initial end
   }
 }
 }// end namespace "katana"
