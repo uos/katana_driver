@@ -3,8 +3,6 @@
 
     <p>
     This package provides a tele-operation node to control a Neuronics Katana 450 arm via keyboard commands.
-    
-    The package is still under construction and shall support futher input devices (such as an PS3 controller) soon
     </p>
 
     <p>
@@ -14,7 +12,7 @@
   </description>  
   
   <author>hdeeken</author>
-  <license>BSD</license>
+  <license>GPL</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana_teleop</url>
   <depend package="std_msgs"/>
