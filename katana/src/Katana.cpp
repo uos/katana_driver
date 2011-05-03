@@ -377,6 +377,13 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
   {
     ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in executeTrajectory(): %s)", e.message().c_str());
   }
+  catch (FirmwareException e)
+  {
+    // TODO: find out what the real cause of this is when it happens again
+    // the message returned by the Katana is:
+    // FirmwareException : 'StopperThread: collision on axis: 1 (axis N)'
+    ROS_ERROR("FirmwareException: Motor collision? Perhaps we tried to send a trajectory that the arm couldn't follow. (exception in executeTrajectory(): %s)", e.message().c_str());
+  }
   catch (Exception e)
   {
     ROS_ERROR("Unhandled exception in executeTrajectory(): %s", e.message().c_str());
