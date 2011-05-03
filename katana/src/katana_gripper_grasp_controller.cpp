@@ -31,7 +31,7 @@ namespace katana
 {
 
 KatanaGripperGraspController::KatanaGripperGraspController(boost::shared_ptr<AbstractKatana> katana) :
-      katana_(katana), last_command_was_close_(false)
+  katana_(katana), last_command_was_close_(false)
 {
   ros::NodeHandle root_nh("");
   ros::NodeHandle pn("~");
@@ -66,7 +66,10 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
         return;
       }
 
-      katana_->moveJoint(GRIPPER_INDEX,GRIPPER_CLOSED_ANGLE);
+      // well, we don't really use the grasp_posture.position value here, we just instruct
+      // the gripper to close all the way...
+      // that might change in the future and we might do something more interesting
+      katana_->moveJoint(GRIPPER_INDEX, GRIPPER_CLOSED_ANGLE);
 
       last_command_was_close_ = true;
       break;
@@ -79,10 +82,13 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
         return;
       }
 
-      for(unsigned int i = 0 ; i <  goal->grasp.pre_grasp_posture.position.size(); i++){
-
-              katana_->moveJoint(katana_->getJointIndex(goal->grasp.pre_grasp_posture.name[i]),goal->grasp.grasp_posture.position[i]);
-
+      // well, we don't really use the grasp_posture.position value here, we just instruct
+      // the gripper to open  all the way...
+      // that might change in the future and we might do something more interesting
+      for (unsigned int i = 0; i < goal->grasp.pre_grasp_posture.position.size(); i++)
+      {
+        katana_->moveJoint(katana_->getJointIndex(goal->grasp.pre_grasp_posture.name[i]),
+                           goal->grasp.grasp_posture.position[i]);
       }
 
       last_command_was_close_ = false;
@@ -90,7 +96,7 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
 
     case object_manipulation_msgs::GraspHandPostureExecutionGoal::RELEASE:
 
-      katana_->moveJoint(GRIPPER_INDEX,GRIPPER_OPEN_ANGLE);
+      katana_->moveJoint(GRIPPER_INDEX, GRIPPER_OPEN_ANGLE);
       last_command_was_close_ = false;
       break;
 

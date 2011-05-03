@@ -55,7 +55,7 @@ KNIKinematics::KNIKinematics()
   }
   if (joint_names.size() != (size_t)NUM_JOINTS)
   {
-    ROS_ERROR("Wrong number of joints! was: %zu, expected: %zu", joint_names.size(), NUM_JOINTS);
+    ROS_ERROR("Wrong number of joints! was: %d, expected: %zu", joint_names.size(), NUM_JOINTS);
   }
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {

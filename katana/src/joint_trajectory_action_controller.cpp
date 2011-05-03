@@ -44,13 +44,15 @@ JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_p
 
 
   // Trajectory and goal constraints
-   goal_constraints_.resize(joints_.size());
+  //  node_.param("joint_trajectory_action_node/constraints/goal_time", goal_time_constraint_, 0.0);
+  node_.param("joint_trajectory_action_node/constraints/stopped_velocity_tolerance", stopped_velocity_tolerance_, 1e-6);
+  goal_constraints_.resize(joints_.size());
   //  trajectory_constraints_.resize(joints_.size());
   for (size_t i = 0; i < joints_.size(); ++i)
   {
     std::string ns = std::string("joint_trajectory_action_node/constraints") + joints_[i];
     node_.param(ns + "/goal", goal_constraints_[i], 0.02);
-
+    //    node_.param(ns + "/trajectory", trajectory_constraints_[i], -1.0);
   }
 
   // Subscriptions, publishers, services

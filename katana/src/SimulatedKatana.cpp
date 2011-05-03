@@ -116,7 +116,7 @@ void SimulatedKatana::moveGripper(double openingAngle)
 
 bool SimulatedKatana::moveJoint(int jointIndex, double turningAngle){
   // TODO send to Joint Position Controller
-
+  return false;
 }
 
 bool SimulatedKatana::someMotorCrashed() {

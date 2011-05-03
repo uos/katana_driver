@@ -425,9 +425,6 @@ bool Katana::moveJoint(int motorIndex, double desiredAngle){
     ROS_ERROR("Unhandled exception in moveJoint()");
   }
   return false;
-
-
-
 }
 
 bool Katana::someMotorCrashed()

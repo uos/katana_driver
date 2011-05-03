@@ -41,7 +41,7 @@ AbstractKatana::AbstractKatana()
   // angles and velocities and limits: the 5 "real" joints + gripper
   motor_angles_.resize(NUM_MOTORS);
   motor_velocities_.resize(NUM_MOTORS);
-  motor_limits_.resize(NUM_MOTORS+1);
+  motor_limits_.resize(NUM_MOTORS + 1);
 
   /* ********* get parameters ********* */
   // ros::NodeHandle pn("~");
@@ -49,9 +49,10 @@ AbstractKatana::AbstractKatana()
 
   std::string robot_desc_string;
 
-  if (!n.getParam("robot_description", robot_desc_string)) {
-      ROS_FATAL("Couldn't get a robot_description from the param server");
-      return;
+  if (!n.getParam("robot_description", robot_desc_string))
+  {
+    ROS_FATAL("Couldn't get a robot_description from the param server");
+    return;
   }
 
   urdf::Model model;
@@ -70,7 +71,7 @@ AbstractKatana::AbstractKatana()
   }
   if (joint_names.size() != (size_t)NUM_JOINTS)
   {
-    ROS_ERROR("Wrong number of joints! was: %zu, expected: %zu", joint_names.size(), NUM_JOINTS);
+    ROS_ERROR("Wrong number of joints! was: %d, expected: %zu", joint_names.size(), NUM_JOINTS);
   }
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
@@ -103,9 +104,9 @@ AbstractKatana::AbstractKatana()
   {
     ROS_ERROR("Malformed gripper_joint specification.  (namespace: %s)", n.getNamespace().c_str());
   }
-  if (gripper_joint_names.size() != (size_t)NUM_GRIPPER_JOINTS)
+  if ((size_t)gripper_joint_names.size() != NUM_GRIPPER_JOINTS)
   {
-    ROS_ERROR("Wrong number of gripper_joints! was: %zu, expected: %zu", gripper_joint_names.size(), NUM_GRIPPER_JOINTS);
+    ROS_ERROR("Wrong number of gripper_joints! was: %d, expected: %zu", gripper_joint_names.size(), NUM_GRIPPER_JOINTS);
   }
   for (size_t i = 0; i < NUM_GRIPPER_JOINTS; ++i)
   {
@@ -151,10 +152,10 @@ int AbstractKatana::getJointIndex(std::string joint_name)
       return i;
   }
 
-  for(int i =0; i< (int) gripper_joint_names_.size(); i++)
+  for (int i = 0; i < (int)gripper_joint_names_.size(); i++)
   {
-    if(gripper_joint_names_[i] == joint_name)
-      return joint_names_.size();
+    if (gripper_joint_names_[i] == joint_name)
+      return GRIPPER_INDEX;
   }
 
   ROS_ERROR("Joint not found: %s.", joint_name.c_str());
@@ -196,35 +197,30 @@ std::vector<motion_planning_msgs::JointLimits> AbstractKatana::getMotorLimits()
   return motor_limits_;
 }
 
-double AbstractKatana::getMotorLimitMax(std::string joint_name){
-
-  for(size_t i = 0; i < motor_limits_.size(); i++){
-
-    if(motor_limits_[i].joint_name == joint_name){
-
+double AbstractKatana::getMotorLimitMax(std::string joint_name)
+{
+  for (size_t i = 0; i < motor_limits_.size(); i++)
+  {
+    if (motor_limits_[i].joint_name == joint_name)
+    {
       return motor_limits_[i].max_position;
-
     }
   }
 
   return -1;
 }
 
-double AbstractKatana::getMotorLimitMin(std::string joint_name){
-
-  for(size_t i = 0; i < motor_limits_.size(); i++){
-
-    if(motor_limits_[i].joint_name == joint_name){
-
+double AbstractKatana::getMotorLimitMin(std::string joint_name)
+{
+  for (size_t i = 0; i < motor_limits_.size(); i++)
+  {
+    if (motor_limits_[i].joint_name == joint_name)
+    {
       return motor_limits_[i].min_position;
-
     }
   }
 
   return -1;
 }
-
-
-
 
 }
