@@ -234,25 +234,26 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
 
   try
   {
-    refreshMotorStatus();
-    ROS_DEBUG("Motor status: %d, %d, %d, %d, %d, %d", motor_status_[0], motor_status_[1], motor_status_[2], motor_status_[3], motor_status_[4], motor_status_[5]);
-
-    // ------- check if motors are blocked
-    if (someMotorCrashed())
-    {
-      ROS_WARN("Motors are crashed before executing trajectory! Unblocking...");
-
-      boost::recursive_mutex::scoped_lock lock(kni_mutex);
-      kni->unBlock();
-    }
-
     // ------- wait until all motors idle
     ros::Rate idleWait(10);
-    while (!allJointsReady())
+    while (!allMotorsReady())
     {
-      // TODO: we should check here that no motor has crashed to prevent getting stuck here
-      idleWait.sleep();
       refreshMotorStatus();
+      ROS_DEBUG("Motor status: %d, %d, %d, %d, %d, %d", motor_status_[0], motor_status_[1], motor_status_[2], motor_status_[3], motor_status_[4], motor_status_[5]);
+
+      // ------- check if motors are blocked
+      // it is important to do this inside the allMotorsReady() loop, otherwise we
+      // could get stuck in a deadlock if the motors crash while we wait for them to
+      // become ready
+      if (someMotorCrashed())
+      {
+        ROS_WARN("Motors are crashed before executing trajectory! Unblocking...");
+
+        boost::recursive_mutex::scoped_lock lock(kni_mutex);
+        kni->unBlock();
+      }
+
+      idleWait.sleep();
     }
 
     //// ------- move to start position
