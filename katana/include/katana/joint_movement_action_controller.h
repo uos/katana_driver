@@ -58,8 +58,6 @@ private:
 
   sensor_msgs::JointState movement_goal_;
 
-  bool movement_executing_;
-
   // action server
   void executeCB(const JMAS::GoalConstPtr &goal);
   JMAS action_server_;
