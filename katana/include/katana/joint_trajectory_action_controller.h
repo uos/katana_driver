@@ -67,9 +67,6 @@ private:
   double stopped_velocity_tolerance_;
   std::vector<double> goal_constraints_;
 
-
-  bool trajectory_executing_;
-
   // subscriber to "command" topic
   void commandCB(const trajectory_msgs::JointTrajectory::ConstPtr &msg);
   ros::Subscriber sub_command_;

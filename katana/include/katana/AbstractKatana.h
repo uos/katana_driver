@@ -48,8 +48,12 @@ public:
   virtual void freezeRobot();
 
   /**
-   * Open/close the gripper to the desired opening angle. Do not wait for result,
+   * Move the joint to the desired angle. Do not wait for result,
    * but return immediately.
+   *
+   * @param jointIndex the joint to move
+   * @param turningAngle the target angle
+   * @return true iff command was successfully sent to Katana
    */
   virtual bool moveJoint(int jointIndex, double turningAngle) = 0;
 
