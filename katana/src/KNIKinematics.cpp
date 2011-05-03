@@ -45,17 +45,17 @@ KNIKinematics::KNIKinematics()
   XmlRpc::XmlRpcValue joint_names;
 
   // ------- get joint names
-  if (!pn.getParam("joints", joint_names))
+  if (!n.getParam("katana_joints", joint_names))
   {
-    ROS_ERROR("No joints given. (namespace: %s)", pn.getNamespace().c_str());
+    ROS_ERROR("No joints given. (namespace: %s)", n.getNamespace().c_str());
   }
   if (joint_names.getType() != XmlRpc::XmlRpcValue::TypeArray)
   {
-    ROS_ERROR("Malformed joint specification.  (namespace: %s)", pn.getNamespace().c_str());
+    ROS_ERROR("Malformed joint specification.  (namespace: %s)", n.getNamespace().c_str());
   }
   if (joint_names.size() != (size_t)NUM_JOINTS)
   {
-    ROS_ERROR("Wrong number of joints! was: %zu, expected: %zu", joint_names.size(), NUM_JOINTS);
+    ROS_ERROR("Wrong number of joints! was: %d, expected: %zu", joint_names.size(), NUM_JOINTS);
   }
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
@@ -63,7 +63,7 @@ KNIKinematics::KNIKinematics()
     if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
     {
       ROS_ERROR("Array of joint names should contain all strings.  (namespace: %s)",
-          pn.getNamespace().c_str());
+          n.getNamespace().c_str());
     }
 
     joint_names_[i] = (std::string)name_value;

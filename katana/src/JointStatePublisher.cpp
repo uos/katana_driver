@@ -38,7 +38,7 @@ JointStatePublisher::~JointStatePublisher()
 {
 }
 
-void JointStatePublisher::loopOnce()
+void JointStatePublisher::update()
 {
   /* ************** Publish joint angles ************** */
   sensor_msgs::JointStatePtr msg = boost::make_shared<sensor_msgs::JointState>();

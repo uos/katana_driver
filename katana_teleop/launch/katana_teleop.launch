@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!-- see http://www.ros.org/wiki/move_arm/Tutorials/GettingStarted -->
+<launch>
+  <!-- start katana node -->
+  <include file="$(find katana)/launch/katana.launch" />
+
+  <!-- start keyboard tele op node here -->
+  <node pkg="katana_teleop" type="katana_teleop" name="katana_teleop_key" output="screen"/>
+ 
+</launch>

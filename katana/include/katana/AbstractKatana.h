@@ -27,9 +27,12 @@
 
 #include <ros/ros.h>
 #include <urdf/joint.h>
+#include <urdf/model.h>
 
 #include <katana/SpecifiedTrajectory.h>
 #include <katana/katana_constants.h>
+
+#include <motion_planning_msgs/JointLimits.h>
 
 namespace katana
 {
@@ -45,17 +48,29 @@ public:
   virtual void freezeRobot();
 
   /**
-   * Open/close the gripper to the desired opening angle. Do not wait for result,
+   * Move the joint to the desired angle. Do not wait for result,
    * but return immediately.
+   *
+   * @param jointIndex the joint to move
+   * @param turningAngle the target angle
+   * @return true iff command was successfully sent to Katana
    */
-  virtual void moveGripper(double openingAngle) = 0;
+  virtual bool moveJoint(int jointIndex, double turningAngle) = 0;
 
   virtual int getJointIndex(std::string joint_name);
+
   virtual std::vector<std::string> getJointNames();
   virtual std::vector<int> getJointTypes();
 
+  virtual std::vector<std::string> getGripperJointNames();
+  virtual std::vector<int> getGripperJointTypes();
+
   virtual std::vector<double> getMotorAngles();
   virtual std::vector<double> getMotorVelocities();
+
+  virtual std::vector<motion_planning_msgs::JointLimits> getMotorLimits();
+  virtual double getMotorLimitMax(std::string joint_name);
+  virtual double getMotorLimitMin(std::string joint_name);
 
   virtual void refreshMotorStatus();
   virtual bool someMotorCrashed() = 0;
@@ -68,9 +83,18 @@ protected:
   std::vector<std::string> joint_names_;
   std::vector<int> joint_types_;
 
+  // the two "finger" joints of the gripper:
+  std::vector<std::string> gripper_joint_names_;
+  std::vector<int> gripper_joint_types_;
+
   // all motors (the 5 "real" joints plus the gripper)
+
   std::vector<double> motor_angles_;
   std::vector<double> motor_velocities_;
+
+  // the motor limits of the 6 motors
+
+  std::vector<motion_planning_msgs::JointLimits> motor_limits_;
 };
 
 }

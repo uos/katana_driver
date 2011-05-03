@@ -55,7 +55,7 @@ double KNIConverter::angle_rad2enc(int index, double angle)
   const TMotInit param = config_.getMotInit(index);
 
   // normalize our input to [-pi, pi)
-  while (angle < - M_PI)
+  while (angle < -M_PI)
     angle += 2 * M_PI;
 
   while (angle >= M_PI)
@@ -66,11 +66,11 @@ double KNIConverter::angle_rad2enc(int index, double angle)
   if (index == 0 || index == 2 || index == 3 || index == 4)
     angle += M_PI;
 
-  if (index == GRIPPER_INDEX)
+  if (index == (int)GRIPPER_INDEX)
     angle = (angle - GRIPPER_CLOSED_ANGLE) / KNI_TO_URDF_GRIPPER_FACTOR + KNI_GRIPPER_CLOSED_ANGLE;
 
   return ((deg2rad(param.angleOffset) - angle) * (double)param.encodersPerCycle * (double)param.rotationDirection)
-  / (2.0 * M_PI) + param.encoderOffset;
+      / (2.0 * M_PI) + param.encoderOffset;
 }
 
 double KNIConverter::angle_enc2rad(int index, int encoders)
@@ -80,7 +80,7 @@ double KNIConverter::angle_enc2rad(int index, int encoders)
   double result = deg2rad(param.angleOffset) - (((double)encoders - (double)param.encoderOffset) * 2.0 * M_PI)
       / ((double)param.encodersPerCycle * (double)param.rotationDirection);
 
-  if (index == GRIPPER_INDEX)
+  if (index == (int)GRIPPER_INDEX)
   {
     result = (result - KNI_GRIPPER_CLOSED_ANGLE) * KNI_TO_URDF_GRIPPER_FACTOR + GRIPPER_CLOSED_ANGLE;
   }
@@ -92,7 +92,7 @@ double KNIConverter::angle_enc2rad(int index, int encoders)
     result -= M_PI;
 
   // normalize our output to [-pi, pi)
-  while (result < - M_PI)
+  while (result < -M_PI)
     result += 2 * M_PI;
 
   while (result >= M_PI)

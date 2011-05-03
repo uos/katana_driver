@@ -1,0 +1,27 @@
+<package>
+  <description brief="Katana Teleoperation Node">
+
+    <p>
+    This package provides a tele-operation node to control a Neuronics Katana 450 arm via keyboard commands.
+    </p>
+
+    <p>
+    GPL license
+    </p>
+    
+  </description>  
+  
+  <author>hdeeken</author>
+  <license>GPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_teleop</url>
+  <depend package="std_msgs"/>
+  <depend package="sensor_msgs"/>
+  <depend package="rospy"/>
+  <depend package="joy"/>
+  <depend package="roscpp"/>
+  <depend package="katana"/>
+
+</package>
+
+

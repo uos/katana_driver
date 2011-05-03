@@ -75,6 +75,8 @@ void SimulatedKatana::refreshEncoders()
 
 bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj_ptr)
 {
+
+  // TODO convert to normal trajectory execute via joint spline trajectory controller
   // ------- wait until start time
   ros::Time::sleepUntil(ros::Time(traj_ptr->at(0).start_time));
 
@@ -110,6 +112,11 @@ void SimulatedKatana::moveGripper(double openingAngle)
 
   current_trajectory_ = new_traj_ptr;
   return;
+}
+
+bool SimulatedKatana::moveJoint(int jointIndex, double turningAngle){
+  // TODO send to Joint Position Controller
+  return false;
 }
 
 bool SimulatedKatana::someMotorCrashed() {

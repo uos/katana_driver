@@ -34,13 +34,13 @@ namespace katana
 {
 
 JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana) :
-  katana_(katana), trajectory_executing_(false),
-      action_server_(ros::NodeHandle(), "joint_trajectory_action",
-                     boost::bind(&JointTrajectoryActionController::executeCB, this, _1))
+  katana_(katana), action_server_(ros::NodeHandle(), "joint_trajectory_action",
+                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1))
 {
   ros::NodeHandle node_;
 
   joints_ = katana_->getJointNames();
+
 
   // Trajectory and goal constraints
   //  node_.param("joint_trajectory_action_node/constraints/goal_time", goal_time_constraint_, 0.0);
@@ -415,6 +415,10 @@ static bool setsEqual(const std::vector<std::string> &a, const std::vector<std::
 
 void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
 {
+  // note: the SimpleActionServer guarantees that we enter this function only when
+  // there is no other active goal. in other words, only one instance of executeCB()
+  // is ever running at the same time.
+
   if (!setsEqual(joints_, goal->trajectory.joint_names))
   {
     ROS_ERROR("Joints on incoming goal don't match our joints");
@@ -437,12 +441,6 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     return;
   }
 
-  if (trajectory_executing_)
-  {
-    ROS_WARN("Already executing a trajectory!");
-    // I don't know if this can even happen with the simple action server, but let's make sure...
-  }
-
   // make sure the katana is stopped
   reset_trajectory_and_stop();
 
@@ -454,22 +452,18 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     return;
   }
 
-  trajectory_executing_ = true;
-
   // calculate new trajectory
   boost::shared_ptr<SpecifiedTrajectory> new_traj = calculateTrajectory(goal->trajectory);
   if (!new_traj)
   {
     ROS_ERROR("Could not calculate new trajectory, aborting");
     action_server_.setAborted();
-    trajectory_executing_ = false;
     return;
   }
   if (!validTrajectory(*new_traj))
   {
     ROS_ERROR("Computed trajectory did not fulfill all constraints!");
     action_server_.setAborted();
-    trajectory_executing_ = false;
     return;
   }
   current_trajectory_ = new_traj;
@@ -483,7 +477,6 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     {
       ROS_WARN("Goal canceled by client while waiting until scheduled start, aborting!");
       action_server_.setPreempted();
-      trajectory_executing_ = false;
       return;
     }
     rate.sleep();
@@ -495,7 +488,6 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   {
     ROS_ERROR("Problem while transferring trajectory to Katana arm, aborting");
     action_server_.setAborted();
-    trajectory_executing_ = false;
     return;
   }
 
@@ -510,15 +502,16 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     {
       ROS_ERROR("Some motor has crashed! Aborting trajectory...");
       action_server_.setAborted();
-      trajectory_executing_ = false;
       return;
     }
 
     // all joints are idle
     if (katana_->allJointsReady() && allJointsStopped())
     {
-      // make sure the joint positions are updated before checking for goalReached()
-      katana_->refreshEncoders();
+      // // make sure the joint positions are updated before checking for goalReached()
+      // --> this isn't necessary because refreshEncoders() is periodically called
+      //     by KatanaNode. Leaving it out saves us some Katana bandwidth.
+      // katana_->refreshEncoders();
 
       if (goalReached())
       {
@@ -531,7 +524,6 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
         ROS_ERROR("Joints are idle and motors are not crashed, but we did not reach the goal position! WTF?");
         action_server_.setAborted();
       }
-      trajectory_executing_ = false;
       return;
     }
 
@@ -539,7 +531,6 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     {
       ROS_WARN("Goal canceled by client while waiting for trajectory to finish, aborting!");
       action_server_.setPreempted();
-      trajectory_executing_ = false;
       return;
     }
 
