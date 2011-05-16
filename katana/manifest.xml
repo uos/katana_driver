@@ -2,7 +2,7 @@
   <description brief="Driver for the Neuronics Katana 450 arm">
 
     <p>
-    This package provides ROS interfaces to the the Neuronics Katana 450 arm.
+    This package provides ROS interfaces to the Neuronics Katana 450 arm.
     It wraps the <a href="/wiki/kni">KNI</a> library for low-level communication
     with the Katana arm.
     </p>

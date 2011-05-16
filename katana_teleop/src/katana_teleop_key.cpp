@@ -135,6 +135,7 @@ void KatanaTeleopKey::giveInfo()
   ROS_INFO("Current scaling is set to: %f" , increment_step_scaling);
   ROS_INFO("---------------------------");
   ROS_INFO("Use 'R' to return to the arm's initial pose");
+  ROS_INFO("Use 'I' to display this manual and the current joint state");
   ROS_INFO("---------------------------");
   ROS_INFO("Use 'AD' to switch to the next/previous joint");
 
@@ -294,7 +295,7 @@ void KatanaTeleopKey::keyboardLoop()
           break;
 
         case KEYCODE_Q:
-          // in case fo shutting down the teleop node the arm is moved back into it's initial pose
+          // in case of shutting down the teleop node the arm is moved back into it's initial pose
           // assuming that this is a proper resting pose for the arm
 
           ROS_INFO("Shutting down the Katana Teleoperation node...");
@@ -566,12 +567,12 @@ void KatanaTeleopKey::keyboardLoop()
              ROS_INFO("Action failed: %s", state.toString().c_str());
 
            ROS_INFO("...goal was successfully send!");
-           giveInfo();
+           //giveInfo();
+           ros::spinOnce();
         }
 
         movement_goal_.name.clear();
         movement_goal_.position.clear();
-
 
         dirty = false;
       }
