@@ -1,0 +1,20 @@
+<package>
+  <description brief="katana_openrave_kinematics">
+
+     katana_openrave_kinematics
+
+  </description>
+  <author>hdeeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_openrave_kinematics</url>
+
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="orrosplanning"/>
+  <depend package="kinematics_msgs"/>
+
+
+</package>
+
+
