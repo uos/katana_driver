@@ -12,9 +12,6 @@
   
   <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" />
 
- <!-- load katana urdf -->
-  <include file="$(find katana_description)/launch/upload_katana.launch" />
-
   <include file="$(find kinect_camera)/launch/kinect_node.launch" />
 
   <!-- drop frames to speed things up; the Kinect publishes at around 10 Hz, which is way too much 
