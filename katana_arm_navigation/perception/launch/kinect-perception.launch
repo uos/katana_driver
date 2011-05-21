@@ -10,10 +10,7 @@
  <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
     args="-0.81 -0.35 0.12 -1.58 0.01 -1.06 /katana_base_link /kinect_rgb 10" /> -->
   
-  <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" /> 
-  
- <!-- load katana urdf -->
-  <include file="$(find katana_description)/launch/upload_katana.launch" />
+  <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" />
 
   <include file="$(find kinect_camera)/launch/kinect_node.launch" />
 
