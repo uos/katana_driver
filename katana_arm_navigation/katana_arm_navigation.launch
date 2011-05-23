@@ -7,8 +7,8 @@
   <!-- motion planning -->
   <include file="$(find katana_arm_navigation)/planning/launch/ompl_planning.launch"/>
 
-  <!-- laser perception, planning environment -->
-  <include file="$(find katana_arm_navigation)/perception/launch/laser-perception.launch"/>
+  <!-- kinect perception, planning environment -->
+  <include file="$(find katana_arm_navigation)/perception/launch/kinect-perception.launch"/>
 
   <!-- trajectory filtering (spline smoother) -->
   <include file="$(find katana_arm_navigation)/filtering/launch/trajectory_filter.launch"/>
