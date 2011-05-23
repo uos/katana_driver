@@ -1,12 +1,11 @@
 <?xml version="1.0"?>
-<launch>
-  
-    <node pkg="katana" type="katana_openrave_kinematics" name="katana_openrave_kinematics" output="screen">
-    
-    <node pkg="orrosplanning" type="openrave_ik.py" name="openrave_ik" output="screen">
-    <param name="--scene" value="$(rospack find katana_description)/collada/katanam690a.robot.xml" />
-  
+<launch>   
+  <node pkg="katana_arm_kinematics_constraint_aware" type="non_constraint_aware_ik_adapter" name="katana_constraint_aware_openrave_ik" output="screen">
+    <param name="ik_service" value="GetPositionIK" />
+  </node>
+      
+  <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" output="screen">
+    <param name="--scene" value="$(find katana_description)/collada/katana6m90a.robot.xml"/>
+  	<param name="--collision" value="collision_map_occ_update"/>  
   </node>
 </launch>
-
-
