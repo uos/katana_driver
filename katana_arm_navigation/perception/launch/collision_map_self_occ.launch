@@ -12,7 +12,7 @@
     <!-- we do not want a separate map with occlusions alone -->
     <param name="publish_occlusion" type="bool" value="true" />
 
-    <!-- TODO: use map frame here -->
+    <!-- TODO: use world frame (e.g., "odom_combined", "map") -->
     <param name="fixed_frame" type="string" value="/katana_base_link" />
 
     <!-- Define a clipping box for the collision map; the operating range of the Katana
