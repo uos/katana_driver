@@ -51,25 +51,37 @@ JointMovementActionController::~JointMovementActionController()
  */
 bool JointMovementActionController::suitableJointGoal(const std::vector<std::string> &jointGoalNames)
 {
+
+  bool suitableJointGoal = true;
+
   for (size_t i = 0; i < jointGoalNames.size(); i++)
   {
+
+    bool exists = false;
+
     for (size_t j = 0; j < joints_.size(); j++)
     {
       if (jointGoalNames[i] == joints_[j])
-        continue;
+        exists = true;
+
     }
 
     for (size_t k = 0; k < gripper_joints_.size(); k++)
     {
       if (jointGoalNames[i] == gripper_joints_[k])
-        continue;
-    }
+        exists = true;
 
-    ROS_ERROR("joint name %s is not one of our controlled joints", jointGoalNames[i].c_str());
-    return false;
+    }
+    if (exists == false)
+    {
+      suitableJointGoal = false;
+      ROS_ERROR("joint name %s is not one of our controlled joints", jointGoalNames[i].c_str());
+    }
+    return suitableJointGoal;
   }
 
   return true;
+
 }
 
 sensor_msgs::JointState JointMovementActionController::adjustJointGoalPositionsToMotorLimits(
