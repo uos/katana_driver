@@ -54,6 +54,7 @@ bool getConstraintAwareIk(kinematics_msgs::GetConstraintAwarePositionIK::Request
 
   client_.call(srv);
 
+  ROS_DEBUG("non_constraint_aware_ik_adapter: get'ConstraintAware'Ik is called");
   resp.error_code = srv.response.error_code;
   resp.solution = srv.response.solution;
 
