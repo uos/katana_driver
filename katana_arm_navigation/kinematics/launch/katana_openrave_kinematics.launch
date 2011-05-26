@@ -1,15 +1,19 @@
 <?xml version="1.0"?>
 <launch>   
 
-  <remap from="IK" to="ik_openrave/IK" />
-  <remap from="GetPositionIK" to="ik_openrave/GetPositionIK" />
+  <remap from="IK" to="IK" />
+  <remap from="GetPositionIK" to="GetPositionIK" />
   <remap from="collision_map/collision_map" to="collision_map_occ" />
 
  <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=$(find katana_description)/collada/katana6m90a.robot.xml --viewer='' --collision_map=collision_map_occ" output="screen"> 
  </node> 
 
-  <node pkg="katana_arm_kinematics_constraint_aware" type="non_constraint_aware_ik_adapter" name="non_constraint_aware_ik_adapter" output="screen">
-  <param name="ik_service" value="ik_openrave/GetPositionIK" />
+  <!-- which joints does this katana instance control? -->
+  <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
+
+
+  <node pkg="katana_openrave_kinematics" type="katana_openrave_kinematics" name="katana_openrave_kinematics" output="screen">
+  <param name="ik_service" value="IK" />
   </node>    
  
 </launch>

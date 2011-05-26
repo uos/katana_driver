@@ -13,8 +13,7 @@
   <depend package="rospy"/>
   <depend package="orrosplanning"/>
   <depend package="kinematics_msgs"/>
-
-
+  <depend package="urdf"/>
 </package>
 
 

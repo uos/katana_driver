@@ -15,8 +15,8 @@
 
   <!-- inverse kinematics -->
   <!-- <include file="$(find katana_arm_navigation)/kinematics/launch/urdf_arm_kinematics.launch"/> -->
-  <!-- <include file="$(find katana_arm_navigation)/kinematics/launch/katana_arm_kinematics.launch"/> -->
-  <include file="$(find katana_arm_navigation)/kinematics/launch/katana_openrave_kinematics.launch"/>
+  <include file="$(find katana_arm_navigation)/kinematics/launch/katana_arm_kinematics.launch"/> 
+  <!-- <include file="$(find katana_arm_navigation)/kinematics/launch/katana_openrave_kinematics.launch"/> -->
   
 
   <!-- load planning_environment -->

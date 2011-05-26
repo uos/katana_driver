@@ -6,8 +6,5 @@
     <closingdirection>-1 -1</closingdirection>
     <direction>1 0 0</direction>
     <translation>0 0 -0.03</translation>
-    <ik_type>translationdirection5d</ik_type>
-    <!-- <IkSolver>TranslationDirection5D</IkSolver> -->
   </manipulator>
-  
 </robot>
