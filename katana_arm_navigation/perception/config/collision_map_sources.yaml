@@ -5,4 +5,6 @@ cloud_sources:
     # take every nth point from the frames you do process
     point_subsample: 1 
     sensor_frame: kinect_depth
-
+    dynamic_publish: false
+    static_publish: true
+    dynamic_until_static_publish: true
