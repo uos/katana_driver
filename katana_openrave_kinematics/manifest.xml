@@ -13,7 +13,16 @@
   <depend package="rospy"/>
   <depend package="orrosplanning"/>
   <depend package="kinematics_msgs"/>
+
   <depend package="urdf"/>
+  <depend package="pluginlib"/>
+  <depend package="kinematics_base"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lkatana_openrave_kinematics"/>
+    <kinematics_base plugin="${prefix}/katana_kinematics_plugin.xml" />
+  </export>
+
 </package>
 
 
