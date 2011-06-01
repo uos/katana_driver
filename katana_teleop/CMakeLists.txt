@@ -29,4 +29,5 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(katana_teleop src/katana_teleop_key.cpp src/katana_teleop_ps3joy.cpp)
+rosbuild_add_executable(katana_teleop src/katana_teleop_key.cpp) 
+#rosbuild_add_executable(katana_teleo src/katana_teleop_ps3joy.cpp)

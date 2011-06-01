@@ -1,0 +1,7 @@
+<library path="lib/libkatana_openrave_kinematics">
+  <class name="katana_openrave_kinematics/KatanaKinematicsPlugin" type="katana_openrave_kinematics::KatanaKinematicsPlugin" base_class_type="kinematics::KinematicsBase">
+    <description>
+      A plugin implementation of the katana kinematics based on the OpenRave IK and the urdf-based arm_kinematics FK</description>
+  </class>
+</library>
+

@@ -17,10 +17,11 @@
   <depend package="urdf"/>
   <depend package="pluginlib"/>
   <depend package="kinematics_base"/>
+  <depend package="arm_kinematics_constraint_aware"/>
 
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lkatana_openrave_kinematics"/>
-    <kinematics_base plugin="${prefix}/katana_kinematics_plugin.xml" />
+    <kinematics_base plugin="${prefix}/katana_openrave_kinematics.xml" />
   </export>
 
 </package>
