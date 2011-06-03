@@ -1,241 +1,293 @@
-#include <ros/ros.h>
-#include <joy/Joy.h>
-#include <sensor_msgs/JointState.h>
+/*
+ * UOS-ROS packages - Robot Operating System code by the University of Osnabrück
+ * Copyright (C) 2011  University of Osnabrück
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
+ * katana_teleop_ps3.cpp
+ *
+ *  Created on: 03.06.2011
+ *  Author: Henning Deeken <hdeeken@uos.de>
+ *
+ **/
 
-sensor_msgs::JointState currentState;
+#include <katana_teleop/katana_teleop_ps3.h>
+#include <math.h>
 
-double max_vel_x, max_rotational_vel;
-ros::Publisher vel_pub;
-double speed_multiplier;
-
-void jointStateCallback(const sensor_msgs::JointState::ConstPtr& js) {
-
-	kinematics_msgs::GetPositionFK::Request fk_request;
-	kinematics_msgs::GetPositionFK::Response fk_response;
-
-	fk_request.header.frame_id = "katana_base_link";
-	fk_request.fk_link_names.resize(1);
-	fk_request.fk_link_names[0] = "katana_gripper_tool_frame";
-	fk_request.robot_state.joint_state = js;
-
-	if (fk_client.call(fk_request, fk_response)) {
-		if (fk_response.error_code.val == fk_response.error_code.SUCCESS) {
-			for (unsigned int i = 0;
-					i < fk_response.pose_stamped.size();
-i				++)
-				{
-
-					ROS_INFO_STREAM("Link    : " << fk_response.fk_link_names[i].c_str());
-					ROS_INFO_STREAM("Position: " <<
-					fk_response.pose_stamped[i].pose.position.x << "," <<
-					fk_response.pose_stamped[i].pose.position.y << "," <<
-					fk_response.pose_stamped[i].pose.position.z);
-					ROS_INFO("Orientation: %f %f %f %f",
-					fk_response.pose_stamped[i].pose.orientation.x,
-					fk_response.pose_stamped[i].pose.orientation.y,
-					fk_response.pose_stamped[i].pose.orientation.z,
-					fk_response.pose_stamped[i].pose.orientation.w);
-
-					// set the necessary variables
-					current_state = js;
-					current_pose = fk_response.pose_stamped;
-
-				}
-			}
-			else
-			{
-				ROS_ERROR("Forward kinematics failed");
-			}
-		}
-		else
-		{
-			ROS_ERROR("Forward kinematics service call failed");
-		}
-	}
-}
-
-void ps3joyCallback(const joy::Joy::ConstPtr& joy) {
-
-	katana::JointMovementGoal goal;
-
-	if (joy->buttons[8] == 1) // check for full-speed button
-	{
-		goal.jointGoal.name.push_back["katana_l_finger_joint"]
-		// gripper schließen
-	} else if (joy->buttons[9] == 1) // else use half max speed
-	{
-		//gripper öffnen
-	}
-
-goal_pose = current_pose;
-
-if (math.abs(axes[0]) > 0) {
-	goal_pose.pose.y + axes[0];
-}
-if (math.abs(axes[1]) > 0) {
-	goal_pose.pose.x + axes[1];
-}
-if (math.abs(axes[3]) > 0) {
-	goal_pose.pose.z + axes[3];
-}
-
-// input js into GetPositionIK
-
-// define the service messages
-kinematics_msgs::GetPositionIK::Request gpik_req;
-kinematics_msgs::GetPositionIK::Response gpik_res;
-gpik_req.timeout = ros::Duration(5.0);
-
-gpik_req.ik_request.pose_stamped = goal_pose;
-gpik_req.ik_request.robot_state.joint_state = current_state;
-
-if (ik_client.call(gpik_req, gpik_res)) {
-	if (gpik_res.error_code.val == gpik_res.error_code.SUCCESS)
-
-		katana::JointMovementGoal goal;
-	goal.jointGoal = gpik_res.solution.joint_state;
-
-	bool finished_within_time = false;
-	action_client.sendGoal(goal);
-	finished_within_time = action_client.waitForResult(ros::Duration(1.0));
-	if (!finished_within_time) {
-		action_client.cancelGoal();
-		ROS_INFO("Timed out achieving goal!");
-	} else {
-		actionlib::SimpleClientGoalState state = action_client.getState();
-		bool success = (state == actionlib::SimpleClientGoalState::SUCCEEDED);
-		if (success)
-			ROS_INFO("Action finished: %s", state.toString().c_str());
-		else
-			ROS_INFO("Action failed: %s", state.toString().c_str());
-
-		ROS_INFO("...goal was successfully send!");
-		ros::spinOnce();
-	}
-
-else ROS_ERROR("Inverse kinematics failed, error code: %d", gpik_res.error_code.val);
-}
-else
-ROS_ERROR("Inverse kinematics service call failed");
-}
-}
-
-int main(int argc, char** argv) {
-ros::init(argc, argv, "kurt_teleop_ps3joy");
-
-ros::NodeHandle nh;
-ros::NodeHandle nh_ns("~");
-
-action_client("joint_movement_action", true)
-action_client.waitForService();
-
-std::string ik_service;
-nh_ns.param<std::string> ("ik_service", ik_service, "get_ik");
-client_ = n.serviceClient<kinematics_msgs::GetPositionIK> (ik_service);
-
-ros::service::waitForService("get_kinematic_solver_info");
-ros::service::waitForService("get_fk");
-ros::service::waitForService("ik_service");
-ros::ServiceClient query_client = nh.serviceClient<
-		kinematics_msgs::GetKinematicSolverInfo> ("get_kinematic_solver_info");
-ros::ServiceClient fk_client =
-		nh.serviceClient<kinematics_msgs::GetPositionFK> ("get_fk");
-
-ros::Subscriber js_sub_ = nh.subscribe("joint_states", 1000,
-		&KatanaTeleopPS3::jointStateCallback, this);
-ros::Subscriber ps3joy_sub = nh.subscribe("joy", 10, ps3joyCallback);
-
-// Gets all of the joints
-  XmlRpc::XmlRpcValue joint_names;
-
-  // Gets all of the joints
-  if (!n_.getParam("katana_joints", joint_names))
-  {
-    ROS_ERROR("No joints given. (namespace: %s)", n_.getNamespace().c_str());
-  }
-  joint_names_.resize(joint_names.size());
-
-  if (joint_names.getType() != XmlRpc::XmlRpcValue::TypeArray)
-  {
-    ROS_ERROR("Malformed joint specification.  (namespace: %s)", n_.getNamespace().c_str());
-  }
-
-  for (size_t i = 0; i < joint_names.size(); ++i)
-  {
-
-    XmlRpc::XmlRpcValue &name_value = joint_names[i];
-
-    if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
-    {
-      ROS_ERROR("Array of joint names should contain all strings.  (namespace: %s)",
-          n_.getNamespace().c_str());
-    }
-
-    joint_names_[i] = (std::string)name_value;
-
-  }
-
-  // Gets all of the gripper joints
-  XmlRpc::XmlRpcValue gripper_joint_names;
-
-  // Gets all of the joints
-  if (!n_.getParam("katana_gripper_joints", gripper_joint_names))
-  {
-    ROS_ERROR("No gripper joints given. (namespace: %s)", n_.getNamespace().c_str());
-  }
-
-  gripper_joint_names_.resize(gripper_joint_names.size());
-
-  if (gripper_joint_names.getType() != XmlRpc::XmlRpcValue::TypeArray)
-  {
-    ROS_ERROR("Malformed gripper joint specification.  (namespace: %s)", n_.getNamespace().c_str());
-  }
-  for (size_t i = 0; i < gripper_joint_names.size(); ++i)
-  {
-    XmlRpc::XmlRpcValue &name_value = gripper_joint_names[i];
-    if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
-    {
-      ROS_ERROR("Array of gripper joint names should contain all strings.  (namespace: %s)",
-          n_.getNamespace().c_str());
-    }
-
-    gripper_joint_names_[i] = (std::string)name_value;
-  }
-
-  combined_joints_.resize(joint_names_.size() + gripper_joint_names_.size());
-
-  for (unsigned int i = 0; i < joint_names_.size(); i++)
-  {
-    combined_joints_[i] = joint_names_[i];
-  }
-
-  for (unsigned int i = 0; i < gripper_joint_names_.size(); i++)
-  {
-    combined_joints_[joint_names_.size() + i] = gripper_joint_names_[i];
-  }
-
-ros::spin();
-}
-
-
-
-bool KatanaTeleopPS3::matchJointGoalRequest()
+namespace katana
 {
 
-  bool found_match = false;
+KatanaTeleopPS3::KatanaTeleopPS3() :
+  action_client("joint_movement_action", true)
+{
 
-  for (unsigned int i = 0; i < current_pose_.name.size(); i++)
+  ROS_INFO("KatanaTeleopPS3 starting...");
+
+  ros::NodeHandle n_;
+  ros::NodeHandle n_private("~");
+
+  // register service and action clients
+  action_client.waitForServer();
+
+  n_private.param<std::string> ("ik_service", ik_service, "get_constraint_aware_ik");
+  n_private.param<std::string> ("fk_service", fk_service, "get_fk");
+  n_private.param<std::string> ("ik_solver_info", ik_solver_info, "get_ik_solver_info");
+
+  ros::service::waitForService(ik_service);
+  ros::service::waitForService(fk_service);
+  ros::service::waitForService(ik_solver_info);
+
+  ik_client = n_.serviceClient<kinematics_msgs::GetConstraintAwarePositionIK> (ik_service);
+  fk_client = n_.serviceClient<kinematics_msgs::GetPositionFK> (fk_service);
+  info_client = n_.serviceClient<kinematics_msgs::GetKinematicSolverInfo> (ik_solver_info);
+
+  js_sub_ = n_.subscribe("joint_states", 1000, &KatanaTeleopPS3::jointStateCallback, this);
+
+  ps3joy_sub = n_.subscribe("joy", 100, &KatanaTeleopPS3::ps3joyCallback, this);
+
+  active = true;
+
+}
+
+void KatanaTeleopPS3::jointStateCallback(const sensor_msgs::JointState::ConstPtr& js)
+{
+
+  sensor_msgs::JointState incoming_joint_state_;
+  incoming_joint_state_.header = js->header;
+  incoming_joint_state_.name = js->name;
+  incoming_joint_state_.position = js->position;
+
+  kinematics_msgs::GetPositionFK::Request fk_request;
+  kinematics_msgs::GetPositionFK::Response fk_response;
+
+  fk_request.header.frame_id = "katana_base_link";
+  fk_request.fk_link_names.resize(1);
+  fk_request.fk_link_names[0] = "katana_gripper_tool_frame";
+  fk_request.robot_state.joint_state = incoming_joint_state_;
+
+  if (fk_client.call(fk_request, fk_response))
   {
 
-    if (current_pose_.name[i] == combined_joints_[jointIndex])
+    if (fk_response.error_code.val == fk_response.error_code.SUCCESS)
     {
-      movement_goal_.position.push_back();
-      found_match = true;
-      break;
 
+      // update the internal variables
+      currentState = incoming_joint_state_;
+
+      //TODO: read pose of katana_gripper_tool_frame
+      //currentPose = fk_response.pose_stamped;
+
+      for (unsigned int i = 0; i < fk_response.pose_stamped.size(); i++)
+      {
+
+        ROS_DEBUG("       Link: %s", fk_response.fk_link_names[i].c_str());
+        ROS_DEBUG("   Position: %f %f %f",
+            fk_response.pose_stamped[i].pose.position.x,
+            fk_response.pose_stamped[i].pose.position.y,
+            fk_response.pose_stamped[i].pose.position.z);
+        ROS_DEBUG("Orientation: %f %f %f %f",
+            fk_response.pose_stamped[i].pose.orientation.x,
+            fk_response.pose_stamped[i].pose.orientation.y,
+            fk_response.pose_stamped[i].pose.orientation.z,
+            fk_response.pose_stamped[i].pose.orientation.w);
+      }
+
+    }
+    else
+    {
+      ROS_ERROR("Forward kinematics failed");
+    }
+  }
+  else
+  {
+    ROS_ERROR("Forward kinematics service call failed");
+  }
+}
+
+void KatanaTeleopPS3::ps3joyCallback(const joy::Joy::ConstPtr& joy)
+{
+  bool execute_action = false;
+
+
+  if (joy->buttons[16] == 1)
+  {
+    active = false;
+  }
+
+  if (joy->buttons[16] == 0)
+  {
+    savedState = currentState;
+
+  }
+
+  if (joy->buttons[3] == 0)
+  {
+
+    goal.jointGoal = savedState;
+    execute_action = true;
+
+  }
+
+  else
+
+  {
+     if (joy->buttons[8] == 1)
+    {
+      addGripperGoalPosition("katana_l_finger_joint", -((joy->axes[8] - 1.0) / -2.0));
+      execute_action = true;
+    }
+    else if (joy->buttons[9] == 1)
+    {
+      addGripperGoalPosition("katana_l_finger_joint", -((joy->axes[8] - 1.0) / -2.0));
+      execute_action = true;
+    }
+
+    goalPose = currentPose;
+    if (abs(joy->axes[0]) > 0 || abs(joy->axes[1]) > 0 || abs(joy->axes[3]) > 0)
+    {
+      goalPose.pose.position.y += joy->axes[0];
+
+      goalPose.pose.position.x += joy->axes[1];
+
+      goalPose.pose.position.z += joy->axes[3];
+    }
+
+  }
+
+  // define the service messages
+  kinematics_msgs::GetConstraintAwarePositionIK::Request gcapik_req;
+  kinematics_msgs::GetConstraintAwarePositionIK::Response gcapik_res;
+  gcapik_req.timeout = ros::Duration(5.0);
+
+  gcapik_req.ik_request.pose_stamped = goalPose;
+  gcapik_req.ik_request.robot_state.joint_state = currentState;
+  gcapik_req.ik_request.ik_seed_state.joint_state = currentState;
+
+  if (ik_client.call(gcapik_req, gcapik_res))
+  {
+    if (gcapik_res.error_code.val == gcapik_res.error_code.SUCCESS)
+    {
+
+      for (size_t i = 0; i < gcapik_res.solution.joint_state.name.size(); i++)
+      {
+        goal.jointGoal.name.push_back(gcapik_res.solution.joint_state.name[i]);
+        goal.jointGoal.position.push_back(gcapik_res.solution.joint_state.position[i]);
+      }
+
+      execute_action = true;
+
+    }
+    else
+    {
+      ROS_ERROR("IK failed, error code: %d", gcapik_res.error_code.val);
+    }
+  }
+  else
+  {
+    ROS_ERROR("IK service call failed");
+  }
+
+  if (execute_action)
+  {
+
+    bool finished_within_time = false;
+
+    action_client.sendGoal(goal);
+    finished_within_time = action_client.waitForResult(ros::Duration(1.0));
+
+    if (!finished_within_time)
+    {
+      action_client.cancelGoal();
+      ROS_INFO("Timed out achieving goal!");
+    }
+    else
+    {
+      actionlib::SimpleClientGoalState state = action_client.getState();
+      bool success = (state == actionlib::SimpleClientGoalState::SUCCEEDED);
+
+      if (success)
+        ROS_INFO("Action finished: %s", state.toString().c_str());
+      else
+        ROS_INFO("Action failed: %s", state.toString().c_str());
+
+      ROS_INFO("...goal was successfully send!");
+
+      ros::spinOnce();
     }
   }
 
-  return found_match;
 }
 
+void KatanaTeleopPS3::addGripperGoalPosition(std::string name, float increment)
+{
+
+
+  float gripper_pos;
+  if (getCurrentJointPosition(currentState, name, gripper_pos))
+    if ((gripper_pos + increment) >= 0.44 && (gripper_pos + increment) <= 0.30)
+    {
+      goal.jointGoal.name.push_back(name);
+      goal.jointGoal.position.push_back(gripper_pos + increment);
+    }
+    else
+      ROS_WARN("gripper position would exceed limits");
+  else
+    ROS_WARN("could not access gripper joint");
+
+}
+
+bool KatanaTeleopPS3::getCurrentJointPosition(sensor_msgs::JointState &joint_state, std::string &name, float &position)
+{
+
+  for (size_t i = 0; i < joint_state.name.size(); i++)
+  {
+
+    if (joint_state.name[i] == name)
+    {
+      position = joint_state.position[i];
+      return true;
+    }
+
+    return false;
+
+  }
+
+}
+
+void KatanaTeleopPS3::loop(){
+
+  while (active)
+  {
+      ros::spin();
+  }
+
+}
+}
+
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "katana_teleop_ps3");
+
+  katana::KatanaTeleopPS3 ktps3;
+
+  ktps3.loop();
+
+
+  return 1;
+
+}
+
+
+// end namespace

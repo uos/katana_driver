@@ -65,7 +65,7 @@ bool getOpenRaveIK(kinematics_msgs::GetConstraintAwarePositionIK::Request &req,
 
   srv.request.joint_state = req.ik_request.robot_state.joint_state;
   srv.request.pose_stamped = req.ik_request.pose_stamped;
-  srv.request.iktype = "translationdirection5d";
+  srv.request.iktype = "Translation3D";
   srv.request.filteroptions = 0;
   client_.call(srv);
 
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
   joint_limits_.resize(5);
 
   std::string robot_desc_string;
-  ROS_ERROR("läuft");
+
   if (!n.getParam("robot_description", robot_desc_string))
   {
     ROS_FATAL("Couldn't get a robot_description from the param server");

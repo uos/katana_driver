@@ -11,7 +11,6 @@
   <!-- which joints does this katana instance control? -->
   <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
 
-
   <node pkg="katana_openrave_kinematics" type="katana_openrave_kinematics" name="katana_openrave_kinematics" output="screen">
   <param name="ik_service" value="IK" />
   </node>    

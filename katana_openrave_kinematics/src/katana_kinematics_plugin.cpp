@@ -1,47 +1,30 @@
 /*
- * Copyright (c) 2008, Willow Garage, Inc.
- * All rights reserved.
+ * UOS-ROS packages - Robot Operating System code by the University of Osnabrück
+ * Copyright (C) 2011  University of Osnabrück
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
  *
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of the Willow Garage, Inc. nor the names of its
- *       contributors may be used to endorse or promote products derived from
- *       this software without specific prior written permission.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
-// TODO: Adapt Copyright Info
-
-/*
- * Author: Henning Deeken  // hdeeken@uos.de
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  *
+ *
+ * katana_kinematics_plugin.cpp
  * based on the pr2_arm_kinematics_plugin.cpp by Sachin Chitta
+ *
+ *  Created on: 30.05.2010
+ *  Author: Henning Deeken  // hdeeken@uos.de
  */
 
-#include <arm_kinematics_constraint_aware/arm_kinematics_constraint_aware_utils.h>
 #include <katana_openrave_kinematics/katana_openrave_kinematics.h>
-#include <geometry_msgs/PoseStamped.h>
-#include <ros/ros.h>
-#include <algorithm>
-#include <numeric>
-
 #include <pluginlib/class_list_macros.h>
 
 using namespace tf;
@@ -49,7 +32,7 @@ using namespace kinematics;
 using namespace std;
 using namespace ros;
 
-//register KatanaKinematics as a KinematicsBase implementation
+// register KatanaKinematics as a KinematicsBase implementation
 PLUGINLIB_DECLARE_CLASS(katana_openrave_kinematics, KatanaKinematicsPlugin, katana_openrave_kinematics::KatanaKinematicsPlugin, kinematics::KinematicsBase)
 
 namespace katana_openrave_kinematics
@@ -69,25 +52,26 @@ bool KatanaKinematicsPlugin::isActive()
 
 bool KatanaKinematicsPlugin::initialize(std::string name)
 {
-
   urdf::Model robot_model;
   std::string tip_name, xml_string;
   ros::NodeHandle private_handle("~/" + name);
+
   dimension_ = 5;
-  while (!arm_kinematics_constraint_aware::loadRobotModel(private_handle, robot_model, root_name_, tip_name, xml_string) && private_handle.ok())
+
+  while (!arm_kinematics_constraint_aware::loadRobotModel(private_handle, robot_model, root_name_, tip_name, xml_string)
+      && private_handle.ok())
   {
     ROS_ERROR("Could not load robot model. Are you sure the robot model is on the parameter server?");
     ros::Duration(0.5).sleep();
   }
 
-  ROS_WARN("Root: %s Tip: %s", root_name_.c_str(), tip_name.c_str());
+  ROS_DEBUG("Root: %s Tip: %s", root_name_.c_str(), tip_name.c_str());
 
   kinematics_msgs::KinematicSolverInfo kinematic_info_;
 
-  getUrdfInfo(robot_model, root_name_, tip_name, kinematic_info_);
+  arm_kinematics_constraint_aware::getChainInfoFromRobotModel(robot_model, root_name_, tip_name, kinematic_info_);
 
-  ROS_INFO("Advertising services");
-
+  // connecting to services
   std::string fk_service;
   private_handle.param<std::string> ("fk_service", fk_service, "get_fk");
   fk_service_ = node_handle_.serviceClient<kinematics_msgs::GetPositionFK> (fk_service);
@@ -137,7 +121,9 @@ bool KatanaKinematicsPlugin::initialize(std::string name)
     ROS_INFO("KatanaKinematicsPlugin::active for %s",name.c_str());
     active_ = true;
   }
-  // ROS_ERROR("Giving Tool Frame: %s",ik_solver_info_.link_names[0].c_str());
+
+  ROS_DEBUG("Initialising the KatanaKinematicsPlugin was successful.");
+
   return active_;
 }
 
@@ -148,10 +134,13 @@ bool KatanaKinematicsPlugin::getPositionIK(const geometry_msgs::Pose &ik_pose,
   if (!active_)
   {
     ROS_ERROR("kinematics not active");
-    error_code = 1; //kinematics::SUCCESS;
+    error_code = kinematics::SUCCESS;
     return false;
   }
 
+  ROS_DEBUG("Call getPositionIK()...");
+
+  // set up the OpenRave IK request
   orrosplanning::IK srv;
   srv.request.manip_name = "arm";
   srv.request.joint_state.header.frame_id = root_name_;
@@ -159,26 +148,29 @@ bool KatanaKinematicsPlugin::getPositionIK(const geometry_msgs::Pose &ik_pose,
   srv.request.pose_stamped.pose = ik_pose;
   srv.request.pose_stamped.header.frame_id = root_name_;
   srv.request.pose_stamped.header.stamp = ros::Time::now();
-  srv.request.iktype = "translationdirection5d";
+  srv.request.iktype = "TranslationDirection5D";
   srv.request.filteroptions = 0;
-  ROS_DEBUG("Call OpenRave IK");
+
+  ROS_DEBUG("Call OpenRave IK...");
   ik_service_.call(srv);
 
   if (srv.response.error_code.val == srv.response.error_code.SUCCESS)
   {
     if (srv.response.solutions.points.size() >= 1)
     {
-      ROS_DEBUG("OpenRave IK found several solutions, we discard all solutions despite the first one");
+      ROS_DEBUG("OpenRave IK found %d solutions,", srv.response.solutions.points.size());
+      ROS_DEBUG("in cases of several solutions we discard all despite the first one");
     }
+
     solution.resize(dimension_);
     solution = srv.response.solutions.points[0].positions;
-    error_code = 1; //kinematics::SUCCESS
+    error_code = kinematics::SUCCESS;
     return true;
   }
   else
   {
     ROS_DEBUG("An IK solution could not be found");
-    error_code = -2; //kinematics::NO_IK_SOLUTION;
+    error_code = kinematics::NO_IK_SOLUTION;
     return false;
   }
 }
@@ -194,6 +186,9 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
     return false;
   }
 
+  ROS_DEBUG("Call searchPositionIK() without Callback Functions...");
+
+  // set up the OpenRave IK request
   orrosplanning::IK srv;
   srv.request.manip_name = "arm";
   srv.request.joint_state.header.frame_id = root_name_;
@@ -201,27 +196,31 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
   srv.request.pose_stamped.pose = ik_pose;
   srv.request.pose_stamped.header.frame_id = root_name_;
   srv.request.pose_stamped.header.stamp = ros::Time::now();
-  srv.request.iktype = "translationdirection5d";
+  srv.request.iktype = "TranslationDirection5D";
   srv.request.filteroptions = 0;
-  ROS_DEBUG("Call OpenRave IK");
+
+  ROS_DEBUG("Call OpenRave IK...");
+
   ik_service_.call(srv);
 
   if (srv.response.error_code.val == srv.response.error_code.SUCCESS)
   {
     if (srv.response.solutions.points.size() >= 1)
     {
-      ROS_DEBUG("OpenRave IK found several solutions, we discard all despite the first one");
+      ROS_DEBUG("OpenRave IK found %d solutions,", srv.response.solutions.points.size());
+      ROS_DEBUG("in cases of several solutions we discard all despite the first one");
     }
+
     solution.resize(dimension_);
     solution = srv.response.solutions.points[0].positions;
-    error_code = 1; //kinematics::SUCCESS;
+    error_code = kinematics::SUCCESS;
 
     return true;
   }
   else
   {
     ROS_DEBUG("An IK solution could not be found");
-    error_code = -2; //kinematics::NO_IK_SOLUTION;
+    error_code = kinematics::NO_IK_SOLUTION;
     return false;
   }
 }
@@ -232,7 +231,9 @@ void KatanaKinematicsPlugin::desiredPoseCallback(const std::vector<double>& ik_s
 {
 
   int int_error_code;
+
   desiredPoseCallback_(ik_pose, ik_seed_state, int_error_code);
+
   if (int_error_code)
     error_code.val = motion_planning_msgs::ArmNavigationErrorCodes::SUCCESS;
   else
@@ -244,7 +245,9 @@ void KatanaKinematicsPlugin::jointSolutionCallback(const std::vector<double>& so
                                                    motion_planning_msgs::ArmNavigationErrorCodes& error_code)
 {
   int int_error_code;
+
   solutionCallback_(ik_pose, solution, int_error_code);
+
   if (int_error_code > 0)
     error_code.val = motion_planning_msgs::ArmNavigationErrorCodes::SUCCESS;
   else
@@ -269,48 +272,56 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
     return false;
   }
 
+  ROS_DEBUG("Call searchPositionIK() with Callback Functions...");
+
   desiredPoseCallback_ = desired_pose_callback;
   solutionCallback_ = solution_callback;
 
   motion_planning_msgs::ArmNavigationErrorCodes error_code;
+
   // perform IK and check for callback suitability
 
   if (!desired_pose_callback.empty())
     desiredPoseCallback(ik_seed_state, ik_pose, error_code);
+
   if (error_code.val != error_code.SUCCESS)
   {
     ROS_DEBUG("An IK solution could not be found, because the constraints in desired_pose_callback are not matched");
-    error_code_int = -2; // NO_IK_SOLUTION
+    error_code_int = kinematics::NO_IK_SOLUTION;
     return false;
   }
 
-  orrosplanning::IK srv;
   std::vector<double> solution_;
+
+  // set up the OpenRave IK request
+  orrosplanning::IK srv;
   srv.request.manip_name = "arm";
   srv.request.joint_state.header.frame_id = root_name_;
   srv.request.joint_state.position = ik_seed_state;
   srv.request.pose_stamped.pose = ik_pose;
   srv.request.pose_stamped.header.frame_id = root_name_;
   srv.request.pose_stamped.header.stamp = ros::Time::now();
-  srv.request.iktype = "translationdirection5d";
+  srv.request.iktype = "TranslationDirection5D";
   srv.request.filteroptions = 0;
-  ROS_DEBUG("Call OpenRave IK");
-    ik_service_.call(srv);
 
-    ROS_DEBUG("OpenRave Result %d", srv.response.error_code.val);
+  ROS_WARN("Call OpenRave IK ...");
+  ik_service_.call(srv);
+
+  ROS_WARN("OpenRave Result %d", srv.response.error_code.val);
 
   if (srv.response.error_code.val == srv.response.error_code.SUCCESS)
   {
-
     if (srv.response.solutions.points.size() >= 1)
     {
-      ROS_DEBUG("OpenRave IK found several solutions, we discard all despite the first one");
+      ROS_DEBUG("OpenRave IK found %d solutions,", srv.response.solutions.points.size());
+      ROS_DEBUG("in cases of several solutions we discard all despite the first one");
     }
     solution_.resize(dimension_);
     solution_ = srv.response.solutions.points[0].positions;
   }
 
   bool callback_check = true;
+
   if (solution_callback.empty())
     callback_check = false;
 
@@ -319,12 +330,12 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
     if (callback_check)
     {
       jointSolutionCallback(solution_, ik_pose, error_code);
+
       if (error_code.val == error_code.SUCCESS)
       {
         solution.resize(dimension_);
         solution = solution_;
-        error_code_int = 1; //SUCCESS
-        ROS_DEBUG("return ture");
+        error_code_int = kinematics::SUCCESS;
         return true;
       }
     }
@@ -333,19 +344,17 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
       error_code.val = error_code.SUCCESS;
       solution.resize(dimension_);
       solution = solution_;
-      error_code_int = 1; //SUCCESS
-      ROS_DEBUG("return ture");
+      error_code_int = kinematics::SUCCESS;
       return true;
     }
   }
   else
   {
     ROS_WARN("An IK solution could not be found");
-    error_code_int = -2;
-    ROS_WARN("return false");
+    error_code_int = kinematics::NO_IK_SOLUTION;
     return false;
   }
-  ROS_ERROR("searchPoistionIK run till the end, this should not happen");
+
   return false;
 }
 
@@ -359,10 +368,12 @@ bool KatanaKinematicsPlugin::getPositionFK(const std::vector<std::string> &link_
     return false;
   }
 
+  ROS_DEBUG("Call getPositionFK()...");
+
+
   kinematics_msgs::GetPositionFK srv;
 
-  // TODO extrem unschoen oder?
-  srv.request.header.frame_id = "katana_base_link";
+  srv.request.header.frame_id = root_name_;
   srv.request.fk_link_names = link_names;
   srv.request.robot_state.joint_state.name = link_names;
   srv.request.robot_state.joint_state.position = joint_angles;
@@ -379,19 +390,19 @@ bool KatanaKinematicsPlugin::getPositionFK(const std::vector<std::string> &link_
 
   if (srv.response.error_code.val == srv.response.error_code.SUCCESS)
   {
-
     ROS_DEBUG("Successfully computed FK...");
 
     for (size_t i = 0; i < poses.size(); i++)
     {
       poses[i] = srv.response.pose_stamped[i].pose;
-      ROS_DEBUG("Joint: %s Pose: %f %f %f // %f %f %f %f", link_names[i].c_str(), poses[i].position.x,
-          poses[i].position.y,
-          poses[i].position.z,
-          poses[i].orientation.x,
-          poses[i].orientation.y,
-          poses[i].orientation.z,
-          poses[i].orientation.w);
+      ROS_DEBUG("Joint: %s Pose: %f %f %f // %f %f %f %f",  link_names[i].c_str(),
+                                                            poses[i].position.x,
+                                                            poses[i].position.y,
+                                                            poses[i].position.z,
+                                                            poses[i].orientation.x,
+                                                            poses[i].orientation.y,
+                                                            poses[i].orientation.z,
+                                                            poses[i].orientation.w);
     }
 
     return true;
@@ -404,6 +415,7 @@ bool KatanaKinematicsPlugin::getPositionFK(const std::vector<std::string> &link_
     return false;
   }
 }
+
 std::string KatanaKinematicsPlugin::getBaseFrame()
 {
   if (!active_)
@@ -411,7 +423,7 @@ std::string KatanaKinematicsPlugin::getBaseFrame()
     ROS_ERROR("kinematics not active");
     return std::string("");
   }
-  return "katana_base_link";
+  return root_name_;
 }
 
 std::string KatanaKinematicsPlugin::getToolFrame()
@@ -422,8 +434,6 @@ std::string KatanaKinematicsPlugin::getToolFrame()
     return std::string("");
   }
 
-  //ROS_ERROR("Giving Tool Frame: %s",ik_solver_info_.link_names[0].c_str());
-  //return "katana_gripper_tool_frame";
   return ik_solver_info_.link_names[0];
 }
 
@@ -448,58 +458,6 @@ std::vector<std::string> KatanaKinematicsPlugin::getLinkNames()
   }
 
   return fk_solver_info_.link_names;
-}
-
-bool KatanaKinematicsPlugin::getUrdfInfo(urdf::Model &robot_model, const std::string &root_name,
-                                         const std::string &tip_name, kinematics_msgs::KinematicSolverInfo &chain_info)
-{
-  ROS_INFO("starting to read urdf...");
-  boost::shared_ptr<const urdf::Link> link = robot_model.getLink(tip_name);
-  boost::shared_ptr<const urdf::Joint> joint;
-  while (link && link->name != root_name)
-  {
-    joint = robot_model.getJoint(link->parent_joint->name);
-    ROS_INFO("Process %s",link->parent_joint->name.c_str());
-    if (!joint)
-    {
-      ROS_ERROR("Could not find joint: %s",link->parent_joint->name.c_str());
-      return false;
-    }
-    if (joint->type != urdf::Joint::UNKNOWN && joint->type != urdf::Joint::FIXED)
-    {
-      float lower, upper;
-      int hasLimits;
-      if (joint->type != urdf::Joint::CONTINUOUS)
-      {
-        lower = joint->limits->lower;
-        upper = joint->limits->upper;
-        hasLimits = 1;
-      }
-      else
-      {
-        lower = -M_PI;
-        urdf::Model robot_model;
-        upper = M_PI;
-        hasLimits = 0;
-      }
-      chain_info.joint_names.push_back(joint->name);
-      motion_planning_msgs::JointLimits limits;
-      limits.joint_name = joint->name;
-      limits.has_position_limits = hasLimits;
-      limits.min_position = lower;
-      limits.max_position = upper;
-      chain_info.limits.push_back(limits);
-    }
-    link = robot_model.getLink(link->getParent()->name);
-  }
-  link = robot_model.getLink(tip_name);
-  if (link)
-    chain_info.link_names.push_back(tip_name);
-
-  std::reverse(chain_info.limits.begin(), chain_info.limits.end());
-  std::reverse(chain_info.joint_names.begin(), chain_info.joint_names.end());
-  ROS_INFO("Got all infos out of URDF");
-  return true;
 }
 
 }

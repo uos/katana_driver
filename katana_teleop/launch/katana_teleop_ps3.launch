@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<!-- see http://www.ros.org/wiki/move_arm/Tutorials/GettingStarted -->
+<launch>
+
+  <node pkg="joy" type="joy_node" name="joy_node">
+  	<param name="autorepeat_rate" value="10">
+  </node>
+
+  <include file="$(find ps3joy)/ps3.launch" />
+
+  <!-- start katana node -->
+  <include file="$(find katana_openrave_kinematics)/launch/katana_selfcollision_aware_kinematics.launch" />
+
+  <!-- start ps3 tele_op node -->
+  <node pkg="katana_teleop" type="katana_teleop_ps3" name="katana_teleop_ps3" output="screen"/>
+ 
+</launch>

@@ -1,9 +1,15 @@
 <package>
-  <description brief="katana_openrave_kinematics">
+ 
+   <description brief="A kinematics plugin for the Katana 450 arm based on OpenRave IK and urdf-based FK">
 
-     katana_openrave_kinematics
-
+    <p>
+    This package provides an plugin implementation of the kinematics_base interface to establish constraint aware kinematics services.
+    The plugin combines the OpenRave IK service from the orroplanning package and the generic urdf-based FK from the arm_kinematics package.
+    
+    To provide constraint_aware services the plugin must be used with the arm_kinematics_constraint_aware node of the respective package.
+    </p>
   </description>
+ 
   <author>hdeeken</author>
   <license>BSD</license>
   <review status="unreviewed" notes=""/>
@@ -13,7 +19,6 @@
   <depend package="rospy"/>
   <depend package="orrosplanning"/>
   <depend package="kinematics_msgs"/>
-
   <depend package="urdf"/>
   <depend package="pluginlib"/>
   <depend package="kinematics_base"/>
