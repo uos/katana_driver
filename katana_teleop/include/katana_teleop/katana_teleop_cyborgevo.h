@@ -63,6 +63,7 @@ class KatanaTeleopCyborgEvo
 
     bool active, initial;
 
+    std::vector<double> current_RPY_Orientation,initial_RPY_Orientation, saved_RPY_Orientation;
     katana::JointMovementGoal goal;
     sensor_msgs::JointState currentState, savedState, initialState;
     geometry_msgs::PoseStamped currentPose, goalPose;

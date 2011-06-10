@@ -1,21 +1,22 @@
 arm:
   tip_name: katana_gripper_tool_frame
   root_name: katana_base_link
-  kinematics_solver: katana_openrave_kinematics/KatanaKinematicsPlugin
+  #kinematics_solver: katana_openrave_kinematics/KatanaKinematicsPlugin
+  kinematics_solver: arm_kinematics_constraint_aware/KDLArmKinematicsPlugin
 
 #Parameter Set for ACTIVE collision_map   
-#use_collision_map: true
-#default_robot_padding: 0.02
-#link_padding:
-#  - link: arm 
-#    padding: .02
-
-#Parameter Set for IN-ACTIVE collision_map       
-use_collision_map: false
-collision_map_safety_timeout: 10000.0
-joint_states_safety_timeout: 1.0
-tf_safety_timeout: 10.0
+use_collision_map: true
 default_robot_padding: 0.02
 link_padding:
-  - link: right_arm 
+  - link: arm 
     padding: .02
+
+#Parameter Set for IN-ACTIVE collision_map       
+#use_collision_map: false
+#collision_map_safety_timeout: 10000.0
+#joint_states_safety_timeout: 1.0
+#tf_safety_timeout: 10.0
+#default_robot_padding: 0.02
+#link_padding:
+#  - link: right_arm 
+#    padding: .02
