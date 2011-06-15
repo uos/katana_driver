@@ -84,6 +84,7 @@ void KatanaTeleopCyborgEvo::jointStateCallback(const sensor_msgs::JointState::Co
   if (initial)
     initialState = incoming_joint_state_;
 
+
   kinematics_msgs::GetPositionFK::Request fk_request;
   kinematics_msgs::GetPositionFK::Response fk_response;
 
@@ -98,6 +99,9 @@ void KatanaTeleopCyborgEvo::jointStateCallback(const sensor_msgs::JointState::Co
     if (fk_response.error_code.val == fk_response.error_code.SUCCESS)
     {
 
+    	if(initial){
+    		initial_RPY_Orientation = fk_response.pose_stamped[0].orientation;
+    	}
       // update the internal variables
       currentState = incoming_joint_state_;
       currentPose = fk_response.pose_stamped[0];
@@ -179,11 +183,24 @@ void KatanaTeleopCyborgEvo::cyborgevoCallback(const joy::Joy::ConstPtr& joy)
     }
 
     goalPose = currentPose;
-    if (abs(joy->axes[0]) > 0.1 || abs(joy->axes[1]) > 0.1 || abs(joy->axes[3]) > 0.1)
+    if (abs(joy->axes[0]) > 0.1 ||
+    	abs(joy->axes[1]) > 0.1 ||
+    	abs(joy->axes[3]) > 0.1 ||
+    	abs(joy->axes[R]) > 0.1 ||
+    	abs(joy->axes[P]) > 0.1 ||
+    	abs(joy->axes[Y]) > 0.1)
     {
       goalPose.pose.position.y += 0.001 * joy->axes[0];
       goalPose.pose.position.x += 0.001 * joy->axes[1];
       goalPose.pose.position.z += 0.001 * joy->axes[3];
+
+
+
+      goalPose.pose.position.y += 0.001 * joy->axes[0];
+            goalPose.pose.position.x += 0.001 * joy->axes[1];
+            goalPose.pose.position.z += 0.001 * joy->axes[3];
+
+
       ROS_WARN("Want to modify Pose");
       request_ik = true;
     }

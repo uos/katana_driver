@@ -151,7 +151,7 @@ bool KatanaKinematicsPlugin::getPositionIK(const geometry_msgs::Pose &ik_pose,
   srv.request.iktype = "TranslationDirection5D";
   srv.request.filteroptions = 0;
 
-  ROS_WARN("Call OpenRave IK...in Plugin...gPIK");
+  ROS_DEBUG("Call OpenRave IK...in Plugin...gPIK");
   ik_service_.call(srv);
 
   if (srv.response.error_code.val == srv.response.error_code.SUCCESS)
@@ -199,7 +199,7 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
   srv.request.iktype = "TranslationDirection5D";
   srv.request.filteroptions = 0;
 
-  ROS_WARN("Call OpenRave IK...in Plugin...sPIK wo CB");
+  ROS_DEBUG("Call OpenRave IK...in Plugin...sPIK wo CB");
 
   ik_service_.call(srv);
 
@@ -304,17 +304,17 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
   srv.request.iktype = "TranslationDirection5D";
   srv.request.filteroptions = 0;
 
-  ROS_WARN("Call OpenRave IK in Plugin...sPIK w CB");
+  ROS_DEBUG("Call OpenRave IK in Plugin...sPIK w CB");
   ik_service_.call(srv);
 
-  ROS_WARN("OpenRave Result %d", srv.response.error_code.val);
+  ROS_DEBUG("OpenRave Result %d", srv.response.error_code.val);
 
   if (srv.response.error_code.val == srv.response.error_code.SUCCESS)
   {
     if (srv.response.solutions.points.size() >= 1)
     {
-      ROS_WARN("OpenRave IK found %d solutions,", srv.response.solutions.points.size());
-      ROS_WARN("in cases of several solutions we discard all despite the first one");
+      ROS_DEBUG("OpenRave IK found %d solutions,", srv.response.solutions.points.size());
+      ROS_DEBUG("in cases of several solutions we discard all despite the first one");
     }
     solution_.resize(dimension_);
     solution_ = srv.response.solutions.points[0].positions;
@@ -336,11 +336,11 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
         solution.resize(dimension_);
         solution = solution_;
         error_code_int = kinematics::SUCCESS;
-        ROS_WARN("Plugin sPIK w CB: found ik solution & solution_callback ok-> return true");
+        ROS_DEBUG("Plugin sPIK w CB: found ik solution & solution_callback ok-> return true");
         return true;
       }else{
 
-        ROS_WARN("Plugin sPIK w CB: found IK solution but solution call back fails");
+        ROS_DEBUG("Plugin sPIK w CB: found IK solution but solution call back fails");
         error_code_int = kinematics::NO_IK_SOLUTION;
         return false;
       }
@@ -352,13 +352,13 @@ bool KatanaKinematicsPlugin::searchPositionIK(const geometry_msgs::Pose &ik_pose
       solution.resize(dimension_);
       solution = solution_;
       error_code_int = kinematics::SUCCESS;
-      ROS_WARN("Plugin sPIK w CB: found ik solution & solution call back not necessary-> return true");
+      ROS_DEBUG("Plugin sPIK w CB: found ik solution & solution call back not necessary-> return true");
       return true;
     }
   }
   else
   {
-    ROS_WARN("Plugin sPIK w CB: An IK solution could not be found");
+    ROS_DEBUG("Plugin sPIK w CB: An IK solution could not be found");
     error_code_int = kinematics::NO_IK_SOLUTION;
     return false;
   }
@@ -376,7 +376,7 @@ bool KatanaKinematicsPlugin::getPositionFK(const std::vector<std::string> &link_
     return false;
   }
 
-  ROS_WARN("Plugin: Call getPositionFK()...");
+  ROS_DEBUG("Plugin: Call getPositionFK()...");
 
 
   kinematics_msgs::GetPositionFK srv;
@@ -398,12 +398,12 @@ bool KatanaKinematicsPlugin::getPositionFK(const std::vector<std::string> &link_
 
   if (srv.response.error_code.val == srv.response.error_code.SUCCESS)
   {
-    ROS_WARN("Successfully computed FK...");
+    ROS_DEBUG("Successfully computed FK...");
 
     for (size_t i = 0; i < poses.size(); i++)
     {
       poses[i] = srv.response.pose_stamped[i].pose;
-      ROS_WARN("PLUGIN Joint: %s Pose: %f %f %f // %f %f %f %f",  link_names[i].c_str(),
+      ROS_DEBUG("PLUGIN Joint: %s Pose: %f %f %f // %f %f %f %f",  link_names[i].c_str(),
                                                             poses[i].position.x,
                                                             poses[i].position.y,
                                                             poses[i].position.z,
@@ -418,7 +418,7 @@ bool KatanaKinematicsPlugin::getPositionFK(const std::vector<std::string> &link_
   else
   {
 
-    ROS_ERROR("Plugin: Could not compute FK");
+    ROS_DEBUG("Plugin: Could not compute FK");
 
     return false;
   }
