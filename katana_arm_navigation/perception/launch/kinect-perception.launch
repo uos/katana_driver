@@ -7,11 +7,11 @@
     args="-0.03 0.0 0.0 0.0 0.0 0.0 /kinect_rgb /kinect_depth 10" />
 
   <!-- since the transformation between katana and kinect is not fixed (yet), we start a GUI to adjust it instead of the static transform -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
-    args="-1.20 -0.02 0.15 -1.57 0 -1.57 /katana_base_link /kinect_rgb 10" /> -->
+ <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
+    args="-0.81 -0.35 0.12 -1.58 0.01 -1.06 /katana_base_link /kinect_rgb 10" /> -->
   
-  <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" />
-
+  <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" /> 
+  
  <!-- load katana urdf -->
   <include file="$(find katana_description)/launch/upload_katana.launch" />
 

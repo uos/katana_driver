@@ -23,6 +23,7 @@
   <depend package="pluginlib"/>
   <depend package="kinematics_base"/>
   <depend package="arm_kinematics_constraint_aware"/>
+  <depend package="ompl"/>
 
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lkatana_openrave_kinematics"/>

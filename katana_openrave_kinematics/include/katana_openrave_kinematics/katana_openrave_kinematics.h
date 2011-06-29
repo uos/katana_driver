@@ -42,6 +42,7 @@
 #include <urdf/model.h>
 #include <kinematics_base/kinematics_base.h>
 #include <arm_kinematics_constraint_aware/arm_kinematics_constraint_aware_utils.h>
+#include <ompl/util/RandomNumbers.h>
 
 namespace katana_openrave_kinematics
 {
