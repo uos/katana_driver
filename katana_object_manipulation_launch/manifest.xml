@@ -1,0 +1,14 @@
+<package>
+  <description brief="katana_object_manipulation_launch">
+
+     katana_object_manipulation_launch
+
+  </description>
+  <author>hdeeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_object_manipulation_launch</url>
+
+</package>
+
+

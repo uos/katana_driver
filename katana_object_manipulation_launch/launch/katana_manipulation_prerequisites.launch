@@ -1,0 +1,8 @@
+<launch>
+
+  <include file="$(find katana_arm_navigation)/katana_arm_navigation.launch"/>
+ 
+  <!-- interpolated IK -->
+ <!-- <node name="interpolated_ik_node" pkg="interpolated_ik_motion_planner" type="interpolated_ik_motion_planner.py" args="r" respawn="false" /> -->
+ 
+</launch>

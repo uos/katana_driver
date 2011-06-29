@@ -1,0 +1,18 @@
+<package>
+  <description brief="katana_pick_and_place_test">
+
+     katana_pick_and_place_test
+
+  </description>
+  <author>hdeeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_pick_and_place_test</url>
+  <depend package="actionlib"/>
+  <depend package="object_manipulation_msgs"/>
+  <depend package="tabletop_object_detector"/>
+  <depend package="tabletop_collision_map_processing"/>
+
+</package>
+
+

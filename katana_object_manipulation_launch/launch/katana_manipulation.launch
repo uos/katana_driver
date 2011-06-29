@@ -1,0 +1,82 @@
+<launch>
+
+  <!-- hand descriptions -->
+
+  <rosparam command="load" file="$(find katana_object_manipulation_launch)/config/katana_hand_descriptions.yaml"/>
+
+  <!--grasp planners-->
+
+  <!-- database-backed grasp planning is now provided directly by the database wrapper node -->
+  <!-- which must be started separately -->
+  
+  <node name="katana_gripper_grasp_planner_cluster" pkg="katana_gripper_grasp_planner_cluster" 
+    type="katana_gripper_grasp_planner_cluster_server.py" respawn="false" output="screen">
+	<param name="z_up_frame" value="/katana_base_link"/>
+  </node>  
+
+  <!--include file="$(find bayesian_grasp_planner)/launch/bayesian_grasp_planner_node.launch"/-->  
+
+  <node name="grasp_planning_gripper_click_node" pkg="pr2_gripper_click"
+    type="grasp_planning_gripper_click_node" respawn="false" output="screen">
+    <param name="use_assembler" value="true"/>	
+    <param name="rgbd_assembly_service_name" value="/rgbd_assembly"/>
+  </node>
+
+ 
+  <!-- Cartesian controller -->
+  <include file="$(find pr2_object_manipulation_launch)/launch/c_jt.launch"/>
+
+
+  <!--object manipulator-->
+
+  <node name="object_manipulator" pkg="object_manipulator"
+    type="object_manipulator_node" respawn="false" output="screen">
+
+      <remap from="right_arm/constraint_aware_ik" to="/pr2_right_arm_kinematics/get_constraint_aware_ik" />    
+
+      <remap from="right_arm/get_fk" to="/pr2_right_arm_kinematics/get_fk" />    
+ 
+      <remap from="right_arm/interpolated_ik" to="/r_interpolated_ik_motion_plan" />    
+    
+      <remap from="right_arm/interpolated_ik_set_params" to="/r_interpolated_ik_motion_plan_set_params" />    
+   
+
+      <remap from="right_arm/get_ik_solver_info" to="/pr2_right_arm_kinematics/get_ik_solver_info" />    
+    
+      <remap from="right_arm/get_state_validity" to="/environment_server/get_state_validity" />    
+  
+      <remap from="right_arm/move_arm" to="/move_right_arm" />    
+>    
+
+      <remap from="right_arm/joint_trajectory" to="/r_arm_controller/joint_trajectory_action" />    
+    
+      <remap from="right_arm/hand_posture_execution" to="/r_gripper_grasp_posture_controller" />    
+  
+      <remap from="right_arm/grasp_status" to="/r_gripper_grasp_status" />
+   
+
+      <remap from="right_arm/cart/command_pose" to="/r_cart/command_pose" />
+      
+      <remap from="switch_controller" to="pr2_controller_manager/switch_controller"/>
+      <remap from="list_controllers" to="pr2_controller_manager/list_controllers"/>
+
+      <param name="default_cluster_planner" value="/plan_point_cluster_grasp" />
+      <param name="default_database_planner" value="/objects_database_node/database_grasp_planning" />     
+      <param name="default_probabilistic_planner" value="/probabilistic_grasp_planning" />
+
+      <param name="randomize_grasps" value="false" />
+
+      <param name="right_cartesian_controller" value="r_cart" />
+ 
+      <param name="right_joint_controller" value="r_arm_controller" />
+
+  </node>
+
+  <!-- cluster bounding box finder--> 
+
+  <node name="cluster_bounding_box_finder" pkg="object_manipulator"
+    type="cluster_bounding_box_finder_server.py" output="screen" respawn="false" >
+	<param name="z_up_frame" value="/base_link" />
+  </node>
+	
+</launch>
