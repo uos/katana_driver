@@ -41,8 +41,8 @@ KatanaTeleopCyborgEvo::KatanaTeleopCyborgEvo() :
   // register service and action clients
   action_client.waitForServer();
 
-  //  n_private.param<std::string> ("ik_service", ik_service, "katana_openrave_kinematics/get_openrave_ik"):
-  n_private.param<std::string> ("ik_service", ik_service, "non_constraint_aware_ik_adapter/get_constraint_aware_ik");
+  n_private.param<std::string> ("ik_service", ik_service, "katana_openrave_kinematics/get_openrave_ik");
+  //n_private.param<std::string> ("ik_service", ik_service, "non_constraint_aware_ik_adapter/get_constraint_aware_ik");
   n_private.param<std::string> ("fk_service", fk_service, "get_fk");
   n_private.param<std::string> ("ik_solver_info", ik_solver_info, "get_kinematic_solver_info");
 
@@ -100,7 +100,7 @@ void KatanaTeleopCyborgEvo::jointStateCallback(const sensor_msgs::JointState::Co
     {
 
     	if(initial){
-    		initial_RPY_Orientation = fk_response.pose_stamped[0].orientation;
+    	//	initial_RPY_Orientation = fk_response.pose_stamped[0].orientation;
     	}
       // update the internal variables
       currentState = incoming_joint_state_;
@@ -185,27 +185,29 @@ void KatanaTeleopCyborgEvo::cyborgevoCallback(const joy::Joy::ConstPtr& joy)
     goalPose = currentPose;
     if (abs(joy->axes[0]) > 0.1 ||
     	abs(joy->axes[1]) > 0.1 ||
-    	abs(joy->axes[3]) > 0.1 ||
-    	abs(joy->axes[R]) > 0.1 ||
-    	abs(joy->axes[P]) > 0.1 ||
-    	abs(joy->axes[Y]) > 0.1)
+    	abs(joy->axes[3]) > 0.1
+    //	abs(joy->axes[R]) > 0.1 ||
+    //	abs(joy->axes[P]) > 0.1 ||
+    //	abs(joy->axes[Y]) > 0.1
+    	)
     {
       goalPose.pose.position.y += 0.001 * joy->axes[0];
       goalPose.pose.position.x += 0.001 * joy->axes[1];
       goalPose.pose.position.z += 0.001 * joy->axes[3];
 
 
-
+/*
+ *    add to RPY convert to quad -> orientation = quad
       goalPose.pose.position.y += 0.001 * joy->axes[0];
-            goalPose.pose.position.x += 0.001 * joy->axes[1];
-            goalPose.pose.position.z += 0.001 * joy->axes[3];
-
+      goalPose.pose.position.x += 0.001 * joy->axes[1];
+      goalPose.pose.position.z += 0.001 * joy->axes[3];
+*/
 
       ROS_WARN("Want to modify Pose");
       request_ik = true;
     }
   }
-
+/*
   ROS_ERROR("Desired Pose...");
   ROS_ERROR("       Link: %s", "katana_gripper_tool_frame");
   ROS_ERROR("   Position: %f %f %f",
@@ -217,7 +219,7 @@ void KatanaTeleopCyborgEvo::cyborgevoCallback(const joy::Joy::ConstPtr& joy)
       goalPose.pose.orientation.y,
       goalPose.pose.orientation.z,
       goalPose.pose.orientation.w);
-
+*/
   if (request_ik)
   {
 

@@ -5,11 +5,11 @@
   <include file="$(find katana)/launch/katana.launch" />
   
   <!-- start katana arm_kinematics node -->
+  <include file="$(find katana_arm_navigation)/kinematics/launch/katana_openrave_kinematics.launch" /> 
+  
+  <!-- start katana arm_kinematics node -->
   <include file="$(find katana_arm_navigation)/kinematics/launch/katana_arm_kinematics.launch" /> 
   
-  <node pkg="katana_openrave_kinematics" type="katana_openrave_kinematics" name="katana_openrave_kinematics">
-  </node>
-
   <node pkg="joy" type="joy_node" name="joy_node">
   	<param name="autorepeat_rate" value="10"/>
   </node>
