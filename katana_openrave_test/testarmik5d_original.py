@@ -16,7 +16,7 @@ if __name__=='__main__':
     rospy.wait_for_service('IK')
     IKFn = rospy.ServiceProxy('IK',orrosplanning.srv.IK)
     req = orrosplanning.srv.IKRequest()
-    req.pose_stamped.header.frame_id = 'katana_base_link'
+    req.pose_stamped.header.frame_id = 'Base'
     req.manip_name = 'arm'
     req.iktype = 'TranslationDirection5D'
     req.filteroptions = 0

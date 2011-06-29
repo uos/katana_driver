@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=robots/neuronics-katana.zae" output="screen"/>
+  <node pkg="orrosplanning" type="testarmik5d_original.py" name="testik5d" output="screen"/>
+</launch>

@@ -12,6 +12,8 @@
   <depend package="rospy"/>
   <depend package="orrosplanning"/>
   <depend package="openrave"/>
+  <depend package="ompl"/>
+  <depend package="move_arm_msgs"/>
 
 
 </package>

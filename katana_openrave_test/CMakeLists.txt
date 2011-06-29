@@ -28,3 +28,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
+
+rosbuild_add_executable(get_constraint_aware_ik_test src/get_constraint_aware_ik_test.cpp)
+rosbuild_add_executable(get_constraint_aware_ik_performance src/get_constraint_aware_ik_performance.cpp)
+rosbuild_add_executable(move_arm_joint_goal src/move_arm_joint_goal.cpp)
+rosbuild_add_executable(move_arm_simple_pose_goal src/move_arm_simple_pose_goal.cpp)
+
