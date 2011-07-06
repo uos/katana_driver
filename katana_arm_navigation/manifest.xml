@@ -38,10 +38,11 @@
   <depend package="spline_smoother"/>
   <depend package="trajectory_filter_server"/>
   <depend package="topic_tools"/>
-
-  <depend package="ompl_planning"/>
-  <depend package="ompl_search"/>
+  <depend package="ompl_ros_interface"/>
+  
   <!-- <depend package="chomp_motion_planner"/> -->
+  
+  <depend package="point_cloud_converter"/>
 
   <depend package="katana_trajectory_filter"/>
 </package>

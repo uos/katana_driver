@@ -1,0 +1,21 @@
+<package>
+  <description brief="katana_openrave_test">
+
+     katana_openrave_test
+
+  </description>
+  <author>hdeeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_openrave_test</url>
+  <depend package="roscpp"/>
+  <depend package="rospy"/>
+  <depend package="orrosplanning"/>
+  <depend package="openrave"/>
+  <depend package="ompl"/>
+  <depend package="move_arm_msgs"/>
+
+
+</package>
+
+

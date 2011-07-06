@@ -102,6 +102,7 @@ class KatanaTeleopKey
     sensor_msgs::JointState movement_goal_;
     sensor_msgs::JointState current_pose_;
     sensor_msgs::JointState initial_pose_;
+
     JMAC action_client;
     ros::Subscriber js_sub_;
 };
