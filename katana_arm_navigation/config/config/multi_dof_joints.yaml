@@ -1,0 +1,15 @@
+multi_dof_joints:
+  - name: world_joint
+    type: Fixed
+    # parent_frame_id should be specified as the parent link of the base link of our robot (here: katana_internal_controlbox_link)
+    parent_frame_id: odom_combined
+    child_frame_id: katana_internal_controlbox_link
+
+## TODO: when the Katana is attached to its mobile base, we should specify this
+##       here as follows:
+# 
+# multi_dof_joints:
+#   - name: base_joint
+#     type: Floating
+#     parent_frame_id: odom_combined
+#     child_frame_id: base_link

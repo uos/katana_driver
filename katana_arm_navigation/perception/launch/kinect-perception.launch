@@ -7,10 +7,13 @@
     args="-0.03 0.0 0.0 0.0 0.0 0.0 /kinect_rgb /kinect_depth 10" />
 
   <!-- since the transformation between katana and kinect is not fixed (yet), we start a GUI to adjust it instead of the static transform -->
-  <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
-    args="-1.20 -0.02 0.15 -1.57 0 -1.57 /katana_base_link /kinect_rgb 10" /> -->
+ <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
+    args="-0.81 -0.35 0.12 -1.58 0.01 -1.06 /katana_base_link /kinect_rgb 10" /> -->
   
-  <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" />
+  <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" /> 
+  
+ <!-- load katana urdf -->
+  <include file="$(find katana_description)/launch/upload_katana.launch" />
 
   <include file="$(find kinect_camera)/launch/kinect_node.launch" />
 
@@ -23,10 +26,15 @@
     <remap from="cloud_in" to="kinect/depth/points_drop" />
     <remap from="cloud_out" to="tilt_scan_cloud_known" />
     <param name="sensor_frame" type="string" value="kinect_depth" />
-    <param name="fixed_frame" type="string" value="/katana_base_link" /> <!-- TODO: use map frame here -->
+    <param name="fixed_frame" type="string" value="/katana_base_link" /> <!-- TODO: use world frame (e.g., "odom_combined", "map") -->
     <param name="object_padd" type="double" value="0.02" />
     <param name="object_scale" type="double" value="1.0" />
   </node>
+
+    <node pkg="point_cloud_converter" name="point_cloud_converter_preself" type="point_cloud_converter">
+	<remap from="/points_in" to="/tilt_scan_cloud_known" />
+        <remap from="/points2_out" to="/tilt_scan_cloud_known2" />
+      </node>
 
   <!-- displaying known model markers -->
   <node pkg="planning_environment" name="display_planner_collision_model_environment_server" 
@@ -44,19 +52,26 @@
   <node pkg="robot_self_filter" type="self_filter" respawn="true" name="self_filter" output="screen">
 
     <!-- The topic for the input cloud -->
-    <remap from="cloud_in" to="tilt_scan_cloud_known" />
+    <remap from="cloud_in" to="tilt_scan_cloud_known2" />
 
     <!-- The topic for the output cloud -->
-    <remap from="cloud_out" to="tilt_scan_cloud_filtered" />
+    <remap from="cloud_out" to="tilt_scan_cloud_filtered2" />
 
     <!-- The frame of the sensor used to obtain the data to be
        filtered; This parameter is optional. If it is not specified,
        shadow points will be considered outside -->
     <param name="sensor_frame" type="string" value="kinect_depth" />
 
+    <param name="subsample_value" type="double" value=".01"/>
+
     <rosparam command="load" file="$(find katana_arm_navigation)/perception/config/self_filter.yaml" />
   </node>
-  
+
+  <node pkg="point_cloud_converter" name="point_cloud_converter_postself" type="point_cloud_converter">
+	<remap from="/points2_in" to="/tilt_scan_cloud_filtered2" />
+        <remap from="/points_out" to="/tilt_scan_cloud_filtered" />
+  </node>
+
   <!-- start collision map -->
   <include file="$(find katana_arm_navigation)/perception/launch/collision_map_self_occ.launch" />
   

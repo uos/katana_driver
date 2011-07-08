@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<launch>   
+
+  <remap from="collision_map/collision_map" to="collision_map_occ" />
+  <remap from="arm_kinematics/get_fk_solver_info" to="get_fk_solver_info" />
+  <remap from="arm_kinematics/get_fk" to="get_fk" />
+  <remap from="orrosplanning/get_fk" to="IK" />
+
+<!-- start the ik_openrave node for ik services -->
+
+ <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=$(find katana_description)/collada/katana6m90a.robot.xml --viewer='' --collision_map=collision_map_occ" output="screen"> 
+ </node> 
+
+<!-- start the arm_kinematics node for fk services -->
+  
+ <node pkg="arm_kinematics" type="arm_kinematics" name="arm_kinematics" output="screen" >
+    <param name="root_name" value="katana_base_link" />
+    <param name="tip_name" value="katana_gripper_tool_frame" />
+ </node>
+
+<!-- start the arm_kinematics_constraint_aware node for constraint_aware services -->
+
+<node pkg="arm_kinematics_constraint_aware" type="arm_kinematics_constraint_aware" name="katana_constraint_aware_kinematics" output="screen">
+ 	<rosparam command="load" file="$(find katana_openrave_kinematics)/config/katana_selfcollision_aware_kinematics.yaml" />
+ 	<param name="group" value="arm" />
+ 	<param name="kinematics_solver" value="katana_openrave_kinematics/KatanaKinematicsPlugin" />
+ </node>
+	 
+</launch>
