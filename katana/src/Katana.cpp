@@ -35,24 +35,61 @@ Katana::Katana() :
   motor_status_.resize(NUM_MOTORS);
 
   /* ********* get parameters ********* */
-  std::string ip, config_file_path;
-  int port;
 
-  pn.param<std::string> ("ip", ip, "192.168.1.1");
-  pn.param("port", port, 5566);
+  // general parameters
+  std::string config_file_path;
+  bool use_serial;
+
   pn.param("config_file_path", config_file_path, ros::package::getPath("kni")
       + "/KNI_4.3.0/configfiles450/katana6M90A_G.cfg");
+  pn.param("use_serial", use_serial, false);
 
   converter = new KNIConverter(config_file_path);
 
+  // parameters for TCP/IP connection
+  std::string ip;
+  int tcpip_port;
+
+  pn.param<std::string> ("ip", ip, "192.168.1.1");
+  pn.param("port", tcpip_port, 5566);
+
+  // parameters for serial connection
+  int serial_port;
+
+  pn.param("serial_port", serial_port, 0);
+  if (serial_port < 0 || serial_port > 9)
+  {
+    ROS_ERROR("serial_port must be in the range [0-9]!");
+    return;
+  }
+
   try
   {
-    /* ********* open device: a network transport is opened in this case ********* */
-    ROS_INFO("trying to connect to katana...");
-    char* nonconst_ip = strdup(ip.c_str());
-    device = new CCdlSocket(nonconst_ip, port);
-    free(nonconst_ip);
-    ROS_INFO("success:  port %d open", port);
+    /* ********* open device ********* */
+    if (use_serial)
+    {
+      ROS_INFO("trying to connect to katana (serial port: /dev/ttyS%d) ...", serial_port);
+
+      TCdlCOMDesc serial_config;
+      serial_config.port = serial_port; // serial port number (0-9 for /dev/ttyS[0-9])
+      serial_config.baud = 57600; // baud rate of port
+      serial_config.data = 8; // data bits
+      serial_config.parity = 'N'; // parity bit
+      serial_config.stop = 1; // stop bit
+      serial_config.rttc = 300; // read  total timeout
+      serial_config.wttc = 0; // write total timeout
+
+      device = new CCdlCOM(serial_config);
+      ROS_INFO("success: serial connection to Katana opened");
+    }
+    else
+    {
+      ROS_INFO("trying to connect to katana (TCP/IP) on %s:%d...", ip.c_str(), tcpip_port);
+      char* nonconst_ip = strdup(ip.c_str());
+      device = new CCdlSocket(nonconst_ip, tcpip_port);
+      free(nonconst_ip);
+      ROS_INFO("success: TCP/IP connection to Katana opened");
+    }
 
     /* ********* init protocol ********* */
     protocol = new CCplSerialCRC();
@@ -65,7 +102,6 @@ Katana::Katana() :
     kni.reset(new CLMBase());
     kni->create(config_file_path.c_str(), protocol);
     ROS_INFO("success: katana initialized");
-
   }
   catch (Exception &e)
   {
@@ -402,8 +438,8 @@ void Katana::freezeRobot()
   kni->freezeRobot();
 }
 
-bool Katana::moveJoint(int motorIndex, double desiredAngle){
-
+bool Katana::moveJoint(int motorIndex, double desiredAngle)
+{
   if (desiredAngle < motor_limits_[motorIndex].min_position || motor_limits_[motorIndex].max_position < desiredAngle)
   {
     ROS_ERROR("Desired angle %f is out of range [%f, %f]", desiredAngle, motor_limits_[motorIndex].min_position, motor_limits_[motorIndex].max_position);

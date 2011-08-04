@@ -64,7 +64,7 @@ public:
 private:
   boost::shared_ptr<CLMBase> kni;
   CCplSerialCRC* protocol;
-  CCdlSocket* device;
+  CCdlBase* device;
 
   KNIConverter* converter;
 
