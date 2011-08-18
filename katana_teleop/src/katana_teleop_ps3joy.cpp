@@ -222,8 +222,6 @@ void KatanaTeleopPS3::ps3joyCallback(const joy::Joy::ConstPtr& joy)
       else
         ROS_INFO("Action failed: %s", state.toString().c_str());
 
-      ROS_INFO("...goal was successfully send!");
-
       ros::spinOnce();
     }
   }

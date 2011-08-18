@@ -566,7 +566,6 @@ void KatanaTeleopKey::keyboardLoop()
            else
              ROS_INFO("Action failed: %s", state.toString().c_str());
 
-           ROS_INFO("...goal was successfully send!");
            //giveInfo();
            ros::spinOnce();
         }
