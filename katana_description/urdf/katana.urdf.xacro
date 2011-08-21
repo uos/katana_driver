@@ -6,6 +6,8 @@
        xmlns:xacro="http://ros.org/wiki/xacro"
        name="katana">
 
+  <include filename="$(find katana_description)/urdf/transmissions.urdf.xacro"/>
+
   <property name="M_PI" value="3.1415926535897931" />
 
   <!-- all values from the katana manual -->
