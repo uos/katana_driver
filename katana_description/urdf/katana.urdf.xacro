@@ -19,30 +19,33 @@
   <property name="link4_length" value="0.1473" />
   <property name="link5_length" value="0.1505" />
 
-  <link name="katana_internal_controlbox_link">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" />
-        </geometry>
+  <!-- All inertial values (mass, center of mass and inertia tensor) have been
+       calculated from the meshes using MeshLab -->
 
-        <material name="grey">
-          <color rgba="0.8 0.8 0.8 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 0" />
-        <geometry>
-          <mesh filename="package://katana_description/meshes/katana/convex/katana_internal_controlbox_convex.stlb" />
-        </geometry>
-      </collision>
-      <inertial>
-        <mass value="0.05" />
-        <origin xyz="0.0 0.0 10.0" />
-        <inertia ixx="1.0" ixy="0.0" ixz="0.0"
-                 iyy="1.0" iyz="0.0"
-                 izz="1.0" />
-      </inertial>
+  <link name="katana_internal_controlbox_link">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" />
+      </geometry>
+
+      <material name="grey">
+        <color rgba="0.8 0.8 0.8 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://katana_description/meshes/katana/convex/katana_internal_controlbox_convex.stlb" />
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="4.47057045" />
+      <origin xyz="0.000024 -0.006508 0.030555" />
+      <inertia ixx="0.013760086" ixy="-0.000000539" ixz="-0.000000442" 
+        iyy="0.015251808" iyz="0.000361753" 
+        izz="0.023409309" />
+    </inertial>
   </link>
 
   <joint name="katana_base_joint" type="fixed">
@@ -52,20 +55,27 @@
   </joint>
 
   <link name="katana_base_link">
-      <visual>
-        <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
-        <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"/>
-        </geometry>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
+      <geometry>
+        <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"/>
+      </geometry>
 
-        <material name="grey" />
-      </visual>
-      <collision>
-        <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
-        <geometry>
-          <mesh filename="package://katana_description/meshes/katana/convex/katana_base_link_convex.stlb"/>
-        </geometry>
-      </collision>
+      <material name="grey" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
+      <geometry>
+        <mesh filename="package://katana_description/meshes/katana/convex/katana_base_link_convex.stlb"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="1.4047990875" />
+      <origin xyz="-0.000327 0.000908 0.058457"/>
+      <inertia ixx="0.003000703" ixy="0.000000864" ixz="-0.000011312" 
+        iyy="0.002974822" iyz="0.000036294" 
+        izz="0.001434739" />
+    </inertial>
   </link>
 
   <joint name="katana_motor1_pan_joint" type="revolute">
@@ -81,20 +91,27 @@
   </joint>
 
   <link name="katana_motor1_pan_link">
-      <visual>
-        <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
-        <geometry>
-          <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"/>
-        </geometry>
+    <visual>
+      <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://katana_description/meshes/katana/katana_motor1_pan_link.stl"/>
+      </geometry>
 
-        <material name="grey" />
-      </visual>
-      <collision>
-        <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
-        <geometry>
-          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor1_pan_link_convex.stlb"/>
-        </geometry>
-      </collision>
+      <material name="grey" />
+    </visual>
+    <collision>
+      <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="package://katana_description/meshes/katana/convex/katana_motor1_pan_link_convex.stlb"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.74793301875" />
+      <origin xyz="-0.000410 -0.001285 -0.016774" />
+      <inertia ixx="0.001737241" ixy="0.000000421" ixz="0.000000650" 
+        iyy="0.000998782" iyz="0.000016114" 
+        izz="0.001349170" />    
+    </inertial>
   </link>
 
   <joint name="katana_motor2_lift_joint" type="revolute">
@@ -125,8 +142,14 @@
           <mesh filename="package://katana_description/meshes/katana/convex/katana_motor2_lift_link_convex.stlb"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="0.80174941875" />
+        <origin xyz="0.092420 0.005283 0.000172"/>
+        <inertia ixx="0.000478252" ixy="0.000081166" ixz="0.000003961" 
+          iyy="0.004314636" iyz="0.000000332" 
+          izz="0.004625444" />
+      </inertial>
   </link>
-
 
   <joint name="katana_motor3_lift_joint" type="revolute">
     <!-- Joint 3 in Katana Manual -->
@@ -157,7 +180,14 @@
           <mesh filename="package://katana_description/meshes/katana/convex/katana_motor3_lift_link_convex.stlb"/>
         </geometry>
       </collision>
-  </link>
+      <inertial>
+        <mass value="0.79241664375" />
+        <origin xyz="0.058036 0.008963 -0.000187"/>
+        <inertia ixx="0.001156089" ixy="0.000112877" ixz="-0.000004398" 
+          iyy="0.002305646" iyz="-0.000000036" 
+          izz="0.003128648" />
+      </inertial>
+    </link>
 
   <joint name="katana_motor4_lift_joint" type="revolute">
     <!-- Joint 4 in Katana Manual -->
@@ -187,7 +217,14 @@
           <mesh filename="package://katana_description/meshes/katana/convex/katana_motor4_lift_link_convex.stlb"/>
         </geometry>
       </collision>
-  </link>
+      <inertial>
+        <mass value="0.69149323125" />
+        <origin xyz="0.050401 0.005807 0.000000"/>
+        <inertia ixx="0.000765999" ixy="0.000045260" ixz="-0.000001210" 
+          iyy="0.001504115" iyz="0.000000147" 
+          izz="0.001887277" />
+      </inertial>
+    </link>
 
 
   <joint name="katana_motor5_wrist_roll_joint" type="revolute">
@@ -218,7 +255,14 @@
           <mesh filename="package://katana_description/meshes/katana/convex/katana_motor5_wrist_roll_link_convex.stlb"/>
         </geometry>
       </collision>
-  </link>
+      <inertial>
+        <mass value="0.25622555625" />
+        <origin xyz="-0.003140899 0.000013920 0.001680144"/>
+        <inertia ixx="0.000120481" ixy="0.000000015" ixz="-0.000001089" 
+          iyy="0.000132130" iyz="-0.000000124" 
+          izz="0.000093522" />
+      </inertial>
+    </link>
 
 
   <joint name="katana_gripper_joint" type="fixed">
@@ -242,6 +286,12 @@
           <mesh filename="package://katana_description/meshes/katana/convex/katana_gripper_link_convex.stlb"/>
         </geometry>
       </collision>
+      <inertial>
+        <mass value="0.0552136183596" />
+        <origin xyz="-0.014379 -0.000000 0.000006"/>
+        <inertia ixx="0.000011468" ixy="0.000000000" ixz="0.000000007" 
+          iyy="0.000013830" iyz="0.000000000" 
+          izz="0.000011290" /></inertial>
     </link>
 
   <xacro:macro name="finger" params="prefix rotate">
@@ -268,8 +318,15 @@
             <mesh filename="package://katana_description/meshes/katana/convex/katana_gripper_${prefix}_finger_convex.stlb"/>
           </geometry>
         </collision>
-    </link>
-  </xacro:macro>
+        <inertial>
+          <mass value="0.0251722230462" />
+          <origin xyz="${0.034 + (-0.032216)} 0.025167 -.001603"/>
+          <inertia ixx="0.000005990" ixy="0.000008473" ixz="0.000001448" 
+            iyy="0.000019757" iyz="-0.000000996" 
+            izz="0.000023588" />        
+        </inertial>
+      </link>
+    </xacro:macro>
 
   <xacro:finger prefix="r" rotate="0" />
   <xacro:finger prefix="l" rotate="${M_PI}" />
