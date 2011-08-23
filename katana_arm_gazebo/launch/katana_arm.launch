@@ -12,11 +12,8 @@
   <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -urdf -param robot_description -model katana" respawn="false" output="screen"/>
 
   <!-- Default Controllers -->
-  <!-- TODO: find out correct PID parameters: -->
   <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_arm_controller.yaml" />
-  <!-- TODO:
-  <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_gripper_controller.yaml" />
-  -->
+  <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_finger_position_controllers.yaml" />
 
   <!-- Controller manager parameters -->
   <param name="pr2_controller_manager/mechanism_statistics_publish_rate" value="1.0" />
@@ -31,7 +28,7 @@
   <!-- Controllers that come up loaded -->
   <node name="default_loaded_controllers_spawner"
     pkg="pr2_controller_manager" type="spawner" output="screen"
-    args="--wait-for=/calibrated katana_arm_controller" />  <!-- TODO: add katana_gripper_controller-->
+    args="--wait-for=/calibrated katana_arm_controller katana_r_finger_position_controller katana_l_finger_position_controller" />
 
   <!-- Fake calibration -->
   <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"

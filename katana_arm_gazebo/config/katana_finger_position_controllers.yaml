@@ -1,0 +1,17 @@
+katana_r_finger_position_controller:
+  type: robot_mechanism_controllers/JointPositionController
+  joint: katana_r_finger_joint
+  pid:
+    p: 0.02
+    d: 0.03
+    i: 0.01
+    i_clamp: 0.05
+
+katana_l_finger_position_controller:
+  type: robot_mechanism_controllers/JointPositionController
+  joint: katana_l_finger_joint
+  pid:
+    p: 0.02
+    d: 0.03
+    i: 0.01
+    i_clamp: 0.05
