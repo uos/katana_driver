@@ -36,3 +36,6 @@ rosbuild_link_boost(test_gripper thread)
 
 rosbuild_add_executable(move_arm src/move_arm.cpp)
 rosbuild_link_boost(move_arm thread)
+
+rosbuild_add_executable(min_max_trajectory src/min_max_trajectory.cpp)
+
