@@ -65,9 +65,12 @@ bool KatanaKinematicsPlugin::initialize(std::string name)
     ros::Duration(0.5).sleep();
   }
 
-  kinematics_msgs::KinematicSolverInfo kinematic_info_;
+  kinematics_msgs::KinematicSolverInfo kinematic_info;
 
-  arm_kinematics_constraint_aware::getChainInfoFromRobotModel(robot_model, root_name_, tip_name, kinematic_info_);
+  if (!arm_kinematics_constraint_aware::getChainInfoFromRobotModel(robot_model, root_name_, tip_name, kinematic_info))
+  {
+    ROS_FATAL("Could not get chain info!");
+  }
 
   // connecting to services
   std::string fk_service;
@@ -101,7 +104,7 @@ bool KatanaKinematicsPlugin::initialize(std::string name)
   }
   else
   {
-    fk_solver_info_ = kinematic_info_;
+    fk_solver_info_ = kinematic_info;
     ik_solver_info_ = fk_solver_info_;
 
     for (unsigned int i = 0; i < fk_solver_info_.joint_names.size(); i++)
