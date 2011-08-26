@@ -34,11 +34,11 @@ rosrun collada_urdf urdf_to_collada katana6m90a.urdf katana6m90a.dae
 # optionally, check the links:
 
 export PYTHONPATH=$(rospack find openrave)/lib/python2.6/site-packages:$PYTHONPATH
-rosrun openrave openrave0.3-robot.py katana6m90a.dae --list links
+rosrun openrave openrave0.4-robot.py katana6m90a.dae --list links
 
 # optionally, visualize the model:
 
-rosrun openrave openrave0.3 -f katana6m90a.dae
+rosrun openrave openrave0.4 -f katana6m90a.dae
 
 # and now start the IK service:
 
