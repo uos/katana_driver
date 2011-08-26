@@ -3,7 +3,7 @@
 # also see: http://answers.ros.org/question/858/how-to-run-ik_openravepy-with-my-urdf-file
 #
 # most important step: In order to do successful collada export, you need to use 
-# the robot_model trunk, the robot_model diamondback has an old exporter. 
+# the robot_model trunk, the robot_model in diamondback has an old exporter. 
 
 svn co https://code.ros.org/svn/ros-pkg/stacks/robot_model/trunk robot_model
 
@@ -46,5 +46,10 @@ rosrun orrosplanning ik_openrave.py --scene="katana6m90a.robot.xml"
 
 # to disable the viewer:
 
-rosrun orrosplanning ik_openrave.py --scene="katana6m90a.robot.xml"
+rosrun orrosplanning ik_openrave.py --scene="katana6m90a.robot.xml" --viewer=''
+
+# in a separate terminal, run:
+# (you first have to change the word 'Base' to 'katana_base_link' in the file orrosplanning/test/testarmik5d.py)
+
+rosrun orrosplanning testarmik5d.py
 
