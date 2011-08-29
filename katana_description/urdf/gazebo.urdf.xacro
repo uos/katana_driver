@@ -6,11 +6,22 @@
   xmlns:xacro="http://ros.org/wiki/xacro">
 
   <gazebo>
+    <!-- controller for the 5 arm joints -->
     <controller:gazebo_ros_controller_manager name="gazebo_ros_controller_manager" plugin="libgazebo_ros_controller_manager.so">
       <alwaysOn>true</alwaysOn>
       <updateRate>1000.0</updateRate>
       <interface:audio name="gazebo_ros_controller_manager_dummy_iface" />
     </controller:gazebo_ros_controller_manager>
+
+    <!-- gripper controller -->
+    <controller:gazebo_ros_katana_gripper name="katana_gripper_controller" plugin="libgazebo_ros_katana_gripper.so">
+      <alwaysOn>true</alwaysOn>
+      <node_namespace>katana</node_namespace>
+      <r_finger_joint>katana_r_finger_joint</r_finger_joint>
+      <l_finger_joint>katana_l_finger_joint</l_finger_joint>
+      <updateRate>1000.0</updateRate>
+      <max_torque>10.0</max_torque>  <!-- TODO: find out sensible default; 0.1? -->
+    </controller:gazebo_ros_katana_gripper>
   </gazebo>
 
   

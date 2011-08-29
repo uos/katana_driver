@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+  <!-- remap katana_gripper_grasp_controller topic names; this has to be stated before loading Gazebo! -->
+  <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
+  <remap from="grasp_query_name" to="/gripper_grasp_status" />
 
   <!-- load world -->
   <include file="$(find katana_arm_gazebo)/launch/grasp_world.launch" />
@@ -13,7 +16,7 @@
 
   <!-- Default Controllers -->
   <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_arm_controller.yaml" />
-  <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_finger_position_controllers.yaml" />
+  <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_gripper_controller.yaml" />
 
   <!-- Controller manager parameters -->
   <param name="pr2_controller_manager/mechanism_statistics_publish_rate" value="1.0" />
@@ -28,19 +31,11 @@
   <!-- Controllers that come up loaded -->
   <node name="default_loaded_controllers_spawner"
     pkg="pr2_controller_manager" type="spawner" output="screen"
-    args="--wait-for=/calibrated katana_arm_controller katana_r_finger_position_controller katana_l_finger_position_controller" />
+    args="--wait-for=/calibrated katana_arm_controller" />
 
   <!-- Fake calibration -->
   <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
     args="pub /calibrated std_msgs/Bool true" />
-
-  <!-- TODO: Gripper action -->
-  <!--
-  <group ns="r_gripper_controller">
-    <node name="gripper_action_node"
-      pkg="pr2_gripper_action" type="pr2_gripper_action" />
-  </group>
-  -->
 
   <!--
   <include file="$(find katana_arm_gazebo)/launch/cylinder_object.launch"/>
