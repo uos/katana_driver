@@ -33,12 +33,12 @@
 #include <kinematics_msgs/GetConstraintAwarePositionIK.h>
 #include <kinematics_msgs/GetKinematicSolverInfo.h>
 
-#include <katana/JointMovementAction.h>
+#include <katana_msgs/JointMovementAction.h>
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/simple_action_client.h>
 
-typedef actionlib::SimpleActionServer<katana::JointMovementAction> JMAS;
-typedef actionlib::SimpleActionClient<katana::JointMovementAction> JMAC;
+typedef actionlib::SimpleActionServer<katana_msgs::JointMovementAction> JMAS;
+typedef actionlib::SimpleActionClient<katana_msgs::JointMovementAction> JMAC;
 
 namespace katana{
 
@@ -64,7 +64,7 @@ class KatanaTeleopCyborgEvo
     bool active, initial;
 
     std::vector<double> current_RPY_Orientation,initial_RPY_Orientation, saved_RPY_Orientation;
-    katana::JointMovementGoal goal;
+    katana_msgs::JointMovementGoal goal;
     sensor_msgs::JointState currentState, savedState, initialState;
     geometry_msgs::PoseStamped currentPose, goalPose;
 

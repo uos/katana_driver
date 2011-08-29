@@ -533,7 +533,7 @@ void KatanaTeleopKey::keyboardLoop()
 
       } // end switch case
 
-      katana::JointMovementGoal goal;
+      katana_msgs::JointMovementGoal goal;
 
       goal.jointGoal = movement_goal_;
 

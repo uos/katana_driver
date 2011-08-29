@@ -33,14 +33,14 @@
 
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
-#include <katana/JointMovementAction.h>
+#include <katana_msgs/JointMovementAction.h>
 
 
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/simple_action_client.h>
 
-typedef actionlib::SimpleActionServer<katana::JointMovementAction> JMAS;
-typedef actionlib::SimpleActionClient<katana::JointMovementAction> JMAC;
+typedef actionlib::SimpleActionServer<katana_msgs::JointMovementAction> JMAS;
+typedef actionlib::SimpleActionClient<katana_msgs::JointMovementAction> JMAC;
 
 #define KEYCODE_A 0x61
 #define KEYCODE_D 0x64
