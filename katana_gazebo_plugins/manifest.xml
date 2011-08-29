@@ -1,0 +1,28 @@
+<package>
+  <description brief="Provides Gazebo plugins to simulate the Katana arm">
+
+     katana_gazebo_plugins
+
+  </description>
+  <author>Martin Günther</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/katana_gazebo_plugins</url>
+  <depend package="gazebo"/>
+  <depend package="nav_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="sensor_msgs"/>
+
+  <!-- for gazebo_ros_katana_gripper -->
+  <depend package="object_manipulation_msgs"/>
+  <depend package="control_toolbox"/>
+  <depend package="actionlib"/>
+  <depend package="katana_msgs"/>
+
+  <export>
+    <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib" />
+    <gazebo plugin_path="${prefix}/lib" />
+  </export>
+</package>
+
+
