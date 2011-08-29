@@ -5,5 +5,4 @@ msg/JointMovementActionResult.msg
 msg/JointMovementFeedback.msg
 msg/JointMovementGoal.msg
 msg/JointMovementResult.msg
-src/katana/
-msg/lisp/
+src/katana_msgs/

@@ -34,7 +34,7 @@
 
 #include <katana/AbstractKatana.h>
 #include <sensor_msgs/JointState.h>
-#include <katana/JointMovementAction.h>
+#include <katana_msgs/JointMovementAction.h>
 
 #include <motion_planning_msgs/JointLimits.h>
 
@@ -43,8 +43,8 @@ namespace katana
 
 class JointMovementActionController
 {
-  typedef actionlib::SimpleActionServer<katana::JointMovementAction> JMAS;
-  typedef actionlib::SimpleActionClient<katana::JointMovementAction> JMAC;
+  typedef actionlib::SimpleActionServer<katana_msgs::JointMovementAction> JMAS;
+  typedef actionlib::SimpleActionClient<katana_msgs::JointMovementAction> JMAC;
 
 public:
   JointMovementActionController(boost::shared_ptr<AbstractKatana> katana);

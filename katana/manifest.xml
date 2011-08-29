@@ -25,7 +25,6 @@
 
   <!-- for JointTrajectoryActionController -->
   <depend package="actionlib" />
-  <depend package="actionlib_msgs" />
   <depend package="pr2_controllers_msgs" />
   <depend package="trajectory_msgs"/>
   <depend package="urdf"/>
@@ -37,5 +36,8 @@
 
   <!-- for katana_gripper_grasp_controller -->
   <depend package="object_manipulation_msgs"/>
+
+  <!-- for JointMovementActionController -->
+  <depend package="katana_msgs"/>
 
 </package>
