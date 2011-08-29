@@ -257,11 +257,8 @@ bool KatanaTeleopPS3::getCurrentJointPosition(sensor_msgs::JointState &joint_sta
       position = joint_state.position[i];
       return true;
     }
-
-    return false;
-
   }
-
+  return false;
 }
 
 void KatanaTeleopPS3::loop(){
