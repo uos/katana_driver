@@ -39,7 +39,6 @@
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/simple_action_client.h>
 
-typedef actionlib::SimpleActionServer<katana_msgs::JointMovementAction> JMAS;
 typedef actionlib::SimpleActionClient<katana_msgs::JointMovementAction> JMAC;
 
 #define KEYCODE_A 0x61

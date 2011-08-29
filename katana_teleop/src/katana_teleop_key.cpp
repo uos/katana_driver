@@ -65,7 +65,7 @@ KatanaTeleopKey::KatanaTeleopKey() :
     ROS_ERROR("Malformed joint specification.  (namespace: %s)", n_.getNamespace().c_str());
   }
 
-  for (size_t i = 0; i < joint_names.size(); ++i)
+  for (size_t i = 0; (int) i < joint_names.size(); ++i)
   {
 
     XmlRpc::XmlRpcValue &name_value = joint_names[i];
@@ -95,7 +95,7 @@ KatanaTeleopKey::KatanaTeleopKey() :
   {
     ROS_ERROR("Malformed gripper joint specification.  (namespace: %s)", n_.getNamespace().c_str());
   }
-  for (size_t i = 0; i < gripper_joint_names.size(); ++i)
+  for (size_t i = 0; (int) i < gripper_joint_names.size(); ++i)
   {
     XmlRpc::XmlRpcValue &name_value = gripper_joint_names[i];
     if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
