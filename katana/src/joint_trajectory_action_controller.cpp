@@ -35,7 +35,7 @@ namespace katana
 
 JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana) :
   katana_(katana), action_server_(ros::NodeHandle(), "joint_trajectory_action",
-                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1))
+                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1), false)
 {
   ros::NodeHandle node_;
 
@@ -55,6 +55,7 @@ JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_p
   }
 
   // Subscriptions, publishers, services
+  action_server_.start();
   sub_command_ = node_.subscribe("command", 1, &JointTrajectoryActionController::commandCB, this);
   serve_query_state_ = node_.advertiseService("query_state", &JointTrajectoryActionController::queryStateService, this);
   controller_state_publisher_ = node_.advertise<pr2_controllers_msgs::JointTrajectoryControllerState> ("state", 1);

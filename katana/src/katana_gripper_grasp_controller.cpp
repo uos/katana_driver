@@ -45,7 +45,8 @@ KatanaGripperGraspController::KatanaGripperGraspController(boost::shared_ptr<Abs
 
   std::string posture_action_name = root_nh.resolveName("posture_action_name");
   action_server_ = new actionlib::SimpleActionServer<object_manipulation_msgs::GraspHandPostureExecutionAction>(root_nh,
-      posture_action_name, boost::bind(&KatanaGripperGraspController::executeCB, this, _1));
+      posture_action_name, boost::bind(&KatanaGripperGraspController::executeCB, this, _1), false);
+  action_server_->start();
   ROS_INFO_STREAM("katana gripper grasp hand posture action server started on topic " << posture_action_name);
 }
 

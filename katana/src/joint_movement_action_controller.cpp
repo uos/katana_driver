@@ -33,13 +33,13 @@ namespace katana
 
 JointMovementActionController::JointMovementActionController(boost::shared_ptr<AbstractKatana> katana) :
   katana_(katana), action_server_(ros::NodeHandle(), "joint_movement_action",
-                                  boost::bind(&JointMovementActionController::executeCB, this, _1))
+                                  boost::bind(&JointMovementActionController::executeCB, this, _1), false)
 {
   ros::NodeHandle node_;
 
   joints_ = katana_->getJointNames();
   gripper_joints_ = katana_->getGripperJointNames();
-
+  action_server_.start();
 }
 
 JointMovementActionController::~JointMovementActionController()
