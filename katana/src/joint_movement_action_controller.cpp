@@ -35,8 +35,6 @@ JointMovementActionController::JointMovementActionController(boost::shared_ptr<A
   katana_(katana), action_server_(ros::NodeHandle(), "joint_movement_action",
                                   boost::bind(&JointMovementActionController::executeCB, this, _1), false)
 {
-  ros::NodeHandle node_;
-
   joints_ = katana_->getJointNames();
   gripper_joints_ = katana_->getGripperJointNames();
   action_server_.start();
@@ -51,37 +49,29 @@ JointMovementActionController::~JointMovementActionController()
  */
 bool JointMovementActionController::suitableJointGoal(const std::vector<std::string> &jointGoalNames)
 {
-
-  bool suitableJointGoal = true;
-
   for (size_t i = 0; i < jointGoalNames.size(); i++)
   {
-
     bool exists = false;
 
     for (size_t j = 0; j < joints_.size(); j++)
     {
       if (jointGoalNames[i] == joints_[j])
         exists = true;
-
     }
 
     for (size_t k = 0; k < gripper_joints_.size(); k++)
     {
       if (jointGoalNames[i] == gripper_joints_[k])
         exists = true;
-
     }
-    if (exists == false)
+    if (!exists)
     {
-      suitableJointGoal = false;
       ROS_ERROR("joint name %s is not one of our controlled joints", jointGoalNames[i].c_str());
+      return false;
     }
-    return suitableJointGoal;
   }
 
   return true;
-
 }
 
 sensor_msgs::JointState JointMovementActionController::adjustJointGoalPositionsToMotorLimits(
