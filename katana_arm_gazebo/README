@@ -1,2 +1,4 @@
 $ rosservice call /gazebo/apply_body_wrench '{body_name: "object_1::object_1_base_link", reference_frame: "object_1::object_1_base_link", wrench: { force: { x: 0, y: 0, z: -20.0 } }, start_time: 0, duration: -1 }'
 
+$ rosrun actionlib axclient.py gripper_grasp_posture_controller object_manipulation_msgs/GraspHandPostureExecution
+
