@@ -28,7 +28,7 @@
 #include <gazebo/Controller.hh>
 #include <gazebo/Model.hh>
 
-#include <sensor_msgs/JointState.h>
+// #include <sensor_msgs/JointState.h>
 #include <katana_msgs/GripperControllerState.h>
 #include <control_toolbox/pid.h>
 #include <ros/ros.h>
@@ -51,7 +51,7 @@ private:
 
   ros::NodeHandle *rosnode_;
 
-  ros::Publisher joint_state_pub_;
+  //  ros::Publisher joint_state_pub_;
   ros::Publisher controller_state_pub_;
 
   ParamT<std::string> *node_namespaceP_;
@@ -66,7 +66,7 @@ private:
 
   Joint *joints_[NUM_JOINTS];
 
-  sensor_msgs::JointState js_;
+  // sensor_msgs::JointState js_;
 
   // Simulation time of the last update
   Time prev_update_time_;

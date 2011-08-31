@@ -98,16 +98,16 @@ void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
 
   rosnode_ = new ros::NodeHandle(**node_namespaceP_);
 
-  joint_state_pub_ = rosnode_->advertise<sensor_msgs::JointState> ("/joint_states", 1);
+  //  joint_state_pub_ = rosnode_->advertise<sensor_msgs::JointState> ("/joint_states", 1);
   controller_state_pub_ = rosnode_->advertise<katana_msgs::GripperControllerState> ("gripper_controller_state", 1);
 
-  for (size_t i = 0; i < NUM_JOINTS; ++i)
-  {
-    js_.name.push_back(**joint_nameP_[i]);
-    js_.position.push_back(0);
-    js_.velocity.push_back(0);
-    js_.effort.push_back(0);
-  }
+  //  for (size_t i = 0; i < NUM_JOINTS; ++i)
+  //  {
+  //    js_.name.push_back(**joint_nameP_[i]);
+  //    js_.position.push_back(0);
+  //    js_.velocity.push_back(0);
+  //    js_.effort.push_back(0);
+  //  }
 
   // construct pid controller
   if (!pid_controller_.init(ros::NodeHandle(*rosnode_, "gripper_pid")))
@@ -184,15 +184,21 @@ void GazeboRosKatanaGripper::UpdateChild()
 
     controller_state_pub_.publish(controller_state);
 
-    // --------------- publish joint states ---------------
-    js_.header.stamp = ros::Time::now();
-
-    for (size_t i = 0; i < NUM_JOINTS; ++i)
-    {
-      js_.position[i] = joints_[i]->GetAngle(0).GetAsRadian();
-      js_.velocity[i] = joints_[i]->GetVelocity(0);
-    }
-
-    joint_state_pub_.publish(js_);
+    // don't publish joint states: The pr2_controller_manager publishes joint states for
+    // ALL joints, not just the ones it controls.
+    //
+    //    // --------------- publish joint states ---------------
+    //    js_.header.stamp = ros::Time::now();
+    //
+    //    for (size_t i = 0; i < NUM_JOINTS; ++i)
+    //    {
+    //      js_.position[i] = joints_[i]->GetAngle(0).GetAsRadian();
+    //      js_.velocity[i] = joints_[i]->GetVelocity(0);
+    //      js_.effort[i] = commanded_effort[i];
+    //
+    //      ROS_DEBUG("publishing gripper joint state %d (effort: %f)", i, commanded_effort[i]);
+    //    }
+    //
+    //    joint_state_pub_.publish(js_);
   }
 }
