@@ -21,6 +21,11 @@
 
   <!-- All inertial values (mass, center of mass and inertia tensor) have been
        calculated from the meshes using MeshLab -->
+  <!-- lower + upper joint limits have been calculated using the KNI's GetEncoderMinPos(), GetEncoderMaxPos();
+       the velocity limit has been calculated by vel_enc2rad(180); 180 encoders / 10ms is the maximum
+       speed limit for all joints, according to the Katana 4D documentation -->
+  <!-- the effort limits have been measured experimentally from the maximum effort the Gazebo controller 
+       uses in normal conditions -->
 
   <link name="katana_internal_controlbox_link">
     <visual>
@@ -84,10 +89,7 @@
     <child link="katana_motor1_pan_link" />
     <origin xyz="0 0 ${base_height}" rpy="0 0 ${M_PI}"/>
     <axis xyz="0 0 1"/>
-    <!-- lower + upper limit have been calculated using the KNI's GetEncoderMinPos(), GetEncoderMaxPos();
-         the velocity limit has been calculated by vel_enc2rad(180); 180 encoders / 10ms is the maximum
-         speed limit for all joints, according to the Katana 4D documentation -->
-    <limit effort="1000.0" lower="-3.025528" upper="2.891097" velocity="2.208932"/>  <!-- TODO:  give correct effort limits -->
+    <limit effort="1.5" lower="-3.025528" upper="2.891097" velocity="2.208932"/>
   </joint>
 
   <link name="katana_motor1_pan_link">
@@ -120,7 +122,7 @@
     <child link="katana_motor2_lift_link" />
     <origin xyz="0 0 0" rpy="${M_PI/2} 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-0.135228" upper="2.168572"  velocity="1.190799"/>  <!-- TODO: give correct effort limits -->
+    <limit effort="0.6" lower="-0.135228" upper="2.168572"  velocity="1.190799"/>  
   </joint>
 
   <link name="katana_motor2_lift_link">
@@ -158,7 +160,7 @@
     <origin xyz="${link2_length} 0 0" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <!-- unexplicably, the measured velocity limit of this motor is exactly half of what vel_enc2rad(180) says -->
-    <limit effort="1000.0" lower="-2.221804" upper="2.054223"  velocity="1.190799"/>  <!-- TODO: give correct effort limits -->
+    <limit effort="0.25" lower="-2.221804" upper="2.054223"  velocity="1.190799"/>  
   </joint>
 
   <link name="katana_motor3_lift_link">
@@ -195,7 +197,7 @@
     <child  link="katana_motor4_lift_link" />
     <origin rpy="${M_PI} 0 0" xyz="${link3_length} 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-2.033309" upper="1.876133"  velocity="2.208932"/>  <!-- TODO: give correct effort limits -->
+    <limit effort="0.1" lower="-2.033309" upper="1.876133"  velocity="2.208932"/>  
   </joint>
 
   <link name="katana_motor4_lift_link">
@@ -233,7 +235,7 @@
     <child  link="katana_motor5_wrist_roll_link" />
     <origin rpy="${M_PI/2} 0 ${-M_PI/2}" xyz="${link4_length} 0 0"/>
     <axis xyz="0 0 1"/>
-    <limit effort="1000.0" lower="-2.993240" upper="2.870985"  velocity="2.208932"/>  <!-- TODO: give correct effort limits -->
+    <limit effort="0.01" lower="-2.993240" upper="2.870985"  velocity="2.208932"/>  
   </joint>
 
   <link name="katana_motor5_wrist_roll_link">
@@ -300,7 +302,7 @@
       <child  link="katana_${prefix}_finger_link" />
       <origin rpy="${rotate} 0 0" xyz="0.034 0 0"/>
       <axis xyz="0 0 1"/>
-      <limit effort="1000.0" lower="-0.44" upper="0.30"  velocity="0.718834"/>  <!-- TODO: give correct effort limits -->
+      <limit effort="0.1" lower="-0.44" upper="0.30"  velocity="0.718834"/>  
    </joint>
 
     <link name="katana_${prefix}_finger_link">

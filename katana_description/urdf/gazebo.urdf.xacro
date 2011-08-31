@@ -20,7 +20,7 @@
       <r_finger_joint>katana_r_finger_joint</r_finger_joint>
       <l_finger_joint>katana_l_finger_joint</l_finger_joint>
       <updateRate>1000.0</updateRate>
-      <max_torque>10.0</max_torque>  <!-- TODO: find out sensible default; 0.1? -->
+      <max_torque>0.1</max_torque>
     </controller:gazebo_ros_katana_gripper>
   </gazebo>
 

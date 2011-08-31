@@ -55,7 +55,7 @@ GazeboRosKatanaGripper::GazeboRosKatanaGripper(Entity *parent) :
   node_namespaceP_ = new ParamT<std::string> ("node_namespace", "katana", 0);
   joint_nameP_.push_back(new ParamT<std::string> ("r_finger_joint", "katana_r_finger_joint", 1));
   joint_nameP_.push_back(new ParamT<std::string> ("l_finger_joint", "katana_l_finger_joint", 1));
-  torqueP_ = new ParamT<float> ("max_torque", 10.0, 1);
+  torqueP_ = new ParamT<float> ("max_torque", 0.1, 1);
   Param::End();
 
   for (size_t i = 0; i < NUM_JOINTS; ++i)
@@ -114,8 +114,6 @@ void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
   {
     ROS_FATAL("gazebo_ros_katana_gripper could not construct PID controller!");
   }
-  // TODO: add katana_gripper_grasp_controller
-
 }
 
 void GazeboRosKatanaGripper::InitChild()
@@ -155,7 +153,7 @@ void GazeboRosKatanaGripper::UpdateChild()
 
     joints_[i]->SetForce(0, commanded_effort[i]);
 
-    // TODO: do I really have to set this every time?
+    // I set this every time just in case some other entity changed it
     joints_[i]->SetMaxForce(0, **(torqueP_));
 
     // TODO: ensure that both joints are always having (approximately)
