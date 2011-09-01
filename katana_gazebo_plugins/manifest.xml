@@ -1,7 +1,7 @@
 <package>
   <description brief="Provides Gazebo plugins to simulate the Katana arm">
 
-     katana_gazebo_plugins
+     This package provides Gazebo plugins to simulate the Katana arm.
 
   </description>
   <author>Martin Günther</author>
