@@ -176,8 +176,10 @@ void GazeboRosKatanaGripper::UpdateChild()
   {
     // --------------- publish gripper controller state  ---------------
     katana_msgs::GripperControllerState controller_state;
+    controller_state.header.stamp = ros::Time::now();
     for (size_t i = 0; i < NUM_JOINTS; ++i)
     {
+      controller_state.name.push_back(joints_[i]->GetName());
       controller_state.actual.push_back(actual_pos[i]);
       controller_state.desired.push_back(desired_pos[i]);
       controller_state.error.push_back(desired_pos[i] - actual_pos[i]);
