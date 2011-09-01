@@ -71,7 +71,7 @@ private:
   // Simulation time of the last update
   Time prev_update_time_;
 
-  katana::KatanaGripperGraspController gripper_grasp_controller_;
+  katana::KatanaGripperGraspController *gripper_grasp_controller_;
 
   short publish_counter_;
 };

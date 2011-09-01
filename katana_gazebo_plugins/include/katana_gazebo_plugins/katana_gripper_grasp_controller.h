@@ -40,7 +40,7 @@ namespace katana
 class KatanaGripperGraspController
 {
 public:
-  KatanaGripperGraspController();
+  KatanaGripperGraspController(ros::NodeHandle private_nodehandle);
   virtual ~KatanaGripperGraspController();
 
   double getDesiredAngle() const

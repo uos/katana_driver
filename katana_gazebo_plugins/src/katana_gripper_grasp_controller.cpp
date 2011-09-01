@@ -44,13 +44,13 @@ static const double DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD = -0.43;
 /// The maximum time it takes to open or close the gripper
 static const double GRIPPER_OPENING_CLOSING_DURATION = 6.0;
 
-KatanaGripperGraspController::KatanaGripperGraspController() :
+KatanaGripperGraspController::KatanaGripperGraspController(ros::NodeHandle private_nodehandle) :
   last_command_was_close_(false), desired_angle_(0.0), current_angle_(0.0)
 {
   ros::NodeHandle root_nh("");
-  ros::NodeHandle pn("~");
 
-  gripper_object_presence_threshold_ = DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD;
+  private_nodehandle.param<double> ("gripper_object_presence_threshold", gripper_object_presence_threshold_,
+                    DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD);
 
   std::string query_service_name = root_nh.resolveName("grasp_query_name");
   query_srv_ = root_nh.advertiseService(query_service_name, &KatanaGripperGraspController::serviceCallback, this);

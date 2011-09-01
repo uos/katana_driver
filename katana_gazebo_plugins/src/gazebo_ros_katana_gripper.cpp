@@ -58,6 +58,8 @@ GazeboRosKatanaGripper::GazeboRosKatanaGripper(Entity *parent) :
   torqueP_ = new ParamT<float> ("max_torque", 0.1, 1);
   Param::End();
 
+  gripper_grasp_controller_ = new katana::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
+
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
     joints_[i] = NULL;
@@ -74,6 +76,7 @@ GazeboRosKatanaGripper::~GazeboRosKatanaGripper()
     delete joint_nameP_[i];
   }
   delete rosnode_;
+  delete gripper_grasp_controller_;
 }
 
 void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
@@ -146,7 +149,7 @@ void GazeboRosKatanaGripper::UpdateChild()
     //else
     //  desired_pos[i] = -0.44;
 
-    desired_pos[i] = gripper_grasp_controller_.getDesiredAngle();
+    desired_pos[i] = gripper_grasp_controller_->getDesiredAngle();
     actual_pos[i] = joints_[i]->GetAngle(0).GetAsRadian();
 
     commanded_effort[i] = pid_controller_.updatePid(actual_pos[i] - desired_pos[i], joints_[i]->GetVelocity(0), dt);
@@ -163,7 +166,7 @@ void GazeboRosKatanaGripper::UpdateChild()
   // --------------- update gripper_grasp_controller  ---------------
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
-    gripper_grasp_controller_.setCurrentAngle(joints_[i]->GetAngle(0).GetAsRadian());
+    gripper_grasp_controller_->setCurrentAngle(joints_[i]->GetAngle(0).GetAsRadian());
   }
 
   // --------------- limit publishing frequency to 25 Hz ---------------
