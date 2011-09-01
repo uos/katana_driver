@@ -58,7 +58,7 @@ GazeboRosKatanaGripper::GazeboRosKatanaGripper(Entity *parent) :
   torqueP_ = new ParamT<float> ("max_torque", 0.1, 1);
   Param::End();
 
-  gripper_grasp_controller_ = new katana::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
+  gripper_grasp_controller_ = new katana_gazebo_plugins::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
 
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {

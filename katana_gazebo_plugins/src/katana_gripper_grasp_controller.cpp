@@ -27,7 +27,7 @@
 
 #include <katana_gazebo_plugins/katana_gripper_grasp_controller.h>
 
-namespace katana
+namespace katana_gazebo_plugins
 {
 
 // copied from katana_constants.h:

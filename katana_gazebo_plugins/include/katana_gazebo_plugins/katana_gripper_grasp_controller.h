@@ -34,7 +34,7 @@
 #include <object_manipulation_msgs/GraspHandPostureExecutionAction.h>
 #include <object_manipulation_msgs/GraspStatus.h>
 
-namespace katana
+namespace katana_gazebo_plugins
 {
 
 class KatanaGripperGraspController
