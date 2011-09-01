@@ -302,7 +302,7 @@
       <child  link="katana_${prefix}_finger_link" />
       <origin rpy="${rotate} 0 0" xyz="0.034 0 0"/>
       <axis xyz="0 0 1"/>
-      <limit effort="0.1" lower="-0.44" upper="0.30"  velocity="0.718834"/>  
+      <limit effort="0.5" lower="-0.44" upper="0.30"  velocity="0.718834"/>  
    </joint>
 
     <link name="katana_${prefix}_finger_link">

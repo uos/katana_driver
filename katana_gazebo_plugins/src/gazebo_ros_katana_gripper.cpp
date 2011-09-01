@@ -55,7 +55,7 @@ GazeboRosKatanaGripper::GazeboRosKatanaGripper(Entity *parent) :
   node_namespaceP_ = new ParamT<std::string> ("node_namespace", "katana", 0);
   joint_nameP_.push_back(new ParamT<std::string> ("r_finger_joint", "katana_r_finger_joint", 1));
   joint_nameP_.push_back(new ParamT<std::string> ("l_finger_joint", "katana_l_finger_joint", 1));
-  torqueP_ = new ParamT<float> ("max_torque", 0.1, 1);
+  torqueP_ = new ParamT<float> ("max_torque", 0.5, 1);
   Param::End();
 
   gripper_grasp_controller_ = new katana_gazebo_plugins::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
