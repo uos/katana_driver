@@ -65,8 +65,6 @@ private:
   pr2_controllers_msgs::JointTrajectoryGoal makeRoughTrajectory(const sensor_msgs::JointState &jointGoal);
   pr2_controllers_msgs::JointTrajectoryGoal makeFullTrajectory(const pr2_controllers_msgs::JointTrajectoryGoal& goal);
 
-  bool validJointStates(const std::vector<std::string>& jointGoalNames);
-
   sensor_msgs::JointState limitJointStates(const sensor_msgs::JointState &jointGoal);
 
   JMAS as_;

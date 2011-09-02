@@ -90,13 +90,6 @@ void JointMovementAdapter::executeCB(const JMAS::GoalConstPtr &movement_goal)
   // there is no other active goal. in other words, only one instance of executeCB()
   // is ever running at the same time.
 
-  // ---------- check if joints are valid ----------
-  if (!validJointStates(movement_goal->jointGoal.name))
-  {
-    as_.setAborted();
-    return;
-  }
-
   // ---------- adjust all goal positions to match the given motor limits ----------
   sensor_msgs::JointState limited_joint_states = limitJointStates(movement_goal->jointGoal);
 
@@ -172,7 +165,10 @@ pr2_controllers_msgs::JointTrajectoryGoal JointMovementAdapter::makeRoughTraject
   // overwrite with positions from joint goal (can be only some of the joints)
   for (size_t i = 0; i < jointGoal.name.size(); ++i)
   {
-    target_state[jointGoal.name[i]] = jointGoal.position[i];
+    if (target_state.find(jointGoal.name[i]) == target_state.end())
+      ROS_WARN("joint name %s is not one of our controlled joints, ignoring", jointGoal.name[i].c_str());
+    else
+      target_state[jointGoal.name[i]] = jointGoal.position[i];
   }
 
   // create a joint trajectory with only one trajectory point (the target);
@@ -268,24 +264,6 @@ pr2_controllers_msgs::JointTrajectoryGoal JointMovementAdapter::makeFullTrajecto
   g.generate(new_goal.trajectory, new_goal.trajectory);
 
   return new_goal;
-}
-
-/**
- * Checks if all joints in the joint goal match a among joints of the katana
- */
-bool JointMovementAdapter::validJointStates(const std::vector<std::string> &jointGoalNames)
-{
-  for (size_t i = 0; i < jointGoalNames.size(); i++)
-  {
-    if (current_state_.find(jointGoalNames[i]) == current_state_.end())
-    {
-      ROS_ERROR("joint name %s is not one of our controlled joints", jointGoalNames[i].c_str());
-
-      return false;
-    }
-  }
-
-  return true;
 }
 
 sensor_msgs::JointState JointMovementAdapter::limitJointStates(const sensor_msgs::JointState &jointGoal)
