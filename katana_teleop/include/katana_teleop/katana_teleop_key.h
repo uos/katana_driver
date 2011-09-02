@@ -34,12 +34,13 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <katana_msgs/JointMovementAction.h>
-
+#include <object_manipulation_msgs/GraspHandPostureExecutionAction.h>
 
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/simple_action_client.h>
 
 typedef actionlib::SimpleActionClient<katana_msgs::JointMovementAction> JMAC;
+typedef object_manipulation_msgs::GraspHandPostureExecutionGoal GHPEG;
 
 #define KEYCODE_A 0x61
 #define KEYCODE_D 0x64
@@ -49,6 +50,9 @@ typedef actionlib::SimpleActionClient<katana_msgs::JointMovementAction> JMAC;
 #define KEYCODE_R 0x72
 #define KEYCODE_Q 0x71
 #define KEYCODE_I 0x69
+
+#define KEYCODE_O 0x6F
+#define KEYCODE_C 0x63
 
 #define KEYCODE_PLUS 0x2B
 #define KEYCODE_NUMBER 0x23
@@ -77,17 +81,17 @@ class KatanaTeleopKey
 {
 
   public:
-
     KatanaTeleopKey();
 
     void jointStateCallback(const sensor_msgs::JointState::ConstPtr& js);
-    bool matchJointGoalRequest(double increment);
     void keyboardLoop();
-    void giveInfo();
 
     ~KatanaTeleopKey()   { }
 
   private:
+    bool matchJointGoalRequest(double increment);
+    void giveInfo();
+    bool send_gripper_action(int32_t goal_type);
 
     size_t jointIndex;
     double increment;
@@ -103,6 +107,7 @@ class KatanaTeleopKey
     sensor_msgs::JointState initial_pose_;
 
     JMAC action_client;
+    actionlib::SimpleActionClient<object_manipulation_msgs::GraspHandPostureExecutionAction> gripper_;
     ros::Subscriber js_sub_;
 };
 }

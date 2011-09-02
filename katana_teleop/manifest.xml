@@ -24,7 +24,7 @@
   <depend package="katana_msgs"/>
   <depend package="actionlib"/>
   <depend package="kinematics_msgs"/>
-
+  <depend package="object_manipulation_msgs"/>
 </package>
 
 

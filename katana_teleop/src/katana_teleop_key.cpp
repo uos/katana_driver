@@ -30,7 +30,7 @@ namespace katana
 {
 
 KatanaTeleopKey::KatanaTeleopKey() :
-  action_client("joint_movement_action", true)
+  action_client("joint_movement_action", true), gripper_("gripper_grasp_posture_controller", true)
 {
   ROS_INFO("KatanaTeleopKey starting...");
   ros::NodeHandle n_;
@@ -47,6 +47,7 @@ KatanaTeleopKey::KatanaTeleopKey() :
   jointIndex = 0;
 
   action_client.waitForServer();
+  gripper_.waitForServer();
 
   // Gets all of the joints
   XmlRpc::XmlRpcValue joint_names;
@@ -133,6 +134,8 @@ void KatanaTeleopKey::giveInfo()
   ROS_INFO("---------------------------");
   ROS_INFO("Use 'AD' to switch to the next/previous joint");
   ROS_INFO("Use '0-9' to select a joint by number");
+  ROS_INFO("---------------------------");
+  ROS_INFO("Use 'OC' to open/close gripper");
 
   for (unsigned int i = 0; i < joint_names_.size(); i++)
   {
@@ -226,6 +229,7 @@ void KatanaTeleopKey::keyboardLoop()
       exit(-1);
     }
 
+    size_t selected_joint_index;
     switch (c)
     {
       // Increasing/Decreasing JointPosition
@@ -303,7 +307,7 @@ void KatanaTeleopKey::keyboardLoop()
       case KEYCODE_7:
       case KEYCODE_8:
       case KEYCODE_9:
-        size_t selected_joint_index  = c - KEYCODE_0;
+        selected_joint_index = c - KEYCODE_0;
 
         if (combined_joints_.size() > jointIndex)
         {
@@ -338,6 +342,14 @@ void KatanaTeleopKey::keyboardLoop()
       case KEYCODE_COMMA:
         increment_step_scaling -= 1.0;
         ROS_DEBUG("Increment_Scaling decreased to: %f",increment_step_scaling);
+        break;
+
+      case KEYCODE_C:
+        send_gripper_action(GHPEG::GRASP);
+        break;
+
+      case KEYCODE_O:
+        send_gripper_action(GHPEG::RELEASE);
         break;
     } // end switch case
 
@@ -375,6 +387,57 @@ void KatanaTeleopKey::keyboardLoop()
 
     } // end if dirty
   }
+}
+
+bool KatanaTeleopKey::send_gripper_action(int32_t goal_type)
+{
+  GHPEG goal;
+
+  switch (goal_type)
+  {
+    case GHPEG::GRASP:
+      goal.grasp.grasp_posture.name.push_back("dummy_name");
+      goal.grasp.grasp_posture.position.push_back(0.0); // angle is ignored
+      // leave velocity and effort empty
+      break;
+
+    case GHPEG::PRE_GRASP:
+      goal.grasp.pre_grasp_posture.name.push_back("dummy_name");
+      goal.grasp.pre_grasp_posture.position.push_back(0.0);
+      // leave velocity and effort empty
+      break;
+
+    case GHPEG::RELEASE:
+      break;
+
+    default:
+      ROS_ERROR("unknown goal code (%d)", goal_type);
+      return false;
+  }
+
+  goal.goal = goal_type;
+
+  bool finished_within_time = false;
+  gripper_.sendGoal(goal);
+  finished_within_time = gripper_.waitForResult(ros::Duration(10.0));
+  if (!finished_within_time)
+  {
+    gripper_.cancelGoal();
+    ROS_WARN("Timed out achieving goal!");
+    return false;
+  }
+  else
+  {
+    actionlib::SimpleClientGoalState state = gripper_.getState();
+    bool success = (state == actionlib::SimpleClientGoalState::SUCCEEDED);
+    if (success)
+      ROS_INFO("Action finished: %s",state.toString().c_str());
+    else
+      ROS_WARN("Action failed: %s",state.toString().c_str());
+
+    return success;
+  }
+
 }
 }// end namespace "katana"
 
