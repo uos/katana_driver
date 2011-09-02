@@ -22,7 +22,7 @@
  *  Author: Henning Deeken <hdeeken@uos.de>
  *
  * based on a pr2 teleop by Kevin Watts
-*/
+ */
 
 #include <katana_teleop/katana_teleop_key.h>
 
@@ -32,7 +32,6 @@ namespace katana
 KatanaTeleopKey::KatanaTeleopKey() :
   action_client("joint_movement_action", true)
 {
-
   ROS_INFO("KatanaTeleopKey starting...");
   ros::NodeHandle n_;
   ros::NodeHandle n_private("~");
@@ -43,8 +42,7 @@ KatanaTeleopKey::KatanaTeleopKey() :
 
   js_sub_ = n_.subscribe("joint_states", 1000, &KatanaTeleopKey::jointStateCallback, this);
 
-  sensor_msgs::JointState jg;
-  set_initial = false;
+  got_joint_states_ = false;
 
   jointIndex = 0;
 
@@ -65,9 +63,8 @@ KatanaTeleopKey::KatanaTeleopKey() :
     ROS_ERROR("Malformed joint specification.  (namespace: %s)", n_.getNamespace().c_str());
   }
 
-  for (size_t i = 0; (int) i < joint_names.size(); ++i)
+  for (size_t i = 0; (int)i < joint_names.size(); ++i)
   {
-
     XmlRpc::XmlRpcValue &name_value = joint_names[i];
 
     if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
@@ -77,7 +74,6 @@ KatanaTeleopKey::KatanaTeleopKey() :
     }
 
     joint_names_[i] = (std::string)name_value;
-
   }
 
   // Gets all of the gripper joints
@@ -95,7 +91,7 @@ KatanaTeleopKey::KatanaTeleopKey() :
   {
     ROS_ERROR("Malformed gripper joint specification.  (namespace: %s)", n_.getNamespace().c_str());
   }
-  for (size_t i = 0; (int) i < gripper_joint_names.size(); ++i)
+  for (size_t i = 0; (int)i < gripper_joint_names.size(); ++i)
   {
     XmlRpc::XmlRpcValue &name_value = gripper_joint_names[i];
     if (name_value.getType() != XmlRpc::XmlRpcValue::TypeString)
@@ -125,8 +121,6 @@ KatanaTeleopKey::KatanaTeleopKey() :
 
 void KatanaTeleopKey::giveInfo()
 {
-  ros::spinOnce();
-
   ROS_INFO("---------------------------");
   ROS_INFO("Use 'WS' to increase/decrease the joint position about one increment");
   ROS_INFO("Current increment is set to: %f", increment);
@@ -138,6 +132,7 @@ void KatanaTeleopKey::giveInfo()
   ROS_INFO("Use 'I' to display this manual and the current joint state");
   ROS_INFO("---------------------------");
   ROS_INFO("Use 'AD' to switch to the next/previous joint");
+  ROS_INFO("Use '0-9' to select a joint by number");
 
   for (unsigned int i = 0; i < joint_names_.size(); i++)
   {
@@ -163,32 +158,28 @@ void KatanaTeleopKey::giveInfo()
 
 void KatanaTeleopKey::jointStateCallback(const sensor_msgs::JointState::ConstPtr& js)
 {
-
   // ROS_INFO("KatanaTeleopKeyboard received a new JointState");
 
   current_pose_.name = js->name;
   current_pose_.position = js->position;
 
-  if (!set_initial)
+  if (!got_joint_states_)
   {
     // ROS_INFO("KatanaTeleopKeyboard received initial JointState");
     initial_pose_.name = js->name;
     initial_pose_.position = js->position;
-    set_initial = true;
+    got_joint_states_ = true;
   }
 }
 
 bool KatanaTeleopKey::matchJointGoalRequest(double increment)
 {
-
   bool found_match = false;
 
   for (unsigned int i = 0; i < current_pose_.name.size(); i++)
   {
-
     if (current_pose_.name[i] == combined_joints_[jointIndex])
     {
-
       //ROS_DEBUG("incoming inc: %f - curren_pose: %f - resulting pose: %f ",increment, current_pose_.position[i], current_pose_.position[i] + increment);
       movement_goal_.position.push_back(current_pose_.position[i] + increment);
       found_match = true;
@@ -216,367 +207,173 @@ void KatanaTeleopKey::keyboardLoop()
   raw.c_cc[VEOF] = 2;
   tcsetattr(kfd, TCSANOW, &raw);
 
-  while (!shutdown)
+  ros::Rate r(50.0); // 50 Hz
+
+  while (ros::ok() && !shutdown)
   {
+    r.sleep();
+    ros::spinOnce();
 
-    if (set_initial)
+    if (!got_joint_states_)
+      continue;
+
+    dirty = false;
+
+    // get the next event from the keyboard
+    if (read(kfd, &c, 1) < 0)
     {
-      // get the next event from the keyboard
-      if (read(kfd, &c, 1) < 0)
-      {
-        perror("read():");
-        exit(-1);
-      }
-
-      switch (c)
-      {
-        // Increasing/Decreasing JointPosition
-        case KEYCODE_W:
-
-          if (matchJointGoalRequest(increment))
-          {
-            movement_goal_.name.push_back(combined_joints_[jointIndex]);
-          }
-          else
-          {
-            ROS_WARN("movement with the desired joint: %s failed due to a mismatch with the current joint state", combined_joints_[jointIndex].c_str());
-            dirty = false;
-            break;
-          }
-
-          dirty = true;
-          break;
-
-        case KEYCODE_S:
-
-          if (matchJointGoalRequest(-increment))
-          {
-            movement_goal_.name.push_back(combined_joints_[jointIndex]);
-          }
-          else
-          {
-            ROS_WARN("movement with the desired joint: %s failed due to a mismatch with the current joint state", combined_joints_[jointIndex].c_str());
-            dirty = false;
-            break;
-          }
-
-          dirty = true;
-          break;
-
-          // Switching active Joint
-        case KEYCODE_D:
-
-          // use this line if you want to use "the gripper" instead of the single gripper joints
-          jointIndex = (jointIndex + 1) % (joint_names_.size() + 1);
-
-          // use this line if you want to select specific gripper joints
-          //jointIndex = (jointIndex + 1) % combined_joints_.size();
-
-          dirty = false;
-          break;
-
-        case KEYCODE_A:
-
-          // use this line if you want to use "the gripper" instead of the single gripper joints
-          jointIndex = (jointIndex - 1) % (joint_names_.size() + 1);
-
-          // use this line if you want to select specific gripper joints
-          //jointIndex = (jointIndex - 1) % combined_joints_.size();
-
-          dirty = false;
-          break;
-
-        case KEYCODE_R:
-          ROS_INFO("Resetting arm to it's initial pose..");
-
-          movement_goal_.name = initial_pose_.name;
-          movement_goal_.position = initial_pose_.position;
-          dirty = true;
-          break;
-
-        case KEYCODE_Q:
-          // in case of shutting down the teleop node the arm is moved back into it's initial pose
-          // assuming that this is a proper resting pose for the arm
-
-          ROS_INFO("Shutting down the Katana Teleoperation node...");
-          movement_goal_.name = initial_pose_.name;
-          movement_goal_.position = initial_pose_.position;
-          dirty = true;
-          shutdown = true;
-          break;
-
-        case KEYCODE_I:
-
-          giveInfo();
-          dirty = false;
-          break;
-
-        case KEYCODE_0:
-
-          if (combined_joints_.size() > 0)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 0: %s", combined_joints_[0].c_str());
-            jointIndex = 0;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 0 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_1:
-
-          if (combined_joints_.size() > 1)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 1: %s", combined_joints_[1].c_str());
-            jointIndex = 1;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 1 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_2:
-
-          if (combined_joints_.size() > 2)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 2: %s", combined_joints_[2].c_str());
-            jointIndex = 2;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 2 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_3:
-
-          if (combined_joints_.size() > 3)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 3: %s", combined_joints_[3].c_str());
-            jointIndex = 3;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 3 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_4:
-
-          if (combined_joints_.size() > 4)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 4: %s", combined_joints_[4].c_str());
-            jointIndex = 4;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 4 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_5:
-
-          if (combined_joints_.size() > 5)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 5: %s", combined_joints_[5].c_str());
-            jointIndex = 5;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 5 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_6:
-
-          if (combined_joints_.size() > 6)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 6: %s", combined_joints_[6].c_str());
-            jointIndex = 6;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 6 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_7:
-
-          if (combined_joints_.size() > 7)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 7: %s", combined_joints_[7].c_str());
-            jointIndex = 7;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 7 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_8:
-
-          if (combined_joints_.size() > 8)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 8: %s", combined_joints_[8].c_str());
-            jointIndex = 8;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 8 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_9:
-
-          if (combined_joints_.size() > 9)
-          {
-
-            ROS_DEBUG("You choose to adress joint no. 9: %s", combined_joints_[9].c_str());
-            jointIndex = 9;
-            dirty = false;
-            break;
-
-          }
-          else
-          {
-
-            ROS_WARN("Joint Index No. 9 can not be adressed!");
-            dirty = false;
-            break;
-          }
-
-        case KEYCODE_PLUS:
-          increment += (increment_step * increment_step_scaling);
-          ROS_DEBUG("Increment increased to: %f",increment);
-          dirty = false;
-          break;
-
-        case KEYCODE_NUMBER:
-
-          increment -= (increment_step * increment_step_scaling);
-          if(increment < 0){
-            increment = 0.0;
-          }
-          ROS_DEBUG("Increment decreased to: %f",increment);
-          dirty = false;
-          break;
-
-        case KEYCODE_POINT:
-
-          increment_step_scaling += 1.0;
-          ROS_DEBUG("Increment_Scaling increased to: %f",increment_step_scaling);
-          dirty = false;
-          break;
-
-        case KEYCODE_COMMA:
-
-          increment_step_scaling -= 1.0;
-          ROS_DEBUG("Increment_Scaling decreased to: %f",increment_step_scaling);
-          dirty = false;
-          break;
-
-      } // end switch case
-
-      katana_msgs::JointMovementGoal goal;
-
-      goal.jointGoal = movement_goal_;
-
-      if (dirty == true)
-      {
-        ROS_WARN("Sending new JointMovementActionGoal..");
-
-        for (size_t i = 0; i < goal.jointGoal.name.size(); i++)
+      perror("read():");
+      exit(-1);
+    }
+
+    switch (c)
+    {
+      // Increasing/Decreasing JointPosition
+      case KEYCODE_W:
+        if (matchJointGoalRequest(increment))
         {
-
-          ROS_DEBUG("Joint: %s to %f rad", goal.jointGoal.name[i].c_str(), goal.jointGoal.position[i]);
-
-        }
-
-
-        bool finished_within_time = false;
-        action_client.sendGoal(goal);
-        finished_within_time = action_client.waitForResult(ros::Duration(1.0));
-        if (!finished_within_time)
-        {
-           action_client.cancelGoal();
-           ROS_INFO("Timed out achieving goal!");
+          movement_goal_.name.push_back(combined_joints_[jointIndex]);
+          dirty = true;
         }
         else
         {
-           actionlib::SimpleClientGoalState state = action_client.getState();
-           bool success = (state == actionlib::SimpleClientGoalState::SUCCEEDED);
-           if (success)
-             ROS_INFO("Action finished: %s",state.toString().c_str());
-           else
-             ROS_INFO("Action failed: %s", state.toString().c_str());
-
-           //giveInfo();
-           ros::spinOnce();
+          ROS_WARN("movement with the desired joint: %s failed due to a mismatch with the current joint state", combined_joints_[jointIndex].c_str());
         }
 
-        movement_goal_.name.clear();
-        movement_goal_.position.clear();
+        break;
 
-        dirty = false;
+      case KEYCODE_S:
+        if (matchJointGoalRequest(-increment))
+        {
+          movement_goal_.name.push_back(combined_joints_[jointIndex]);
+          dirty = true;
+        }
+        else
+        {
+          ROS_WARN("movement with the desired joint: %s failed due to a mismatch with the current joint state", combined_joints_[jointIndex].c_str());
+        }
+
+        break;
+
+        // Switching active Joint
+      case KEYCODE_D:
+        // use this line if you want to use "the gripper" instead of the single gripper joints
+        jointIndex = (jointIndex + 1) % (joint_names_.size() + 1);
+
+        // use this line if you want to select specific gripper joints
+        //jointIndex = (jointIndex + 1) % combined_joints_.size();
+        break;
+
+      case KEYCODE_A:
+        // use this line if you want to use "the gripper" instead of the single gripper joints
+        jointIndex = (jointIndex - 1) % (joint_names_.size() + 1);
+
+        // use this line if you want to select specific gripper joints
+        //jointIndex = (jointIndex - 1) % combined_joints_.size();
+
+        break;
+
+      case KEYCODE_R:
+        ROS_INFO("Resetting arm to its initial pose..");
+
+        movement_goal_.name = initial_pose_.name;
+        movement_goal_.position = initial_pose_.position;
+        dirty = true;
+        break;
+
+      case KEYCODE_Q:
+        // in case of shutting down the teleop node the arm is moved back into it's initial pose
+        // assuming that this is a proper resting pose for the arm
+
+        ROS_INFO("Shutting down the Katana Teleoperation node...");
+        shutdown = true;
+        break;
+
+      case KEYCODE_I:
+        giveInfo();
+        break;
+
+      case KEYCODE_0:
+      case KEYCODE_1:
+      case KEYCODE_2:
+      case KEYCODE_3:
+      case KEYCODE_4:
+      case KEYCODE_5:
+      case KEYCODE_6:
+      case KEYCODE_7:
+      case KEYCODE_8:
+      case KEYCODE_9:
+        size_t selected_joint_index  = c - KEYCODE_0;
+
+        if (combined_joints_.size() > jointIndex)
+        {
+          ROS_DEBUG("You choose to adress joint no. %d: %s", selected_joint_index, combined_joints_[9].c_str());
+          jointIndex = selected_joint_index;
+        }
+        else
+        {
+          ROS_WARN("Joint Index No. %d can not be adressed!", jointIndex);
+        }
+        break;
+
+      case KEYCODE_PLUS:
+        increment += (increment_step * increment_step_scaling);
+        ROS_DEBUG("Increment increased to: %f",increment);
+        break;
+
+      case KEYCODE_NUMBER:
+        increment -= (increment_step * increment_step_scaling);
+        if (increment < 0)
+        {
+          increment = 0.0;
+        }
+        ROS_DEBUG("Increment decreased to: %f",increment);
+        break;
+
+      case KEYCODE_POINT:
+        increment_step_scaling += 1.0;
+        ROS_DEBUG("Increment_Scaling increased to: %f",increment_step_scaling);
+        break;
+
+      case KEYCODE_COMMA:
+        increment_step_scaling -= 1.0;
+        ROS_DEBUG("Increment_Scaling decreased to: %f",increment_step_scaling);
+        break;
+    } // end switch case
+
+    if (dirty)
+    {
+      ROS_INFO("Sending new JointMovementActionGoal..");
+
+      katana_msgs::JointMovementGoal goal;
+      goal.jointGoal = movement_goal_;
+
+      for (size_t i = 0; i < goal.jointGoal.name.size(); i++)
+      {
+        ROS_DEBUG("Joint: %s to %f rad", goal.jointGoal.name[i].c_str(), goal.jointGoal.position[i]);
       }
 
-    } // if set_initial end
+      action_client.sendGoal(goal);
+      bool finished_within_time = action_client.waitForResult(ros::Duration(10.0));
+      if (!finished_within_time)
+      {
+        action_client.cancelGoal();
+        ROS_INFO("Timed out achieving goal!");
+      }
+      else
+      {
+        actionlib::SimpleClientGoalState state = action_client.getState();
+        if (state == actionlib::SimpleClientGoalState::SUCCEEDED)
+          ROS_INFO("Action finished: %s",state.toString().c_str());
+        else
+          ROS_INFO("Action failed: %s", state.toString().c_str());
+
+      }
+
+      movement_goal_.name.clear();
+      movement_goal_.position.clear();
+
+    } // end if dirty
   }
 }
 }// end namespace "katana"
@@ -597,6 +394,6 @@ int main(int argc, char** argv)
 
   ktk.keyboardLoop();
 
-  return (0);
+  return 0;
 }
 

@@ -68,7 +68,7 @@ typedef actionlib::SimpleActionClient<katana_msgs::JointMovementAction> JMAC;
 
 struct termios cooked, raw;
 int kfd = 0;
-bool set_initial;
+bool got_joint_states_;
 
 
 namespace katana{
@@ -89,7 +89,7 @@ class KatanaTeleopKey
 
   private:
 
-    int jointIndex;
+    size_t jointIndex;
     double increment;
     double increment_step;
     double increment_step_scaling;
