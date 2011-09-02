@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+  <!-- which joints does this katana instance control? (for teleop etc.) -->
+  <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
+
   <!-- remap katana_gripper_grasp_controller topic names; this has to be stated before loading Gazebo! -->
   <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
   <remap from="grasp_query_name" to="/gripper_grasp_status" />
@@ -41,5 +44,12 @@
   <include file="$(find katana_arm_gazebo)/launch/cylinder_object.launch"/>
   -->
   <include file="$(find katana_arm_gazebo)/launch/coke_can.launch"/>
+
+  <group ns="katana_arm_controller">
+    <node pkg="katana_joint_movement_adapter" type="joint_movement_adapter" name="joint_movement_adapter" output="screen">
+      <param name="max_acc" value="1.190799" />
+      <param name="max_acc" value="2.646220" />
+    </node>
+  </group>
 </launch>
 
