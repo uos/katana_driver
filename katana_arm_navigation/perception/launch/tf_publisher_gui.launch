@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <launch>
-  <node pkg="tf_publisher_gui" type="tf_publisher_gui" name="tf_publisher_gui">
+  <node pkg="tf_publisher_gui" type="tf_publisher_gui" name="tf_publisher_gui" output="screen">
     <param name="parent_frame" value="katana_base_link" />
     <param name="child_frame" value="kinect_rgb" />
     

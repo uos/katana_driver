@@ -16,7 +16,7 @@
 
   <!-- drop frames to speed things up; the Kinect publishes at around 10 Hz, which is way too much 
        for the collision map, so drop 9 out of 10 frames -->
-  <node pkg="topic_tools" type="drop" name="drop" args="/kinect/depth/points 9 10 /kinect/depth/points_drop" />
+  <node pkg="topic_tools" type="drop" name="drop" args="/kinect/depth/points 9 10 /kinect/depth/points_drop" output="screen" />
 
   <!-- need to clear known objects from scans -->
   <node pkg="planning_environment" type="clear_known_objects" name="clear_known_objects" output="screen">
@@ -28,7 +28,7 @@
     <param name="object_scale" type="double" value="1.0" />
   </node>
 
-    <node pkg="point_cloud_converter" name="point_cloud_converter_preself" type="point_cloud_converter">
+    <node pkg="point_cloud_converter" name="point_cloud_converter_preself" type="point_cloud_converter" output="screen">
 	<remap from="/points_in" to="/tilt_scan_cloud_known" />
         <remap from="/points2_out" to="/tilt_scan_cloud_known2" />
       </node>
@@ -64,7 +64,7 @@
     <rosparam command="load" file="$(find katana_arm_navigation)/perception/config/self_filter.yaml" />
   </node>
 
-  <node pkg="point_cloud_converter" name="point_cloud_converter_postself" type="point_cloud_converter">
+  <node pkg="point_cloud_converter" name="point_cloud_converter_postself" type="point_cloud_converter" output="screen">
 	<remap from="/points2_in" to="/tilt_scan_cloud_filtered2" />
         <remap from="/points_out" to="/tilt_scan_cloud_filtered" />
   </node>
