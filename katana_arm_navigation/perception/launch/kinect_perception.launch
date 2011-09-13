@@ -1,8 +1,5 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- send planning environment parameters -->
-  <include file="$(find katana_arm_navigation)/config/launch/katana_planning_environment.launch" />
-
   <node pkg="tf" type="static_transform_publisher" name="kinect_rgb_to_kinect_depth"
     args="-0.03 0.0 0.0 0.0 0.0 0.0 /kinect_rgb /kinect_depth 10" />
 
