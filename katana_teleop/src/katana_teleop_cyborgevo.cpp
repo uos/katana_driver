@@ -30,7 +30,7 @@ namespace katana
 {
 
 KatanaTeleopCyborgEvo::KatanaTeleopCyborgEvo() :
-  action_client("joint_movement_action", true)
+  action_client("katana_arm_controller/joint_movement_action", true)
 {
 
   ROS_INFO("KatanaTeleopCyborgEvo starting...");

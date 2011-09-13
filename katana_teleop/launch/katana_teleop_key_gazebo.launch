@@ -2,11 +2,5 @@
 <!-- see http://www.ros.org/wiki/move_arm/Tutorials/GettingStarted -->
 <launch>
   <!-- start keyboard tele op node here -->
-  <node pkg="katana_teleop" type="katana_teleop_key" name="katana_teleop_key" output="screen">
-    <remap from="joint_movement_action/cancel" to="/katana_arm_controller/joint_movement_action/cancel" />
-    <remap from="joint_movement_action/feedback" to="/katana_arm_controller/joint_movement_action/feedback" />
-    <remap from="joint_movement_action/goal" to="/katana_arm_controller/joint_movement_action/goal" />
-    <remap from="joint_movement_action/result" to="/katana_arm_controller/joint_movement_action/result" />
-    <remap from="joint_movement_action/status" to="/katana_arm_controller/joint_movement_action/status" />
-  </node>
+  <node pkg="katana_teleop" type="katana_teleop_key" name="katana_teleop_key" output="screen" />
 </launch>

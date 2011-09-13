@@ -30,7 +30,7 @@ namespace katana
 {
 
 KatanaTeleopPS3::KatanaTeleopPS3() :
-  action_client("joint_movement_action", true)
+  action_client("katana_arm_controller/joint_movement_action", true)
 {
 
   ROS_INFO("KatanaTeleopPS3 starting...");

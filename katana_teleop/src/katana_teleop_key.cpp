@@ -30,7 +30,7 @@ namespace katana
 {
 
 KatanaTeleopKey::KatanaTeleopKey() :
-  action_client("joint_movement_action", true), gripper_("gripper_grasp_posture_controller", true)
+  action_client("katana_arm_controller/joint_movement_action", true), gripper_("gripper_grasp_posture_controller", true)
 {
   ROS_INFO("KatanaTeleopKey starting...");
   ros::NodeHandle n_;

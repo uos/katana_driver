@@ -34,7 +34,7 @@ namespace katana
 {
 
 JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana) :
-  katana_(katana), action_server_(ros::NodeHandle(), "joint_trajectory_action",
+  katana_(katana), action_server_(ros::NodeHandle(), "katana_arm_controller/joint_trajectory_action",
                                   boost::bind(&JointTrajectoryActionController::executeCB, this, _1), false)
 {
   ros::NodeHandle node_;
@@ -56,9 +56,9 @@ JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_p
 
   // Subscriptions, publishers, services
   action_server_.start();
-  sub_command_ = node_.subscribe("command", 1, &JointTrajectoryActionController::commandCB, this);
-  serve_query_state_ = node_.advertiseService("query_state", &JointTrajectoryActionController::queryStateService, this);
-  controller_state_publisher_ = node_.advertise<pr2_controllers_msgs::JointTrajectoryControllerState> ("state", 1);
+  sub_command_ = node_.subscribe("katana_arm_controller/command", 1, &JointTrajectoryActionController::commandCB, this);
+  serve_query_state_ = node_.advertiseService("katana_arm_controller/query_state", &JointTrajectoryActionController::queryStateService, this);
+  controller_state_publisher_ = node_.advertise<pr2_controllers_msgs::JointTrajectoryControllerState> ("katana_arm_controller/state", 1);
 
   // NOTE: current_trajectory_ is not initialized here, because that will happen in reset_trajectory_and_stop()
 
@@ -189,7 +189,7 @@ void JointTrajectoryActionController::commandCB(const trajectory_msgs::JointTraj
   // just creates an action from the message and sends it on to the action server
 
   // create an action client spinning its own thread
-  JTAC action_client("joint_trajectory_action", true);
+  JTAC action_client("katana_arm_controller/joint_trajectory_action", true);
   action_client.waitForServer();
 
   JTAS::Goal goal;
