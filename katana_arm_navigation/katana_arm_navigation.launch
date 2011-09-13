@@ -25,4 +25,7 @@
 
   <!-- load move_arm -->
   <include file="$(find katana_arm_navigation)/actions/launch/move_arm.launch"/>
+
+  <!-- fake odometry -->
+  <include file="$(find katana_arm_navigation)/config/launch/fake_odom.launch" />
 </launch>

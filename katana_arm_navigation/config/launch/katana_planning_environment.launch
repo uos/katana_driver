@@ -5,9 +5,7 @@
 
   <!-- send parameters for multidof -->
   <rosparam command="load" ns="robot_description_planning" file="$(find katana_arm_navigation)/config/config/multi_dof_joints.yaml" />
-  <include file="$(find katana_arm_navigation)/config/launch/fake_odom.launch" />
 
-	<!-- send parameters needed for motion planning -->
-	<rosparam command="load" ns="robot_description_planning" file="$(find katana_arm_navigation)/config/config/planning_groups.yaml" />
-
+  <!-- send parameters needed for motion planning -->
+  <rosparam command="load" ns="robot_description_planning" file="$(find katana_arm_navigation)/config/config/planning_groups.yaml" />
 </launch>
