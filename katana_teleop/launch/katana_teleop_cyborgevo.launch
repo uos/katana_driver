@@ -2,7 +2,7 @@
 <!-- see http://www.ros.org/wiki/move_arm/Tutorials/GettingStarted -->
 <launch>
   <!-- start katana node -->
-  <include file="$(find katana)/launch/katana.launch" />
+  <include file="$(find katana)/launch/$(env KATANA_TYPE).launch" />
   
   <!-- start katana arm_kinematics node -->
   <include file="$(find katana_arm_navigation)/kinematics/launch/katana_openrave_kinematics.launch" /> 

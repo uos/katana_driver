@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <launch>
+  <!-- load katana urdf -->
+  <include file="$(find katana_description)/launch/upload_$(env KATANA_TYPE).launch" />
+
   <!-- which joints does this katana instance control? (for teleop etc.) -->
   <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
 
@@ -9,9 +12,6 @@
 
   <!-- load world -->
   <include file="$(find katana_arm_gazebo)/launch/grasp_world.launch" />
-
-  <!-- load katana urdf -->
-  <include file="$(find katana_description)/launch/upload_katana.launch" />
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
   <!-- <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -unpause -urdf -param robot_description -model katana" respawn="false" output="screen"/> -->
