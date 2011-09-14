@@ -26,7 +26,6 @@
 #define KATANA_H_
 
 #include <ros/ros.h>
-#include <ros/package.h>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread.hpp>
 

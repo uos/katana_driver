@@ -40,8 +40,12 @@ Katana::Katana() :
   std::string config_file_path;
   bool use_serial;
 
-  pn.param("config_file_path", config_file_path, ros::package::getPath("kni")
-      + "/KNI_4.3.0/configfiles450/katana6M90A_G.cfg");
+  bool has_path = pn.getParam("config_file_path", config_file_path);
+  if (!has_path) {
+    ROS_ERROR("Required parameter config_file_path could not be found on param server!");
+    return;
+  }
+
   pn.param("use_serial", use_serial, false);
 
   converter = new KNIConverter(config_file_path);

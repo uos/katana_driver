@@ -11,6 +11,7 @@
   
   <!-- katana node -->
   <node pkg="katana" type="katana" name="katana" output="screen">
+   <param name="config_file_path" type="string" value="$(find kni)/KNI_4.3.0/configfiles450/katana6M90A_G.cfg" />
   
    <!--<param name="simulation" type="bool" value="true" /> -->
   
