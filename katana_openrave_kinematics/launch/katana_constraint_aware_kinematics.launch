@@ -8,7 +8,7 @@
 
 <!-- start the ik_openrave node for ik services -->
 
- <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=$(find katana_description)/collada/katana6m90a.robot.xml --viewer='' --collision_map=collision_map_occ" output="screen"> 
+ <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=$(find katana_description)/collada/$(env KATANA_TYPE).robot.xml --viewer='' --collision_map=collision_map_occ" output="screen"> 
  </node> 
 
 <!-- start the arm_kinematics node for fk services -->

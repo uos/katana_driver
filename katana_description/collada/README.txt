@@ -23,30 +23,30 @@ rosrun xacro xacro.py $KATANA_TYPE.urdf.xacro > $KATANA_TYPE.urdf
 #
 # now the .dae can be generated:
 
-rosrun collada_urdf urdf_to_collada katana6m90a.urdf katana6m90a.dae
+rosrun collada_urdf urdf_to_collada $KATANA_TYPE.urdf $KATANA_TYPE.dae
 
 # if you want, you can zip the .dae together with a manifest.xml file to get the .zae.
 # the manifest.xml should look like this:
 #
 # <?xml version="1.0" encoding="utf-8"?>
-# <dae_root>./katana6m90a.dae</dae_root>
+# <dae_root>./$KATANA_TYPE.dae</dae_root>
 #
 # optionally, check the links:
 
 export PYTHONPATH=$(rospack find openrave)/lib/python2.6/site-packages:$PYTHONPATH
-rosrun openrave openrave0.4-robot.py katana6m90a.dae --list links
+rosrun openrave openrave0.4-robot.py $KATANA_TYPE.dae --list links
 
 # optionally, visualize the model:
 
-rosrun openrave openrave0.4 -f katana6m90a.dae
+rosrun openrave openrave0.4 -f $KATANA_TYPE.dae
 
 # and now start the IK service:
 
-rosrun orrosplanning ik_openrave.py --scene="katana6m90a.robot.xml"
+rosrun orrosplanning ik_openrave.py --scene="$KATANA_TYPE.robot.xml"
 
 # to disable the viewer:
 
-rosrun orrosplanning ik_openrave.py --scene="katana6m90a.robot.xml" --viewer=''
+rosrun orrosplanning ik_openrave.py --scene="$KATANA_TYPE.robot.xml" --viewer=''
 
 # in a separate terminal, run:
 # (you first have to change the word 'Base' to 'katana_base_link' in the file orrosplanning/test/testarmik5d.py)

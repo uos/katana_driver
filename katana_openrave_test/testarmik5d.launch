@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <launch>
-  <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=$(find katana_description)/collada/katana6m90a.robot.xml" output="screen"/>
+  <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=$(find katana_description)/collada/$(env KATANA_TYPE).robot.xml" output="screen"/>
   <node pkg="katana_openrave_test" type="testarmik5d.py" name="testik5d" output="screen"/>
 </launch>
 
