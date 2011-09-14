@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
   <!-- load katana urdf -->
-  <include file="$(find katana_description)/launch/upload_$(env KATANA_TYPE).launch" />
+  <include file="$(find katana_description)/launch/upload_katana_450_6m90a.launch" />
 
   <!-- robot state publisher -->
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" />
