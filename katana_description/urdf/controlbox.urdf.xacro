@@ -7,7 +7,7 @@
   
   <link name="katana_internal_controlbox_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
       <geometry>
         <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" />
       </geometry>
@@ -17,7 +17,7 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
+      <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
       <geometry>
         <mesh filename="package://katana_description/meshes/katana/convex/katana_internal_controlbox_convex.stlb" />
       </geometry>

@@ -28,7 +28,7 @@
 
   <link name="katana_base_link">
     <visual>
-      <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"/>
       </geometry>
@@ -38,7 +38,7 @@
       </material>
     </visual>
     <collision>
-      <origin xyz="0 0 0" rpy="0 0 ${M_PI}" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://katana_description/meshes/katana/convex/katana_base_link_convex.stlb"/>
       </geometry>
@@ -56,7 +56,7 @@
     <!-- Joint 1 in Katana Manual -->
     <parent link="katana_base_link"/>
     <child link="katana_motor1_pan_link" />
-    <origin xyz="0 0 ${base_height}" rpy="0 0 ${M_PI}"/>
+    <origin xyz="0 0 ${base_height}" rpy="0 0 0"/>
     <axis xyz="0 0 1"/>
     <limit effort="1.5" lower="-3.025528" upper="2.891097" velocity="2.208932"/>
   </joint>
@@ -324,7 +324,7 @@
   <joint name="katana_base_frame_joint" type="fixed">
     <parent link="katana_base_link"/>
     <child link="katana_base_frame" />
-    <origin xyz="0 0 ${base_height}" rpy="0 0 ${M_PI}"/>
+    <origin xyz="0 0 ${base_height}" rpy="0 0 0"/>
   </joint>
 
   <link name="katana_base_frame">

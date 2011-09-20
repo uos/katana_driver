@@ -4,6 +4,6 @@
   <param name="object_description" textfile="$(find katana_arm_gazebo)/urdf/coke_can.urdf" />
 
   <!-- push object_description to factory and spawn in gazebo -->
-  <node name="spawn_object" pkg="gazebo" type="spawn_model" args="-urdf -param object_description -x 0.40 -y 0.005 -z 0.30 -model object_1" respawn="false" output="screen" /> 
+  <node name="spawn_object" pkg="gazebo" type="spawn_model" args="-urdf -param object_description -x -0.40 -y 0.005 -z 0.30 -model object_1" respawn="false" output="screen" /> 
 </launch>
 
