@@ -88,9 +88,8 @@ void move_to_pose(geometry_msgs::Pose & desired_pose,
           simple_pose_constraint.pose.orientation.w);
       ROS_INFO("rpy: %f / %f / %f",roll, pitch, yaw);
 
-      ROS_INFO("Trail #%d - succeeded: %f", counter, (double) success_counter/counter);
+      ROS_INFO("Trial #%d - succeeded: %f", counter, (double) success_counter/counter);
 
-      /*
       tf::TransformBroadcaster br;
       tf::Transform transform;
       transform.setOrigin(tf::Vector3(simple_pose_constraint.pose.position.x, simple_pose_constraint.pose.position.y,
@@ -102,19 +101,13 @@ void move_to_pose(geometry_msgs::Pose & desired_pose,
                                            simple_pose_constraint.pose.orientation.w));
 
       ros::Rate loop_rate1(100);
-      ros::Time end_time = ros::Time::now() + ros::Duration(0.2);
+      ros::Time end_time = ros::Time::now() + ros::Duration(1.0);
 
       while (ros::ok() && ros::Time::now() < end_time)
       {
-
         br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "katana_base_link", "katana_goal_pose"));
-
         loop_rate1.sleep();
       }
-
-      //   br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "katana_base_link", "katana_goal_pose"));
-*/
-
     }
     else
     {
@@ -141,10 +134,7 @@ void move_to_pose(geometry_msgs::Pose & desired_pose,
         loop_rate2.sleep();
       }
 */
-      // else
-      // ROS_INFO("Action failed: %s",state.toString().c_str());
-
-
+      ROS_DEBUG_THROTTLE(1.0, "Action failed: %s (this is expected to happen a lot)",state.toString().c_str());
     }
   }
 }
