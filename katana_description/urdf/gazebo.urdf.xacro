@@ -29,11 +29,6 @@
   <!-- all materials are listed here: simulator_gazebo/gazebo/gazebo/share/gazebo/Media/materials/ -->
 
   <!-- *************** links *************** -->
-
-  <gazebo reference="katana_internal_controlbox_link">
-    <material value="PR2/Grey1" />
-  </gazebo>
-
   <gazebo reference="katana_base_link">
     <material value="PR2/Grey1" />
   </gazebo>

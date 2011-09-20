@@ -4,7 +4,7 @@
   xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
   xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
   xmlns:xacro="http://ros.org/wiki/xacro"
-  name="katana">
+  name="katana_300_6m180">
 
   <include filename="$(find katana_description)/urdf/transmissions.urdf.xacro"/>
   <include filename="$(find katana_description)/urdf/gazebo.urdf.xacro"/>
@@ -12,7 +12,6 @@
   <property name="M_PI" value="3.1415926535897931" />
 
   <!-- all values from the katana manual -->
-  <property name="controlbox_height" value="0.08" />
   <property name="base_height" value="0.2015" />
   <property name="link2_length" value="0.19" />
   <property name="link3_length" value="0.139" />
@@ -26,39 +25,7 @@
        speed limit for all joints, according to the Katana 4D documentation -->
   <!-- the effort limits have been measured experimentally from the maximum effort the Gazebo controller 
        uses in normal conditions -->
-
-  <link name="katana_internal_controlbox_link">
-    <visual>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://katana_description/meshes/katana/katana_internal_controlbox.stl" />
-      </geometry>
-
-      <material name="grey">
-        <color rgba="0.8 0.8 0.8 1"/>
-      </material>
-    </visual>
-    <collision>
-      <origin xyz="0 0 0" rpy="0 0 0" />
-      <geometry>
-        <mesh filename="package://katana_description/meshes/katana/convex/katana_internal_controlbox_convex.stlb" />
-      </geometry>
-    </collision>
-    <inertial>
-      <mass value="4.47057045" />
-      <origin xyz="0.000024 -0.006508 0.030555" />
-      <inertia ixx="0.013760086" ixy="-0.000000539" ixz="-0.000000442" 
-        iyy="0.015251808" iyz="0.000361753" 
-        izz="0.023409309" />
-    </inertial>
-  </link>
-
-  <joint name="katana_base_joint" type="fixed">
-    <parent link="katana_internal_controlbox_link"/>
-    <child link="katana_base_link"/>
-    <origin xyz="0 0 ${controlbox_height}"/>
-  </joint>
-
+ 
   <link name="katana_base_link">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
@@ -66,7 +33,9 @@
         <mesh filename="package://katana_description/meshes/katana/katana_base_link.stl"/>
       </geometry>
 
-      <material name="grey" />
+      <material name="grey">
+        <color rgba="0.8 0.8 0.8 1"/>
+      </material>
     </visual>
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
