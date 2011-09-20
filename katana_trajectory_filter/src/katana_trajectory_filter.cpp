@@ -158,7 +158,7 @@ template<typename T>
 
 } // namespace katana_trajectory_filter
 
-//  PLUGINLIB_REGISTER_CLASS(class_name, class_type, filters::FilterBase<T>)
-PLUGINLIB_REGISTER_CLASS(KatanaTrajectoryFilterFilterJointTrajectory, katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::FilterJointTrajectory::Request>, filters::FilterBase<motion_planning_msgs::FilterJointTrajectory::Request>)
-PLUGINLIB_REGISTER_CLASS(KatanaTrajectoryFilterJointTrajectoryWithLimits, katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::JointTrajectoryWithLimits>, filters::FilterBase<motion_planning_msgs::JointTrajectoryWithLimits>)
-PLUGINLIB_REGISTER_CLASS(KatanaTrajectoryFilterFilterJointTrajectoryWithConstraints, katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::FilterJointTrajectoryWithConstraints::Request>, filters::FilterBase<motion_planning_msgs::FilterJointTrajectoryWithConstraints::Request>)
+//  PLUGINLIB_DECLARE_CLASS(package, class_name, class_type, filters::FilterBase<T>)
+PLUGINLIB_DECLARE_CLASS(katana_trajectory_filter, KatanaTrajectoryFilterFilterJointTrajectory, katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::FilterJointTrajectory::Request>, filters::FilterBase<motion_planning_msgs::FilterJointTrajectory::Request>)
+PLUGINLIB_DECLARE_CLASS(katana_trajectory_filter, KatanaTrajectoryFilterJointTrajectoryWithLimits, katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::JointTrajectoryWithLimits>, filters::FilterBase<motion_planning_msgs::JointTrajectoryWithLimits>)
+PLUGINLIB_DECLARE_CLASS(katana_trajectory_filter, KatanaTrajectoryFilterFilterJointTrajectoryWithConstraints, katana_trajectory_filter::KatanaTrajectoryFilter<motion_planning_msgs::FilterJointTrajectoryWithConstraints::Request>, filters::FilterBase<motion_planning_msgs::FilterJointTrajectoryWithConstraints::Request>)

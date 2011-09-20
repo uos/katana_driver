@@ -18,4 +18,4 @@ filter_chain:
     #            between the previous trajectory point and now
    -
     name: katana_trajectory_filter
-    type: KatanaTrajectoryFilterFilterJointTrajectory
+    type: katana_trajectory_filter/KatanaTrajectoryFilterFilterJointTrajectoryWithConstraints
