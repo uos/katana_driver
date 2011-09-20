@@ -48,7 +48,7 @@
   <group ns="katana_arm_controller">
     <node pkg="katana_joint_movement_adapter" type="joint_movement_adapter" name="joint_movement_adapter" output="screen">
       <param name="max_acc" value="1.190799" />
-      <param name="max_acc" value="2.646220" />
+      <param name="max_vel" value="2.646220" />
     </node>
   </group>
 </launch>
