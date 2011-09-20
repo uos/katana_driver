@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- start katana node for a physical katana arm -->
+  <include file="$(find katana)/launch/$(env KATANA_TYPE).launch" />
+</launch>
+
+ 
