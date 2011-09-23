@@ -71,6 +71,7 @@ void getCubicSplineCoefficients(double start_pos, double start_vel, double end_p
   }
 }
 
+// copied from KNI
 void splineCoefficients(int steps, double *timearray, double *encoderarray, double *arr_p1, double *arr_p2,
                         double *arr_p3, double *arr_p4)
 {
@@ -78,8 +79,8 @@ void splineCoefficients(int steps, double *timearray, double *encoderarray, doub
   int i, j; // counter variables
 
   // calculate time differences between points and b-coefficients
-  double* deltatime = new double[steps];
-  double* b = new double[steps];
+  double deltatime[steps];
+  double b[steps];
   for (i = 0; i < steps; i++)
   {
     deltatime[i] = timearray[i + 1] - timearray[i];
@@ -87,15 +88,15 @@ void splineCoefficients(int steps, double *timearray, double *encoderarray, doub
   }
 
   // calculate a-coefficients
-  double* a = new double[steps - 1];
+  double a[steps - 1];
   for (i = 0; i < (steps - 1); i++)
   {
     a[i] = (2 / deltatime[i]) + (2 / deltatime[i + 1]);
   }
 
   // build up the right hand side of the linear system
-  double* c = new double[steps];
-  double* d = new double[steps + 1];
+  double c[steps];
+  double d[steps + 1];
   d[0] = 0; // f_1' and f_n' equal zero
   d[steps] = 0;
   for (i = 0; i < steps; i++)
@@ -108,9 +109,8 @@ void splineCoefficients(int steps, double *timearray, double *encoderarray, doub
   }
 
   // compose A * f' = d
-  double** Alin = new double*[steps - 1]; // last column of Alin is right hand side
-  for (i = 0; i < (steps - 1); i++)
-    Alin[i] = new double[steps];
+  double Alin[steps - 1][steps]; // last column of Alin is right hand side
+
   // fill with zeros
   for (i = 0; i < (steps - 1); i++)
   {
@@ -153,7 +153,7 @@ void splineCoefficients(int steps, double *timearray, double *encoderarray, doub
   lu_substitute(ublas_A, piv, ublas_b);
 
   // save result in derivatives array
-  double* derivatives = new double[steps + 1];
+  double derivatives[steps + 1];
   derivatives[0] = 0;
   for (i = 0; i < (steps - 1); i++)
   {
