@@ -150,9 +150,9 @@ trajectory_msgs::JointTrajectory FollowJointTrajectoryClient::filterJointTraject
     const trajectory_msgs::JointTrajectory &input)
 {
   ros::service::waitForService("trajectory_filter/filter_trajectory");
-  motion_planning_msgs::FilterJointTrajectory::Request req;
-  motion_planning_msgs::FilterJointTrajectory::Response res;
-  ros::ServiceClient filter_trajectory_client_ = nh_.serviceClient<motion_planning_msgs::FilterJointTrajectory>(
+  arm_navigation_msgs::FilterJointTrajectory::Request req;
+  arm_navigation_msgs::FilterJointTrajectory::Response res;
+  ros::ServiceClient filter_trajectory_client_ = nh_.serviceClient<arm_navigation_msgs::FilterJointTrajectory>(
       "trajectory_filter/filter_trajectory");
 
   req.trajectory = input;

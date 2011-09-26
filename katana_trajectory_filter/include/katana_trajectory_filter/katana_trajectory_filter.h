@@ -28,10 +28,10 @@
 #include <ros/ros.h>
 
 #include <trajectory_msgs/JointTrajectory.h>
-#include <motion_planning_msgs/JointTrajectoryWithLimits.h>
-#include <motion_planning_msgs/JointLimits.h>
-#include <motion_planning_msgs/FilterJointTrajectory.h>
-#include <motion_planning_msgs/FilterJointTrajectoryWithConstraints.h>
+#include <arm_navigation_msgs/JointTrajectoryWithLimits.h>
+#include <arm_navigation_msgs/JointLimits.h>
+#include <arm_navigation_msgs/FilterJointTrajectory.h>
+#include <arm_navigation_msgs/FilterJointTrajectoryWithConstraints.h>
 
 #include <spline_smoother/spline_smoother.h>
 #include <pluginlib/class_list_macros.h>

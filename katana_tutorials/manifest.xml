@@ -27,6 +27,6 @@
   <!-- trajectory filtering-->
   <depend package="trajectory_filter_server"/>
   <depend package="katana_trajectory_filter"/>
-  <depend package="motion_planning_msgs"/>
+  <depend package="arm_navigation_msgs"/>
 </package>
 

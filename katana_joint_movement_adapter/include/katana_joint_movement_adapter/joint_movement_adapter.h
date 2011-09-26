@@ -35,7 +35,7 @@
 #include <sensor_msgs/JointState.h>
 #include <katana_msgs/JointMovementAction.h>
 
-#include <motion_planning_msgs/JointLimits.h>
+#include <arm_navigation_msgs/JointLimits.h>
 
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
 #include <pr2_controllers_msgs/JointTrajectoryControllerState.h>
