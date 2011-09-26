@@ -43,8 +43,6 @@
 #include <kinematics_msgs/GetConstraintAwarePositionIK.h>
 #include <kinematics_msgs/GetPositionIK.h>
 #include <kinematics_msgs/GetKinematicSolverInfo.h>
-#include <motion_planning_msgs/JointPath.h>
-#include <motion_planning_msgs/JointPathPoint.h>
 #include <motion_planning_msgs/JointLimits.h>
 #include <orrosplanning/IK.h>
 
