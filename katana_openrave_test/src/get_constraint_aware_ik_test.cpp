@@ -6,7 +6,6 @@
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
 #include <motion_planning_msgs/DisplayTrajectory.h>
-#include <motion_planning_msgs/DisplayPath.h>
 
 int main(int argc, char **argv)
 {

@@ -5,7 +5,7 @@
 #include <ompl/util/RandomNumbers.h>
 #include <tf/transform_broadcaster.h>
 #include <tf/transform_datatypes.h>
-#include <motion_planning_msgs/DisplayPath.h>
+#include <motion_planning_msgs/DisplayTrajectory.h>
 
 int main(int argc, char **argv)
 {
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
   ros::service::waitForService("katana_constraint_aware_kinematics/get_ik_solver_info");
 
   ros::Publisher pub =
-      rh.advertise<motion_planning_msgs::DisplayPath> ("planned_robot_pose", 1000);
+      rh.advertise<motion_planning_msgs::DisplayTrajectory> ("planned_robot_pose", 1000);
   ros::ServiceClient ik_client_ =
       rh.serviceClient<kinematics_msgs::GetConstraintAwarePositionIK> (ik_service);
   ros::ServiceClient query_client =
@@ -35,7 +35,7 @@ int main(int argc, char **argv)
   kinematics_msgs::GetKinematicSolverInfo::Response response;
 
   sensor_msgs::JointState initialState;
-  motion_planning_msgs::DisplayPath planned_robot_pose;
+  motion_planning_msgs::DisplayTrajectory planned_robot_pose;
 
   if (query_client.call(request, response))
   {
@@ -52,24 +52,25 @@ int main(int argc, char **argv)
 
     for (unsigned int i = 0; i < response.kinematic_solver_info.joint_names.size(); i++)
     {
-      double rand = rng.uniformReal(response.kinematic_solver_info.limits[i].min_position,
-                                    response.kinematic_solver_info.limits[i].max_position);
-     // initialState.position[i] = rand;
+      // double rand = rng.uniformReal(response.kinematic_solver_info.limits[i].min_position,
+      //                               response.kinematic_solver_info.limits[i].max_position);
+      // initialState.position[i] = rand;
       // ROS_INFO("Initial Joint Position: %s %f",response.kinematic_solver_info.joint_names[i].c_str(), rand);
 
     }
 
     // publish initial position
 
-    planned_robot_pose.path.header = initialState.header;
-    planned_robot_pose.path.joint_names = initialState.name;
-    planned_robot_pose.path.points.resize(1);
-    planned_robot_pose.path.points[0].positions.resize(initialState.position.size());
+
+
+    planned_robot_pose.trajectory.joint_trajectory.header = initialState.header;
+    planned_robot_pose.trajectory.joint_trajectory.joint_names = initialState.name;
+    planned_robot_pose.trajectory.joint_trajectory.points.resize(1);
+    planned_robot_pose.trajectory.joint_trajectory.points[0].positions.resize(initialState.position.size());
 
     for (size_t i = 0; i < initialState.position.size(); i++)
     {
-      motion_planning_msgs::JointPathPoint* point = &planned_robot_pose.path.points[0];
-      point->positions[i] = initialState.position[i];
+      planned_robot_pose.trajectory.joint_trajectory.points[0].positions[i] = initialState.position[i];
     }
 
     pub.publish(planned_robot_pose);
@@ -180,7 +181,7 @@ int main(int argc, char **argv)
     while (ros::ok() && ros::Time::now() < end_time)
     {
       jointState.header.stamp = ros::Time::now();
-      planned_robot_pose.path.header = jointState.header;
+      planned_robot_pose.trajectory.joint_trajectory.header = jointState.header;
       pub.publish(planned_robot_pose);
       br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "katana_base_link", "katana_goal_pose"));
 
@@ -254,17 +255,16 @@ int main(int argc, char **argv)
 
   jointState = gcapik_res.solution.joint_state;
 
-  planned_robot_pose.path.header = gcapik_res.solution.joint_state.header;
-  planned_robot_pose.path.joint_names = gcapik_res.solution.joint_state.name;
+  planned_robot_pose.trajectory.joint_trajectory.header = gcapik_res.solution.joint_state.header;
+  planned_robot_pose.trajectory.joint_trajectory.joint_names = gcapik_res.solution.joint_state.name;
 
-  planned_robot_pose.path.points[0].positions.clear();
-  planned_robot_pose.path.points[0].positions.resize(gcapik_res.solution.joint_state.position.size());
+  planned_robot_pose.trajectory.joint_trajectory.points[0].positions.clear();
+  planned_robot_pose.trajectory.joint_trajectory.points[0].positions.resize(gcapik_res.solution.joint_state.position.size());
 
 
   for (size_t i = 0; i <gcapik_res.solution.joint_state.position.size(); i++)
   {
-    motion_planning_msgs::JointPathPoint* point = &planned_robot_pose.path.points[0];
-    point->positions[i] = gcapik_res.solution.joint_state.position[i];
+    planned_robot_pose.trajectory.joint_trajectory.points[0].positions[i] = gcapik_res.solution.joint_state.position[i];
   }
 
   ros::Rate loop_rate(100);
@@ -274,7 +274,7 @@ int main(int argc, char **argv)
     ROS_DEBUG("Publish goal state");
 
     jointState.header.stamp = ros::Time::now();
-    planned_robot_pose.path.header = jointState.header;
+    planned_robot_pose.trajectory.joint_trajectory.header = jointState.header;
     pub.publish(planned_robot_pose);
     br.sendTransform(tf::StampedTransform(transform, ros::Time::now(), "katana_base_link", "katana_goal_pose"));
 
