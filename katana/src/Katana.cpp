@@ -188,19 +188,19 @@ void Katana::refreshEncoders()
 
     last_encoder_update_ = ros::Time::now();
   }
-  catch (WrongCRCException e)
+  catch (const WrongCRCException &e)
   {
     ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in refreshEncoders(): %s)", e.message().c_str());
   }
-  catch (ReadNotCompleteException e)
+  catch (const ReadNotCompleteException &e)
   {
     ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in refreshEncoders(): %s)", e.message().c_str());
   }
-  catch (ParameterReadingException e)
+  catch (const ParameterReadingException &e)
   {
     ROS_ERROR("ParameterReadingException: Could not receive PVP (Position Velocity PWM) parameters from a motor (exception in refreshEncoders(): %s)", e.message().c_str());
   }
-  catch (Exception e)
+  catch (const Exception &e)
   {
     ROS_ERROR("Unhandled exception in refreshEncoders(): %s", e.message().c_str());
   }
@@ -245,15 +245,15 @@ void Katana::refreshMotorStatus()
        */
     }
   }
-  catch (WrongCRCException e)
+  catch (const WrongCRCException &e)
   {
     ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in refreshMotorStatus(): %s)", e.message().c_str());
   }
-  catch (ReadNotCompleteException e)
+  catch (const ReadNotCompleteException &e)
   {
     ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in refreshMotorStatus(): %s)", e.message().c_str());
   }
-  catch (Exception e)
+  catch (const Exception &e)
   {
     ROS_ERROR("Unhandled exception in refreshMotorStatus(): %s", e.message().c_str());
   }
@@ -409,22 +409,22 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
     }
     return true;
   }
-  catch (WrongCRCException e)
+  catch (const WrongCRCException &e)
   {
     ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in executeTrajectory(): %s)", e.message().c_str());
   }
-  catch (ReadNotCompleteException e)
+  catch (const ReadNotCompleteException &e)
   {
     ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in executeTrajectory(): %s)", e.message().c_str());
   }
-  catch (FirmwareException e)
+  catch (const FirmwareException &e)
   {
     // TODO: find out what the real cause of this is when it happens again
     // the message returned by the Katana is:
     // FirmwareException : 'StopperThread: collision on axis: 1 (axis N)'
     ROS_ERROR("FirmwareException: Motor collision? Perhaps we tried to send a trajectory that the arm couldn't follow. (exception in executeTrajectory(): %s)", e.message().c_str());
   }
-  catch (Exception e)
+  catch (const Exception &e)
   {
     ROS_ERROR("Unhandled exception in executeTrajectory(): %s", e.message().c_str());
   }
@@ -456,15 +456,15 @@ bool Katana::moveJoint(int motorIndex, double desiredAngle)
     kni->moveMotorToEnc(motorIndex, converter->angle_rad2enc(motorIndex, desiredAngle), false, 100);
     return true;
   }
-  catch (WrongCRCException e)
+  catch (const WrongCRCException &e)
   {
     ROS_ERROR("WrongCRCException: Two threads tried to access the KNI at once. This means that the locking in the Katana node is broken. (exception in moveJoint(): %s)", e.message().c_str());
   }
-  catch (ReadNotCompleteException e)
+  catch (const ReadNotCompleteException &e)
   {
     ROS_ERROR("ReadNotCompleteException: Another program accessed the KNI. Please stop it and restart the Katana node. (exception in moveJoint(): %s)", e.message().c_str());
   }
-  catch (Exception e)
+  catch (const Exception &e)
   {
     ROS_ERROR("Unhandled exception in moveJoint(): %s", e.message().c_str());
   }

@@ -174,7 +174,7 @@ bool KNIKinematics::get_position_fk(kinematics_msgs::GetPositionFK::Request &req
 
     tf_listener_.transformPose(req.header.frame_id, pose_in, pose_out);
   }
-  catch (tf::TransformException ex)
+  catch (const tf::TransformException &ex)
   {
     ROS_ERROR("%s", ex.what());
     return false;
@@ -225,7 +225,7 @@ bool KNIKinematics::get_position_ik(kinematics_msgs::GetPositionIK::Request &req
 
     tf_listener_.transformPose("katana_base_frame", req.ik_request.pose_stamped, pose_out);
   }
-  catch (tf::TransformException ex)
+  catch (const tf::TransformException &ex)
   {
     ROS_ERROR("%s", ex.what());
     return false;
@@ -247,7 +247,7 @@ bool KNIKinematics::get_position_ik(kinematics_msgs::GetPositionIK::Request &req
     ikBase_.IKCalculate(kni_coordinates[0], kni_coordinates[1], kni_coordinates[2], kni_coordinates[3],
                         kni_coordinates[4], kni_coordinates[5], solution.begin(), seed_encoders);
   }
-  catch (KNI::NoSolutionException e)
+  catch (const KNI::NoSolutionException &e)
   {
     res.error_code.val = res.error_code.NO_IK_SOLUTION;
     return true; // this means that res is valid; the error code is stored inside
