@@ -109,7 +109,7 @@ void KatanaGripperGraspController::executeCB(
       //      for (unsigned int i = 0; i < goal->grasp.pre_grasp_posture.position.size(); i++)
       //      {
       //        katana_->moveJoint(katana_->getJointIndex(goal->grasp.pre_grasp_posture.name[i]),
-      //                           goal->grasp.grasp_posture.position[i]);
+      //                           goal->grasp.pre_grasp_posture.position[i]);
       //      }
       if (goal->grasp.grasp_posture.position.size() == 0)
       {
@@ -117,7 +117,7 @@ void KatanaGripperGraspController::executeCB(
       }
       else
       {
-        desired_angle_ = goal->grasp.grasp_posture.position[0];
+        desired_angle_ = goal->grasp.pre_grasp_posture.position[0];
         last_command_was_close_ = false;
       }
       break;
