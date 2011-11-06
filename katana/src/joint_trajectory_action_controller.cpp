@@ -35,7 +35,9 @@ namespace katana
 
 JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana) :
   katana_(katana), action_server_(ros::NodeHandle(), "katana_arm_controller/joint_trajectory_action",
-                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1), false)
+                                  boost::bind(&JointTrajectoryActionController::executeCB, this, _1), false),
+  action_server_follow_(ros::NodeHandle(), "katana_arm_controller/follow_joint_trajectory",
+			boost::bind(&JointTrajectoryActionController::executeCBFollow, this, _1), false)
 {
   ros::NodeHandle node_;
 
@@ -56,6 +58,7 @@ JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_p
 
   // Subscriptions, publishers, services
   action_server_.start();
+  action_server_follow_.start();
   sub_command_ = node_.subscribe("katana_arm_controller/command", 1, &JointTrajectoryActionController::commandCB, this);
   serve_query_state_ = node_.advertiseService("katana_arm_controller/query_state", &JointTrajectoryActionController::queryStateService, this);
   controller_state_publisher_ = node_.advertise<pr2_controllers_msgs::JointTrajectoryControllerState> ("katana_arm_controller/state", 1);
@@ -176,6 +179,8 @@ void JointTrajectoryActionController::update()
   }
 
   controller_state_publisher_.publish(msg);
+  // TODO: here we could publish feedback for the FollowJointTrajectory action; however,
+  // this seems to be optional (the PR2's joint_trajectory_action_controller doesn't do it either)
 }
 
 /**
@@ -420,65 +425,107 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   // there is no other active goal. in other words, only one instance of executeCB()
   // is ever running at the same time.
 
-  if (!setsEqual(joints_, goal->trajectory.joint_names))
+  //----- cancel other action server
+  if (action_server_follow_.isActive())
+  {
+    ROS_WARN("joint_trajectory_action called while follow_joint_trajectory was active, canceling follow_joint_trajectory");
+    action_server_follow_.setPreempted();
+  }
+
+  int error_code = executeCommon(goal->trajectory, boost::bind(&JTAS::isPreemptRequested, boost::ref(action_server_)));
+
+  if (error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
+    action_server_.setSucceeded();
+  else if (error_code == PREEMPT_REQUESTED)
+    action_server_.setPreempted();
+  else
+    action_server_.setAborted();
+}
+
+void JointTrajectoryActionController::executeCBFollow(const FJTAS::GoalConstPtr &goal)
+{
+  //----- cancel other action server
+  if (action_server_.isActive())
+  {
+    ROS_WARN("follow_joint_trajectory called while joint_trajectory_action was active, canceling joint_trajectory_action");
+    action_server_.setPreempted();
+  }
+
+  // TODO: check tolerances from action goal
+  int error_code = executeCommon(goal->trajectory,
+                                 boost::bind(&FJTAS::isPreemptRequested, boost::ref(action_server_follow_)));
+  FJTAS::Result result;
+  result.error_code = error_code;
+
+  if (error_code == control_msgs::FollowJointTrajectoryResult::SUCCESSFUL)
+    action_server_follow_.setSucceeded(result);
+  else if (error_code == PREEMPT_REQUESTED)
+    action_server_follow_.setPreempted(); // don't return result here, PREEMPT_REQUESTED is not a valid error_code
+  else
+    action_server_follow_.setAborted(result);
+}
+
+/**
+ * @return either one of control_msgs::FollowJointTrajectoryResult, or PREEMPT_REQUESTED
+ */
+int JointTrajectoryActionController::executeCommon(const trajectory_msgs::JointTrajectory &trajectory,
+                                                   boost::function<bool()> isPreemptRequested)
+{
+  if (!setsEqual(joints_, trajectory.joint_names))
   {
     ROS_ERROR("Joints on incoming goal don't match our joints");
-    for (size_t i = 0; i < goal->trajectory.joint_names.size(); i++)
+    for (size_t i = 0; i < trajectory.joint_names.size(); i++)
     {
-      ROS_INFO("  incoming joint %d: %s", (int)i, goal->trajectory.joint_names[i].c_str());
+      ROS_INFO("  incoming joint %d: %s", (int)i, trajectory.joint_names[i].c_str());
     }
     for (size_t i = 0; i < joints_.size(); i++)
     {
       ROS_INFO("  our joint      %d: %s", (int)i, joints_[i].c_str());
     }
-    action_server_.setAborted();
-    return;
+    return control_msgs::FollowJointTrajectoryResult::INVALID_JOINTS;
   }
 
-  if (action_server_.isPreemptRequested())
+  if (isPreemptRequested())
   {
-    ROS_WARN("New action goal already seems to have been cancelled!");
-    action_server_.setPreempted();
-    return;
+    ROS_WARN("New action goal already seems to have been canceled!");
+    return PREEMPT_REQUESTED;
   }
 
   // make sure the katana is stopped
   reset_trajectory_and_stop();
 
   // ------ If requested, performs a stop
-  if (goal->trajectory.points.empty())
+  if (trajectory.points.empty())
   {
     // reset_trajectory_and_stop();
-    action_server_.setSucceeded();
-    return;
+    return control_msgs::FollowJointTrajectoryResult::SUCCESSFUL;
   }
 
   // calculate new trajectory
-  boost::shared_ptr<SpecifiedTrajectory> new_traj = calculateTrajectory(goal->trajectory);
+  boost::shared_ptr<SpecifiedTrajectory> new_traj = calculateTrajectory(trajectory);
   if (!new_traj)
   {
     ROS_ERROR("Could not calculate new trajectory, aborting");
-    action_server_.setAborted();
-    return;
+    return control_msgs::FollowJointTrajectoryResult::INVALID_GOAL;
   }
   if (!validTrajectory(*new_traj))
   {
     ROS_ERROR("Computed trajectory did not fulfill all constraints!");
-    action_server_.setAborted();
-    return;
+    return control_msgs::FollowJointTrajectoryResult::INVALID_GOAL;
   }
   current_trajectory_ = new_traj;
 
   // sleep until 0.5 seconds before scheduled start
-  ROS_DEBUG_COND(goal->trajectory.header.stamp > ros::Time::now(), "Sleeping for %f seconds before start of trajectory", (goal->trajectory.header.stamp - ros::Time::now()).toSec());
+  ROS_DEBUG_COND(
+      trajectory.header.stamp > ros::Time::now(),
+      "Sleeping for %f seconds before start of trajectory", (trajectory.header.stamp - ros::Time::now()).toSec());
   ros::Rate rate(10);
-  while ((goal->trajectory.header.stamp - ros::Time::now()).toSec() > 0.5)
+  while ((trajectory.header.stamp - ros::Time::now()).toSec() > 0.5)
   {
-    if (action_server_.isPreemptRequested() || !ros::ok())
+    if (isPreemptRequested() || !ros::ok())
     {
       ROS_WARN("Goal canceled by client while waiting until scheduled start, aborting!");
-      action_server_.setPreempted();
-      return;
+      return PREEMPT_REQUESTED;
     }
     rate.sleep();
   }
@@ -488,8 +535,7 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
   if (!success)
   {
     ROS_ERROR("Problem while transferring trajectory to Katana arm, aborting");
-    action_server_.setAborted();
-    return;
+    return control_msgs::FollowJointTrajectoryResult::PATH_TOLERANCE_VIOLATED;
   }
 
   ROS_INFO("Waiting until goal reached...");
@@ -502,8 +548,7 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
     if (katana_->someMotorCrashed())
     {
       ROS_ERROR("Some motor has crashed! Aborting trajectory...");
-      action_server_.setAborted();
-      return;
+      return control_msgs::FollowJointTrajectoryResult::PATH_TOLERANCE_VIOLATED;
     }
 
     // all joints are idle
@@ -518,25 +563,26 @@ void JointTrajectoryActionController::executeCB(const JTAS::GoalConstPtr &goal)
       {
         // joints are idle and we are inside goal constraints. yippie!
         ROS_INFO("Goal reached.");
-        action_server_.setSucceeded();
+        return control_msgs::FollowJointTrajectoryResult::SUCCESSFUL;
       }
       else
       {
         ROS_ERROR("Joints are idle and motors are not crashed, but we did not reach the goal position! WTF?");
-        action_server_.setAborted();
+        return control_msgs::FollowJointTrajectoryResult::GOAL_TOLERANCE_VIOLATED;
       }
-      return;
     }
 
-    if (action_server_.isPreemptRequested())
+    if (isPreemptRequested())
     {
       ROS_WARN("Goal canceled by client while waiting for trajectory to finish, aborting!");
-      action_server_.setPreempted();
-      return;
+      return PREEMPT_REQUESTED;
     }
 
     goalWait.sleep();
   }
+
+  // this part is only reached when node is shut down
+  return PREEMPT_REQUESTED;
 }
 
 /**
@@ -599,7 +645,7 @@ std::vector<int> JointTrajectoryActionController::makeJointsLookup(const traject
  */
 bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory &traj)
 {
-  const double MAX_SPEED = 4.0; // rad/s; TODO: should be same value as URDF
+  const double MAX_SPEED = 2.21; // rad/s; TODO: should be same value as URDF
   const double MIN_TIME = 0.01; // seconds; the KNI calculates time in 10ms units, so this is the minimum duration of a spline
   const double EPSILON = 0.0001;
   const double POSITION_TOLERANCE = 0.1; // rad
