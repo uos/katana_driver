@@ -37,7 +37,7 @@
 namespace katana_gazebo_plugins
 {
 
-class KatanaGripperGraspController
+class KatanaGripperGraspController /*: IGazeboRosKatanaAction*/
 {
 public:
   KatanaGripperGraspController(ros::NodeHandle private_nodehandle);

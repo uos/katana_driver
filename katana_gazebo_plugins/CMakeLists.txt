@@ -17,7 +17,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 add_definitions(-fPIC)
-rosbuild_add_library(gazebo_ros_katana_gripper src/gazebo_ros_katana_gripper.cpp src/katana_gripper_grasp_controller.cpp)
+rosbuild_add_library(gazebo_ros_katana_gripper src/gazebo_ros_katana_gripper.cpp src/katana_gripper_grasp_controller.cpp src/katana_gripper_joint_trajectory_controller.cpp)
 
 #uncomment if you have defined messages
 #rosbuild_genmsg()
@@ -31,3 +31,6 @@ rosbuild_add_library(gazebo_ros_katana_gripper src/gazebo_ros_katana_gripper.cpp
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
+
+rosbuild_add_boost_directories()
+rosbuild_add_executable(test_gripper_joint_trajectory src/test_gripper_joint_trajectory.cpp)

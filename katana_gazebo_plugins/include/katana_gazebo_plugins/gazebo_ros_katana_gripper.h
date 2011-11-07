@@ -25,6 +25,8 @@
 #define GAZEBO_ROS_KATANA_H
 
 #include <katana_gazebo_plugins/katana_gripper_grasp_controller.h>
+#include <katana_gazebo_plugins/katana_gripper_joint_trajectory_controller.h>
+
 #include <gazebo/Controller.hh>
 #include <gazebo/Model.hh>
 
@@ -72,6 +74,7 @@ private:
   Time prev_update_time_;
 
   katana_gazebo_plugins::KatanaGripperGraspController *gripper_grasp_controller_;
+  katana_gazebo_plugins::KatanaGripperJointTrajectoryController *gripper_jt_controller_;
 
   short publish_counter_;
 };
