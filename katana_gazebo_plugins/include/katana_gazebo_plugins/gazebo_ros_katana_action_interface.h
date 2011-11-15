@@ -8,13 +8,19 @@
 #ifndef IGAZEBOROSKATANAACTION_H_
 #define IGAZEBOROSKATANAACTION_H_
 
+struct GRKAPoint {
+  double position;
+  double velocity;
+};
+
 class IGazeboRosKatanaAction
 {
 public:
-  IGazeboRosKatanaAction();
   virtual ~IGazeboRosKatanaAction();
-
-
+  virtual GRKAPoint getNextDesiredPoint() = 0;
+  virtual void setCurrentPoint(GRKAPoint point) = 0;
+  virtual bool hasActiveGoal() = 0;
+  virtual void cancleGoal();
 
 };
 

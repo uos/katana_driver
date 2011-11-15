@@ -43,9 +43,14 @@
 namespace katana_gazebo_plugins
 {
 
+/**
+ *  allowed difference between desired and actual position
+ */
 static const double GRIPPER_ANGLE_THRESHOLD = 0.03;
-
-static const double GRIPPER_SAMPLING_TIME_STEPS = 0.01; // seconds
+/**
+ *  sampling time setps in seconds
+ */
+static const double GRIPPER_SAMPLING_TIME_STEPS = 0.01;
 
 /**
  * This class allows you to send JointTrajectory messages to the Katana Arm simulated in Gazebo
