@@ -24,6 +24,9 @@
 #ifndef GAZEBO_ROS_KATANA_H
 #define GAZEBO_ROS_KATANA_H
 
+#include <vector>
+
+#include <katana_gazebo_plugins/gazebo_ros_katana_gripper_action_interface.h>
 #include <katana_gazebo_plugins/katana_gripper_grasp_controller.h>
 #include <katana_gazebo_plugins/katana_gripper_joint_trajectory_controller.h>
 
@@ -34,6 +37,8 @@
 #include <katana_msgs/GripperControllerState.h>
 #include <control_toolbox/pid.h>
 #include <ros/ros.h>
+
+
 
 namespace gazebo
 {
@@ -47,6 +52,9 @@ public:
   virtual void InitChild();
   virtual void FiniChild();
   virtual void UpdateChild();
+
+private:
+  void updateActiveGripperAction();
 
 private:
   static const size_t NUM_JOINTS = 2;
@@ -73,8 +81,8 @@ private:
   // Simulation time of the last update
   Time prev_update_time_;
 
-  katana_gazebo_plugins::KatanaGripperGraspController *gripper_grasp_controller_;
-  katana_gazebo_plugins::KatanaGripperJointTrajectoryController *gripper_jt_controller_;
+  katana_gazebo_plugins::IGazeboRosKatanaGripperAction* active_gripper_action_;
+  std::vector<katana_gazebo_plugins::IGazeboRosKatanaGripperAction*> gripper_action_list_;
 
   short publish_counter_;
 };

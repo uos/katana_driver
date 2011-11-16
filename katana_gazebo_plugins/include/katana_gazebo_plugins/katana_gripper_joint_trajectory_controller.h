@@ -31,14 +31,13 @@
 
 #include <ros/ros.h>
 #include <actionlib/server/action_server.h>
-
-//TODO: use <> with path
-//#include "/opt/ros/diamondback/stacks/trajectory_filters/spline_smoother/include/spline_smoother/splines.h"
 #include <spline_smoother/splines.h>
 
 #include <trajectory_msgs/JointTrajectory.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
 #include <pr2_controllers_msgs/JointTrajectoryControllerState.h>
+
+#include <katana_gazebo_plugins/gazebo_ros_katana_gripper_action_interface.h>
 
 namespace katana_gazebo_plugins
 {
@@ -55,7 +54,7 @@ static const double GRIPPER_SAMPLING_TIME_STEPS = 0.01;
 /**
  * This class allows you to send JointTrajectory messages to the Katana Arm simulated in Gazebo
  */
-class KatanaGripperJointTrajectoryController /*: IGazeboRosKatanaAction*/
+class KatanaGripperJointTrajectoryController : public IGazeboRosKatanaGripperAction
 {
 
 private:
@@ -69,24 +68,16 @@ public:
 
 private:
 
-  // ROS Node and ActionServer
-  //ros::NodeHandle node_;
-  //ros::NodeHandle root_nh_;
-
   JTAS *action_server_;
-
-  //ros::Publisher pub_controller_command_;
-  // ros::Subscriber sub_controller_state_;
-  //ros::Timer watchdog_timer_;
 
   bool has_active_goal_;
   GoalHandle active_goal_;
   trajectory_msgs::JointTrajectory current_traj_;
 
   // the internal state of the gripper
-  double desired_angle_;
-  double current_angle_;
-  std::deque<double> desired_angle_queue_;
+  GRKAPoint current_point_;
+  GRKAPoint last_desired_point_;
+  std::deque<GRKAPoint> desired_points_queue_;
 
   std::vector<std::string> joint_names_;
   std::map<std::string, double> goal_constraints_;
@@ -94,38 +85,51 @@ private:
   double goal_time_constraint_;
   double stopped_velocity_tolerance_;
 
-  pr2_controllers_msgs::JointTrajectoryControllerStateConstPtr last_controller_state_;
-
-  // methods
-  static bool setsEqual(const std::vector<std::string> &a, const std::vector<std::string> &b);
-  //void watchdog(const ros::TimerEvent &e);
-  void checkGoalStatus();
+  // call-back methods
   void goalCB(GoalHandle gh);
   void cancelCB(GoalHandle gh);
-  //void controllerStateCB(const pr2_controllers_msgs::JointTrajectoryControllerStateConstPtr &msg);
-  bool currentIsDesiredAngle();
 
+  // helper methods
+  static bool setsEqual(const std::vector<std::string> &a, const std::vector<std::string> &b);
+  void checkGoalStatus();
+  bool currentIsDesiredAngle();
   void publish(trajectory_msgs::JointTrajectory traj);
-  void stopController();
+  void clearQueue();
+  bool isEmptyQueue();
 
 public:
-  // getter / setter
+  // public methods defined by interface IGazeboRosKatanaGripperAction
 
-  /**
-   * get the next value
-   */
-  double getDesiredAngle()
+  GRKAPoint getNextDesiredPoint()
   {
     // get next value out of the list
-    if (!desired_angle_queue_.empty())
+    if (!desired_points_queue_.empty())
     {
       // get first element in queue
-      desired_angle_ = desired_angle_queue_.front();
+      last_desired_point_ = desired_points_queue_.front();
       // remove the first element
-      desired_angle_queue_.pop_front();
+      desired_points_queue_.pop_front();
     }
 
-    return desired_angle_;
+    return last_desired_point_;
+  }
+
+  void setCurrentPoint(GRKAPoint point)
+  {
+    this->current_point_ = point;
+    this->checkGoalStatus();
+  }
+
+  void cancleGoal()
+  {
+    if (has_active_goal_)
+    {
+      cancelCB(active_goal_);
+    }
+    else
+    {
+      this->clearQueue();
+    }
 
   }
 
@@ -135,15 +139,6 @@ public:
   bool hasActiveGoal() const
   {
     return has_active_goal_;
-  }
-
-  /**
-   * the real angle of the gripper
-   */
-  void setCurrentAngle(double current_angle)
-  {
-    this->current_angle_ = current_angle;
-    this->checkGoalStatus();
   }
 
 };

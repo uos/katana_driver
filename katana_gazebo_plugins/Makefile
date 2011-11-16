@@ -332,6 +332,21 @@ src/gazebo_ros_katana_gripper.s:
 .PHONY : src/gazebo_ros_katana_gripper.s
 
 # target to build an object file
+src/gazebo_ros_katana_gripper_action_interface.o:
+	$(MAKE) -f CMakeFiles/gazebo_ros_katana_gripper.dir/build.make CMakeFiles/gazebo_ros_katana_gripper.dir/src/gazebo_ros_katana_gripper_action_interface.o
+.PHONY : src/gazebo_ros_katana_gripper_action_interface.o
+
+# target to preprocess a source file
+src/gazebo_ros_katana_gripper_action_interface.i:
+	$(MAKE) -f CMakeFiles/gazebo_ros_katana_gripper.dir/build.make CMakeFiles/gazebo_ros_katana_gripper.dir/src/gazebo_ros_katana_gripper_action_interface.i
+.PHONY : src/gazebo_ros_katana_gripper_action_interface.i
+
+# target to generate assembly for a file
+src/gazebo_ros_katana_gripper_action_interface.s:
+	$(MAKE) -f CMakeFiles/gazebo_ros_katana_gripper.dir/build.make CMakeFiles/gazebo_ros_katana_gripper.dir/src/gazebo_ros_katana_gripper_action_interface.s
+.PHONY : src/gazebo_ros_katana_gripper_action_interface.s
+
+# target to build an object file
 src/katana_gripper_grasp_controller.o:
 	$(MAKE) -f CMakeFiles/gazebo_ros_katana_gripper.dir/build.make CMakeFiles/gazebo_ros_katana_gripper.dir/src/katana_gripper_grasp_controller.o
 .PHONY : src/katana_gripper_grasp_controller.o
@@ -404,6 +419,9 @@ help:
 	@echo "... src/gazebo_ros_katana_gripper.o"
 	@echo "... src/gazebo_ros_katana_gripper.i"
 	@echo "... src/gazebo_ros_katana_gripper.s"
+	@echo "... src/gazebo_ros_katana_gripper_action_interface.o"
+	@echo "... src/gazebo_ros_katana_gripper_action_interface.i"
+	@echo "... src/gazebo_ros_katana_gripper_action_interface.s"
 	@echo "... src/katana_gripper_grasp_controller.o"
 	@echo "... src/katana_gripper_grasp_controller.i"
 	@echo "... src/katana_gripper_grasp_controller.s"

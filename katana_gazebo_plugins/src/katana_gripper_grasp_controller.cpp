@@ -45,7 +45,7 @@ static const double DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD = -0.43;
 static const double GRIPPER_OPENING_CLOSING_DURATION = 6.0;
 
 KatanaGripperGraspController::KatanaGripperGraspController(ros::NodeHandle private_nodehandle) :
-  last_command_was_close_(false), desired_angle_(0.0), current_angle_(0.0)
+  last_command_was_close_(false), desired_angle_(0.0), current_angle_(0.0), has_new_desired_angle_(false)
 {
   ros::NodeHandle root_nh("");
 
@@ -91,7 +91,7 @@ void KatanaGripperGraspController::executeCB(
       // well, we don't really use the grasp_posture.position value here, we just instruct
       // the gripper to close all the way...
       // that might change in the future and we might do something more interesting
-      desired_angle_ = GRIPPER_CLOSED_ANGLE;
+      setDesiredAngle(GRIPPER_CLOSED_ANGLE);
       last_command_was_close_ = true;
       break;
 
@@ -117,13 +117,13 @@ void KatanaGripperGraspController::executeCB(
       }
       else
       {
-        desired_angle_ = goal->grasp.grasp_posture.position[0];
+        setDesiredAngle(goal->grasp.grasp_posture.position[0]);
         last_command_was_close_ = false;
       }
       break;
 
     case object_manipulation_msgs::GraspHandPostureExecutionGoal::RELEASE:
-      desired_angle_ = GRIPPER_OPEN_ANGLE;
+      setDesiredAngle(GRIPPER_OPEN_ANGLE);
       last_command_was_close_ = false;
       break;
 

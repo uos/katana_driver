@@ -41,26 +41,36 @@ using namespace gazebo;
 GZ_REGISTER_DYNAMIC_CONTROLLER("gazebo_ros_katana_gripper", GazeboRosKatanaGripper)
 
 GazeboRosKatanaGripper::GazeboRosKatanaGripper(Entity *parent) :
-  Controller(parent), publish_counter_(0)
+    Controller(parent), publish_counter_(0)
 {
   ros::MultiThreadedSpinner s(1);
   boost::thread spinner_thread(boost::bind(&ros::spin, s));
 
-  my_parent_ = dynamic_cast<Model*> (parent);
+  my_parent_ = dynamic_cast<Model*>(parent);
 
   if (!my_parent_)
     gzthrow("Gazebo_ROS_Katana_Gripper controller requires a Model as its parent");
 
   Param::Begin(&this->parameters);
-  node_namespaceP_ = new ParamT<std::string> ("node_namespace", "katana", 0);
-  joint_nameP_.push_back(new ParamT<std::string> ("r_finger_joint", "katana_r_finger_joint", 1));
-  joint_nameP_.push_back(new ParamT<std::string> ("l_finger_joint", "katana_l_finger_joint", 1));
-  torqueP_ = new ParamT<float> ("max_torque", 0.5, 1);
+  node_namespaceP_ = new ParamT<std::string>("node_namespace", "katana", 0);
+  joint_nameP_.push_back(new ParamT<std::string>("r_finger_joint", "katana_r_finger_joint", 1));
+  joint_nameP_.push_back(new ParamT<std::string>("l_finger_joint", "katana_l_finger_joint", 1));
+  torqueP_ = new ParamT<float>("max_torque", 0.5, 1);
   Param::End();
 
-  gripper_grasp_controller_ = new katana_gazebo_plugins::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
+  // create gripper actions
+  katana_gazebo_plugins::IGazeboRosKatanaGripperAction* gripper_grasp_controller_ =
+      new katana_gazebo_plugins::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
+  katana_gazebo_plugins::IGazeboRosKatanaGripperAction* gripper_jt_controller_ =
+      new katana_gazebo_plugins::KatanaGripperJointTrajectoryController(ros::NodeHandle(**node_namespaceP_));
 
-  gripper_jt_controller_ = new katana_gazebo_plugins::KatanaGripperJointTrajectoryController(ros::NodeHandle(**node_namespaceP_));
+  // "register" gripper actions
+  gripper_action_list_.push_back(gripper_grasp_controller_);
+  gripper_action_list_.push_back(gripper_jt_controller_);
+
+  // set default action
+  active_gripper_action_ = gripper_grasp_controller_;
+  //active_gripper_action_ = gripper_jt_controller_;
 
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
@@ -78,8 +88,14 @@ GazeboRosKatanaGripper::~GazeboRosKatanaGripper()
     delete joint_nameP_[i];
   }
   delete rosnode_;
-  delete gripper_grasp_controller_;
-  delete gripper_jt_controller_;
+
+  // delete all gripper actions
+  for (std::size_t i = 0; i != gripper_action_list_.size(); i++)
+  {
+    /* delete object at pointer */
+    delete gripper_action_list_[i];
+  }
+
 }
 
 void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
@@ -98,14 +114,14 @@ void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
   {
     int argc = 0;
     char** argv = NULL;
-    ros::init(argc, argv, "gazebo_ros_katana_gripper", ros::init_options::NoSigintHandler
-        | ros::init_options::AnonymousName);
+    ros::init(argc, argv, "gazebo_ros_katana_gripper",
+              ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
   }
 
   rosnode_ = new ros::NodeHandle(**node_namespaceP_);
 
   //  joint_state_pub_ = rosnode_->advertise<sensor_msgs::JointState> ("/joint_states", 1);
-  controller_state_pub_ = rosnode_->advertise<katana_msgs::GripperControllerState> ("gripper_controller_state", 1);
+  controller_state_pub_ = rosnode_->advertise<katana_msgs::GripperControllerState>("gripper_controller_state", 1);
 
   //  for (size_t i = 0; i < NUM_JOINTS; ++i)
   //  {
@@ -141,8 +157,12 @@ void GazeboRosKatanaGripper::UpdateChild()
   ros::Duration dt = ros::Duration(step_time.Double());
 
   double desired_pos[NUM_JOINTS];
+  double desired_vel[NUM_JOINTS];
   double actual_pos[NUM_JOINTS];
   double commanded_effort[NUM_JOINTS];
+
+  // check for new goals, if found and change the active_gripper_action_
+  this->updateActiveGripperAction();
 
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
@@ -153,9 +173,11 @@ void GazeboRosKatanaGripper::UpdateChild()
     //  desired_pos[i] = -0.44;
 
 //    desired_pos[i] = gripper_grasp_controller_->getDesiredAngle();
-    desired_pos[i] = gripper_jt_controller_->getDesiredAngle();
+    desired_pos[i] = active_gripper_action_->getNextDesiredPoint().position;
+    desired_vel[i] = active_gripper_action_->getNextDesiredPoint().velocity;
     actual_pos[i] = joints_[i]->GetAngle(0).GetAsRadian();
 
+    //TODO: use velocity
     commanded_effort[i] = pid_controller_.updatePid(actual_pos[i] - desired_pos[i], joints_[i]->GetVelocity(0), dt);
 
     joints_[i]->SetForce(0, commanded_effort[i]);
@@ -170,8 +192,13 @@ void GazeboRosKatanaGripper::UpdateChild()
   // --------------- update gripper_grasp_controller  ---------------
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
-//    gripper_grasp_controller_->setCurrentAngle(joints_[i]->GetAngle(0).GetAsRadian());
-    gripper_jt_controller_->setCurrentAngle(joints_[i]->GetAngle(0).GetAsRadian());
+
+    // update all actions
+    for (std::size_t i = 0; i != gripper_action_list_.size(); i++)
+    {
+      gripper_action_list_[i]->setCurrentPoint(joints_[i]->GetAngle(0).GetAsRadian(), joints_[i]->GetVelocity(0));
+    }
+
   }
 
   // --------------- limit publishing frequency to 25 Hz ---------------
@@ -210,3 +237,34 @@ void GazeboRosKatanaGripper::UpdateChild()
     //    joint_state_pub_.publish(js_);
   }
 }
+
+/**
+ * Checks for new goals, if found changes the active_gripper_action_ member
+ */
+void GazeboRosKatanaGripper::updateActiveGripperAction()
+{
+  //TODO: improve the selection of the action, maybe prefer newer started actions (but how to know?)
+  //      atm the list gives some kind of priority, and it its impossible to cancel a goal
+  //      by submitting a new one to another action (but you can cancel the goal via a message)
+
+  // search for a new action if the current (or default on) is finished with its goal
+  // if we cant find a new action, just use the current one
+  if (!active_gripper_action_->hasActiveGoal())
+  {
+
+    // find a new action with a goal
+    for (std::size_t i = 0; i != gripper_action_list_.size(); i++)
+    {
+      // just use the first found
+      if (gripper_action_list_[i]->hasActiveGoal())
+      {
+        // change the active gripper action
+        active_gripper_action_ = gripper_action_list_[i];
+        break;
+      }
+    }
+
+  }
+
+}
+

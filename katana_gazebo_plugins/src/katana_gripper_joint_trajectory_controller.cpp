@@ -32,9 +32,12 @@ namespace katana_gazebo_plugins
 
 /*node_(private_node),*/
 KatanaGripperJointTrajectoryController::KatanaGripperJointTrajectoryController(ros::NodeHandle pn) :
-    has_active_goal_(false), desired_angle_(0.0), current_angle_(0.0)
+    has_active_goal_(false)
 {
 
+  GRKAPoint default_point = {0.0, 0.0};
+  current_point_ = default_point;
+  last_desired_point_ = default_point;
 
   // set the joints fixed here
   joint_names_.push_back((std::string)"r_finger_joint"); // katana_r_finger_joint
@@ -64,7 +67,6 @@ KatanaGripperJointTrajectoryController::KatanaGripperJointTrajectoryController(r
   action_server_->start();
   ROS_INFO(
       "katana gripper joint trajctory action server started on topic katana_arm_controller/gripper_joint_trajectory_action");
-
 
 }
 
@@ -112,7 +114,7 @@ void KatanaGripperJointTrajectoryController::checkGoalStatus()
 
   bool inside_goal_constraints = false;
 
-  if (desired_angle_queue_.empty())
+  if (this->isEmptyQueue())
   {
 
     if (this->currentIsDesiredAngle())
@@ -145,6 +147,9 @@ void KatanaGripperJointTrajectoryController::checkGoalStatus()
 bool KatanaGripperJointTrajectoryController::currentIsDesiredAngle()
 {
 
+  double current_angle_ = current_point_.position;
+  double desired_angle_ = last_desired_point_.position;
+
   ROS_DEBUG("current_angle_: %f desired_angle_: %f", current_angle_, desired_angle_);
 
   return ((current_angle_ - GRIPPER_ANGLE_THRESHOLD) <= desired_angle_
@@ -169,7 +174,7 @@ void KatanaGripperJointTrajectoryController::goalCB(GoalHandle gh)
   if (has_active_goal_)
   {
     // Stops the controller.
-    this->stopController();
+    this->clearQueue();
 
     // Marks the current goal as canceled.
     active_goal_.setCanceled();
@@ -190,15 +195,14 @@ void KatanaGripperJointTrajectoryController::cancelCB(GoalHandle gh)
 {
   if (active_goal_ == gh)
   {
-    // Stops the controller.
-    this->stopController();
+    // stop sending points
+    this->clearQueue();
 
     // Marks the current goal as canceled.
     active_goal_.setCanceled();
     has_active_goal_ = false;
   }
 }
-
 
 void KatanaGripperJointTrajectoryController::publish(trajectory_msgs::JointTrajectory traj)
 {
@@ -240,21 +244,32 @@ void KatanaGripperJointTrajectoryController::publish(trajectory_msgs::JointTraje
 
     for (double t = 0.0; t < time_from_start; t = t + GRIPPER_SAMPLING_TIME_STEPS)
     {
+
       double sample_pos, sample_vel, sample_acc;
       spline_smoother::sampleQuinticSpline(coefficients, t, sample_pos, sample_vel, sample_acc);
 
       ROS_DEBUG("point %i: time %f sample_pos %f to queue", i, t, sample_pos);
-      this->desired_angle_queue_.push_back(sample_pos);
+
+      // add point to queue
+      GRKAPoint point = {sample_pos, sample_vel};
+      this->desired_points_queue_.push_back(point);
+
     }
 
   }
 
 }
 
-void KatanaGripperJointTrajectoryController::stopController()
+void KatanaGripperJointTrajectoryController::clearQueue()
 {
 
-  desired_angle_queue_.clear();
+  desired_points_queue_.clear();
 }
 
+bool KatanaGripperJointTrajectoryController::isEmptyQueue()
+{
+  return desired_points_queue_.empty();
 }
+
+} // end namespace
+

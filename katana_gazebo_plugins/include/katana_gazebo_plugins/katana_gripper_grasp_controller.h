@@ -34,23 +34,40 @@
 #include <object_manipulation_msgs/GraspHandPostureExecutionAction.h>
 #include <object_manipulation_msgs/GraspStatus.h>
 
+#include <katana_gazebo_plugins/gazebo_ros_katana_gripper_action_interface.h>
+
 namespace katana_gazebo_plugins
 {
 
-class KatanaGripperGraspController /*: IGazeboRosKatanaAction*/
+class KatanaGripperGraspController : public IGazeboRosKatanaGripperAction
 {
 public:
   KatanaGripperGraspController(ros::NodeHandle private_nodehandle);
   virtual ~KatanaGripperGraspController();
 
-  double getDesiredAngle() const
+  GRKAPoint getNextDesiredPoint()
   {
-    return desired_angle_;
+    // reset the flag has_new_desired_angle_ because we only emit one angle
+    if (has_new_desired_angle_)
+      has_new_desired_angle_ = false;
+
+    GRKAPoint point = {desired_angle_, 0.0};
+    return point;
   }
 
-  void setCurrentAngle(double current_angle)
+  void setCurrentPoint(GRKAPoint point)
   {
-    this->current_angle_ = current_angle;
+    this->current_angle_ = point.position;
+  }
+
+  bool hasActiveGoal() const
+  {
+    return has_new_desired_angle_;
+  }
+
+  void cancleGoal()
+  {
+    has_new_desired_angle_ = false;
   }
 
 private:
@@ -70,8 +87,15 @@ private:
   bool serviceCallback(object_manipulation_msgs::GraspStatus::Request &request,
                        object_manipulation_msgs::GraspStatus::Response &response);
 
+  void setDesiredAngle(double desired_angle)
+  {
+    desired_angle_ = desired_angle;
+    has_new_desired_angle_ = true;
+  }
+
   double desired_angle_;
   double current_angle_;
+  bool has_new_desired_angle_;
 };
 
 }

@@ -172,7 +172,7 @@ int main(int argc, char** argv)
       usleep(50000);
     }
 
-    ROS_INFO("Done closeGoal");
+    ROS_INFO("closeGoal %s", test.getState().toString().c_str());
 
     usleep(10000000); // 10 sec
 
@@ -183,7 +183,7 @@ int main(int argc, char** argv)
       usleep(50000);
     }
 
-    ROS_INFO("Done openGoal");
+    ROS_INFO("openGoal %s", test.getState().toString().c_str());
 
     usleep(10000000); // 10 sec
 
