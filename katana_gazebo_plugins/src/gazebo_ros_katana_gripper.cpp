@@ -58,20 +58,6 @@ GazeboRosKatanaGripper::GazeboRosKatanaGripper(Entity *parent) :
   torqueP_ = new ParamT<float>("max_torque", 0.5, 1);
   Param::End();
 
-  // create gripper actions
-  katana_gazebo_plugins::IGazeboRosKatanaGripperAction* gripper_grasp_controller_ =
-      new katana_gazebo_plugins::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
-  katana_gazebo_plugins::IGazeboRosKatanaGripperAction* gripper_jt_controller_ =
-      new katana_gazebo_plugins::KatanaGripperJointTrajectoryController(ros::NodeHandle(**node_namespaceP_));
-
-  // "register" gripper actions
-  gripper_action_list_.push_back(gripper_grasp_controller_);
-  gripper_action_list_.push_back(gripper_jt_controller_);
-
-  // set default action
-  active_gripper_action_ = gripper_grasp_controller_;
-  //active_gripper_action_ = gripper_jt_controller_;
-
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
     joints_[i] = NULL;
@@ -136,6 +122,20 @@ void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
   {
     ROS_FATAL("gazebo_ros_katana_gripper could not construct PID controller!");
   }
+
+  // create gripper actions
+  katana_gazebo_plugins::IGazeboRosKatanaGripperAction* gripper_grasp_controller_ =
+      new katana_gazebo_plugins::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
+  katana_gazebo_plugins::IGazeboRosKatanaGripperAction* gripper_jt_controller_ =
+      new katana_gazebo_plugins::KatanaGripperJointTrajectoryController(ros::NodeHandle(**node_namespaceP_));
+
+  // "register" gripper actions
+  gripper_action_list_.push_back(gripper_grasp_controller_);
+  gripper_action_list_.push_back(gripper_jt_controller_);
+
+  // set default action
+  active_gripper_action_ = gripper_grasp_controller_;
+  //active_gripper_action_ = gripper_jt_controller_;
 }
 
 void GazeboRosKatanaGripper::InitChild()
