@@ -65,7 +65,7 @@ public:
     return has_new_desired_angle_;
   }
 
-  void cancleGoal()
+  void cancelGoal()
   {
     has_new_desired_angle_ = false;
   }

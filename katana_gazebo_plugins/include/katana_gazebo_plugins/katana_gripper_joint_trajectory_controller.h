@@ -121,7 +121,7 @@ public:
     this->checkGoalStatus();
   }
 
-  void cancleGoal()
+  void cancelGoal()
   {
     if (has_active_goal_)
     {
