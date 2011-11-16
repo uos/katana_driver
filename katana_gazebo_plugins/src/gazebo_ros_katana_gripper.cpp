@@ -157,7 +157,6 @@ void GazeboRosKatanaGripper::UpdateChild()
   ros::Duration dt = ros::Duration(step_time.Double());
 
   double desired_pos[NUM_JOINTS];
-  double desired_vel[NUM_JOINTS];
   double actual_pos[NUM_JOINTS];
   double commanded_effort[NUM_JOINTS];
 
@@ -174,12 +173,9 @@ void GazeboRosKatanaGripper::UpdateChild()
 
 //    desired_pos[i] = gripper_grasp_controller_->getDesiredAngle();
     desired_pos[i] = active_gripper_action_->getNextDesiredPoint().position;
-    desired_vel[i] = active_gripper_action_->getNextDesiredPoint().velocity;
-    desired_vel[i] = desired_vel[i] == 0.0 ?  joints_[i]->GetVelocity(0) : desired_vel[i];
     actual_pos[i] = joints_[i]->GetAngle(0).GetAsRadian();
 
-    //TODO: use velocity
-    commanded_effort[i] = pid_controller_.updatePid(actual_pos[i] - desired_pos[i], desired_vel[i], dt);
+    commanded_effort[i] = pid_controller_.updatePid(actual_pos[i] - desired_pos[i], joints_[i]->GetVelocity(0), dt);
 
     joints_[i]->SetForce(0, commanded_effort[i]);
 
