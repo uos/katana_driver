@@ -35,7 +35,9 @@
 #include <trajectory_msgs/JointTrajectory.h>
 #include <pr2_controllers_msgs/QueryTrajectoryState.h>
 #include <pr2_controllers_msgs/JointTrajectoryControllerState.h>
+
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
+#include <control_msgs/FollowJointTrajectoryAction.h>
 
 #include <katana/AbstractKatana.h>
 #include <katana/SpecifiedTrajectory.h>
@@ -47,8 +49,12 @@ namespace katana
 class JointTrajectoryActionController
 {
 
+// Action typedefs for the original PR2 specific joint trajectory action
 typedef actionlib::SimpleActionServer<pr2_controllers_msgs::JointTrajectoryAction> JTAS;
 typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> JTAC;
+
+// Action typedefs for the new follow joint trajectory action
+typedef actionlib::SimpleActionServer<control_msgs::FollowJointTrajectoryAction> FJTAS;
 
 public:
   JointTrajectoryActionController(boost::shared_ptr<AbstractKatana> katana);
@@ -58,6 +64,9 @@ public:
   void update();
 
 private:
+  // additional control_msgs::FollowJointTrajectoryResult
+  enum { PREEMPT_REQUESTED = -1000 };
+
   // robot and joint state
   std::vector<std::string> joints_; // controlled joints, same order as expected by the KNI (index 0 = first motor, ...)
   boost::shared_ptr<AbstractKatana> katana_;
@@ -79,9 +88,12 @@ private:
   // publisher to "state" topic
   ros::Publisher controller_state_publisher_;
 
-  // action server
-  void executeCB(const JTAS::GoalConstPtr &goal);
+  // action servers
   JTAS action_server_;
+  FJTAS action_server_follow_;
+  void executeCB(const JTAS::GoalConstPtr &goal);
+  void executeCBFollow(const FJTAS::GoalConstPtr &goal);
+  int executeCommon(const trajectory_msgs::JointTrajectory &trajectory, boost::function<bool ()> isPreemptRequested);
 
   boost::shared_ptr<SpecifiedTrajectory> current_trajectory_;
 
@@ -94,6 +106,7 @@ private:
   bool validTrajectory(const SpecifiedTrajectory &traj);
 
   bool goalReached();
+
   bool allJointsStopped();
 };
 }

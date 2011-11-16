@@ -53,12 +53,11 @@ void JointStatePublisher::update()
     msg->velocity.push_back(vels[i]);
   }
 
-  // TODO later: read finger joint names from katana
-  msg->name.push_back("katana_r_finger_joint");
+  msg->name.push_back(katana->getGripperJointNames()[0]);
   msg->position.push_back(angles[5]);
   msg->velocity.push_back(vels[5]);
 
-  msg->name.push_back("katana_l_finger_joint");
+  msg->name.push_back(katana->getGripperJointNames()[1]);
   msg->position.push_back(angles[5]); // both right and left finger are controlled by motor 6
   msg->velocity.push_back(vels[5]);
 

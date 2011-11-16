@@ -57,13 +57,13 @@ foreach(it ${katana_stl_files})
       COMMAND mkdir -p
       ARGS ${basepath}/convex)
 
-    # create subdirectory iv
-    add_custom_command(
-      OUTPUT ${basepath}/iv
-      # CMake 2.4 doesn't offer the make_directory command.
-      #COMMAND ${CMAKE_COMMAND} -E make_directory
-      COMMAND mkdir -p
-      ARGS ${basepath}/iv)
+    #    # create subdirectory iv
+    #    add_custom_command(
+    #      OUTPUT ${basepath}/iv
+    #      # CMake 2.4 doesn't offer the make_directory command.
+    #      #COMMAND ${CMAKE_COMMAND} -E make_directory
+    #      COMMAND mkdir -p
+    #      ARGS ${basepath}/iv)
   
     # copy *.stl files to *.stlb so that ivcon recognizes them as binary stl files
     add_custom_command(
@@ -101,36 +101,33 @@ foreach(it ${katana_stl_files})
 
     set(katana_gen_files ${katana_gen_files} ${basepath}/convex/${basename}_convex.stlb)
 
-    #convert obj files back to stla, put in directory named convex
-    add_custom_command(
-      OUTPUT ${basepath}/convex/${basename}_convex.stla
-      COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
-      ARGS ${basepath}/convex/${basename}_convex.obj ${basepath}/convex/${basename}_convex.stla
-      DEPENDS ${it} ${basepath}/convex ${basepath}/convex/${basename}_convex.obj)
+    #    #convert obj files back to stla, put in directory named convex
+    #    add_custom_command(
+    #      OUTPUT ${basepath}/convex/${basename}_convex.stla
+    #      COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
+    #      ARGS ${basepath}/convex/${basename}_convex.obj ${basepath}/convex/${basename}_convex.stla
+    #      DEPENDS ${it} ${basepath}/convex ${basepath}/convex/${basename}_convex.obj)
+    #
+    #    set(katana_gen_files ${katana_gen_files} ${basepath}/convex/${basename}_convex.stla)
 
-    set(katana_gen_files ${katana_gen_files} ${basepath}/convex/${basename}_convex.stla)
-
-    #create iv files
-    add_custom_command(
-      OUTPUT ${basepath}/iv/${basename}.iv
-      COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
-      ARGS ${it}b ${basepath}/iv/${basename}.iv
-      DEPENDS ${basepath}/iv ${it} ${it}b)
-    add_custom_command(
-      OUTPUT ${basepath}/convex/${basename}_convex.iv
-      COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
-      ARGS ${basepath}/convex/${basename}_convex.obj ${basepath}/convex/${basename}_convex.iv
-      DEPENDS ${it} ${basepath}/convex ${basepath}/convex/${basename}_convex.obj)
+    #    #create iv files
+    #    add_custom_command(
+    #      OUTPUT ${basepath}/iv/${basename}.iv
+    #      COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
+    #      ARGS ${it}b ${basepath}/iv/${basename}.iv
+    #      DEPENDS ${basepath}/iv ${it} ${it}b)
+    #    add_custom_command(
+    #      OUTPUT ${basepath}/convex/${basename}_convex.iv
+    #      COMMAND ${ivcon_PACKAGE_PATH}/bin/ivcon
+    #      ARGS ${basepath}/convex/${basename}_convex.obj ${basepath}/convex/${basename}_convex.iv
+    #      DEPENDS ${it} ${basepath}/convex ${basepath}/convex/${basename}_convex.obj)
      
-    set(katana_gen_files ${katana_gen_files} ${basepath}/iv/${basename}.iv ${basepath}/convex/${basename}_convex.iv)
+    #    set(katana_gen_files ${katana_gen_files} ${basepath}/iv/${basename}.iv ${basepath}/convex/${basename}_convex.iv)
 
 
   ENDIF ( ${basename} MATCHES "_convex" )
 
 endforeach(it)
 
-# TODO: add_custom_target(media_files ALL DEPENDS ${pr2urdf} ${pr2robot_expanded} ${prfrobot_expanded} ${prgrobot_expanded} ${pr2prototype1_expanded} ${pr2larm_expanded} ${pr2rarm_expanded} ${pr2lgripper_expanded} ${pr2rgripper_expanded} ${pr2_gen_files} )
 add_custom_target(media_files ALL DEPENDS ${katana_gen_files} )
-
-#TODO: stop bin and lib from being generated
 

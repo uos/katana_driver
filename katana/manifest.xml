@@ -26,6 +26,7 @@
   <!-- for JointTrajectoryActionController -->
   <depend package="actionlib" />
   <depend package="pr2_controllers_msgs" />
+  <depend package="control_msgs"/>
   <depend package="trajectory_msgs"/>
   <depend package="urdf"/>
 

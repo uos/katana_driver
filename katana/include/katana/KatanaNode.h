@@ -53,6 +53,7 @@ public:
 
 private:
   boost::shared_ptr<katana::AbstractKatana> katana;
+  ros::NodeHandle nh;  // just to make sure that there is at least one node handle which doesn't go out of scope
 
 };
 

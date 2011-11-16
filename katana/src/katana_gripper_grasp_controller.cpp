@@ -83,13 +83,13 @@ void KatanaGripperGraspController::executeCB(const object_manipulation_msgs::Gra
         return;
       }
 
-      // well, we don't really use the grasp_posture.position value here, we just instruct
+      // well, we don't really use the pre_grasp_posture.position value here, we just instruct
       // the gripper to open  all the way...
       // that might change in the future and we might do something more interesting
       for (unsigned int i = 0; i < goal->grasp.pre_grasp_posture.position.size(); i++)
       {
         katana_->moveJoint(katana_->getJointIndex(goal->grasp.pre_grasp_posture.name[i]),
-                           goal->grasp.grasp_posture.position[i]);
+                           goal->grasp.pre_grasp_posture.position[i]);
       }
 
       last_command_was_close_ = false;
