@@ -1,10 +1,28 @@
 /*
+ * UOS-ROS packages - Robot Operating System code by the University of Osnabrück
+ * Copyright (C) 2011  University of Osnabrück
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ *
  * test_gripper_joint_trajectory.cpp
  *
  *  Created on: 24.10.2011
- *      Author: karl
+ *      Author: Karl Glatz <glatz@hs-weingarten.de>
+ *              Ravensburg-Weingarten, University of Applied Sciences
  *
- *      based on: min_max_trajectory.cpp
+ *    based on: min_max_trajectory.cpp
  */
 #include <ros/ros.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
@@ -19,10 +37,10 @@ static const double GRIPPER_OPEN_ANGLE = 0.30;
 static const double GRIPPER_CLOSED_ANGLE = -0.44;
 
 /// A joint angle below this value indicates there is nothing inside the gripper
-static const double DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD = -0.43;
+//static const double DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD = -0.43;
 
 /// The maximum time it takes to open or close the gripper
-static const double GRIPPER_OPENING_CLOSING_DURATION = 6.0;
+//static const double GRIPPER_OPENING_CLOSING_DURATION = 6.0;
 
 class TestGripperJointTrajectory
 {
@@ -188,6 +206,8 @@ int main(int argc, char** argv)
     usleep(10000000); // 10 sec
 
   }
+
+  return 0;
 
 }
 

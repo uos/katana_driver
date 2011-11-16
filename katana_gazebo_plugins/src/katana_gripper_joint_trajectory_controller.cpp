@@ -19,7 +19,8 @@
  * katana_gripper_joint_trajectory_controller.h
  *
  *  Created on: 20.10.2011
- *      Author: Karl Glatz - Ravensburg-Weingarten, University of Applied Sciences
+ *      Author: Karl Glatz <glatz@hs-weingarten.de>
+ *              Ravensburg-Weingarten, University of Applied Sciences
  *
  *  based on joint_trajectory_action/src/joint_trajectory_action.cpp
  *
@@ -30,7 +31,6 @@
 namespace katana_gazebo_plugins
 {
 
-/*node_(private_node),*/
 KatanaGripperJointTrajectoryController::KatanaGripperJointTrajectoryController(ros::NodeHandle pn) :
     has_active_goal_(false)
 {
@@ -59,7 +59,6 @@ KatanaGripperJointTrajectoryController::KatanaGripperJointTrajectoryController(r
 
   ros::NodeHandle action_node("katana_arm_controller");
 
-  //TODO: name needs to be the same as for the real katana ?? Or is it just a matter of the joint names inside of the goal?
   action_server_ = new JTAS(action_node, "gripper_joint_trajectory_action",
                             boost::bind(&KatanaGripperJointTrajectoryController::goalCB, this, _1),
                             boost::bind(&KatanaGripperJointTrajectoryController::cancelCB, this, _1), false);

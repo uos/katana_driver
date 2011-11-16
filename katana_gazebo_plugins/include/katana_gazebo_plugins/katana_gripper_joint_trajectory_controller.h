@@ -19,7 +19,8 @@
  * katana_gripper_joint_trajectory_controller.h
  *
  *  Created on: 20.10.2011
- *      Author: Karl Glatz - Ravensburg-Weingarten, University of Applied Sciences
+ *      Author: Karl Glatz <glatz@hs-weingarten.de>
+ *              Ravensburg-Weingarten, University of Applied Sciences
  *
  *  based on joint_trajectory_action/src/joint_trajectory_action.cpp
  *
