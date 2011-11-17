@@ -46,7 +46,7 @@ public:
   virtual GRKAPoint getNextDesiredPoint() = 0;
   virtual void setCurrentPoint(GRKAPoint point) = 0;
   virtual bool hasActiveGoal() const = 0;
-  virtual void cancleGoal() = 0;
+  virtual void cancelGoal() = 0;
 
   virtual void setCurrentPoint(double pos, double vel);
 
