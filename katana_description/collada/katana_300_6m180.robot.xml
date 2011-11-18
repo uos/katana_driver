@@ -1,4 +1,4 @@
-<robot name="katana_300_6m180" file="katana_300_6m180.zae">
+<robot name="katana_300_6m180" file="katana_300_6m180.dae">
   <manipulator name="arm">
     <base>katana_base_link</base>
     <effector>katana_gripper_tool_frame</effector>
