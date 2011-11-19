@@ -42,4 +42,7 @@
   <!-- for JointMovementActionController -->
   <depend package="katana_msgs"/>
 
+  <!-- for JointMovementActionController -->
+  <depend package="motion_planning_msgs"/>
+
 </package>
