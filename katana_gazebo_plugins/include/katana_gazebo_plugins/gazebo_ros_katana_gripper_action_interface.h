@@ -28,6 +28,8 @@
 #ifndef IGAZEBOROSKATANAGRIPPERACTION_H_
 #define IGAZEBOROSKATANAGRIPPERACTION_H_
 
+#include<ros/time.h>
+
 namespace katana_gazebo_plugins
 {
 
@@ -43,7 +45,7 @@ public:
   virtual ~IGazeboRosKatanaGripperAction()
   {
   }
-  virtual GRKAPoint getNextDesiredPoint() = 0;
+  virtual GRKAPoint getNextDesiredPoint(ros::Time time) = 0;
   virtual void setCurrentPoint(GRKAPoint point) = 0;
   virtual bool hasActiveGoal() const = 0;
   virtual void cancelGoal() = 0;

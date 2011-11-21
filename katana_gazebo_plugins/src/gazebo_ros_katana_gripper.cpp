@@ -172,7 +172,7 @@ void GazeboRosKatanaGripper::UpdateChild()
     //  desired_pos[i] = -0.44;
 
 //    desired_pos[i] = gripper_grasp_controller_->getDesiredAngle();
-    desired_pos[i] = active_gripper_action_->getNextDesiredPoint().position;
+    desired_pos[i] = active_gripper_action_->getNextDesiredPoint(ros::Time::now()).position;
     actual_pos[i] = joints_[i]->GetAngle(0).GetAsRadian();
 
     commanded_effort[i] = pid_controller_.updatePid(actual_pos[i] - desired_pos[i], joints_[i]->GetVelocity(0), dt);

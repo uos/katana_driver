@@ -34,6 +34,8 @@
 #include <actionlib/server/action_server.h>
 #include <spline_smoother/splines.h>
 
+//#include <katana/spline_functions.h>
+
 #include <trajectory_msgs/JointTrajectory.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
 #include <pr2_controllers_msgs/JointTrajectoryControllerState.h>
@@ -74,11 +76,12 @@ private:
   bool has_active_goal_;
   GoalHandle active_goal_;
   trajectory_msgs::JointTrajectory current_traj_;
+  bool trajectory_finished_;
 
   // the internal state of the gripper
   GRKAPoint current_point_;
   GRKAPoint last_desired_point_;
-  std::deque<GRKAPoint> desired_points_queue_;
+//  std::deque<GRKAPoint> desired_points_queue_;
 
   std::vector<std::string> joint_names_;
   std::map<std::string, double> goal_constraints_;
@@ -95,25 +98,26 @@ private:
   void checkGoalStatus();
   bool currentIsDesiredAngle();
   void publish(trajectory_msgs::JointTrajectory traj);
-  void clearQueue();
-  bool isEmptyQueue();
+//  void clearQueue();
+//  bool isEmptyQueue();
+  bool isTrajectoryFinished();
 
 public:
   // public methods defined by interface IGazeboRosKatanaGripperAction
 
-  GRKAPoint getNextDesiredPoint()
-  {
-    // get next value out of the list
-    if (!desired_points_queue_.empty())
-    {
-      // get first element in queue
-      last_desired_point_ = desired_points_queue_.front();
-      // remove the first element
-      desired_points_queue_.pop_front();
-    }
-
-    return last_desired_point_;
-  }
+  GRKAPoint getNextDesiredPoint(ros::Time time);
+//  {
+//    // get next value out of the list
+//    if (!desired_points_queue_.empty())
+//    {
+//      // get first element in queue
+//      last_desired_point_ = desired_points_queue_.front();
+//      // remove the first element
+//      desired_points_queue_.pop_front();
+//    }
+//
+//    return last_desired_point_;
+//  }
 
   void setCurrentPoint(GRKAPoint point)
   {
@@ -123,14 +127,14 @@ public:
 
   void cancelGoal()
   {
-    if (has_active_goal_)
-    {
-      cancelCB(active_goal_);
-    }
-    else
-    {
-      this->clearQueue();
-    }
+//    if (has_active_goal_)
+//    {
+    cancelCB(active_goal_);
+//    }
+//    else
+//    {
+//      this->clearQueue();
+//    }
 
   }
 

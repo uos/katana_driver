@@ -45,7 +45,7 @@ public:
   KatanaGripperGraspController(ros::NodeHandle private_nodehandle);
   virtual ~KatanaGripperGraspController();
 
-  GRKAPoint getNextDesiredPoint()
+  GRKAPoint getNextDesiredPoint(ros::Time time)
   {
     // reset the flag has_new_desired_angle_ because we only emit one angle
     if (has_new_desired_angle_)

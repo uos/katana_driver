@@ -32,7 +32,7 @@ namespace katana_gazebo_plugins
 {
 
 KatanaGripperJointTrajectoryController::KatanaGripperJointTrajectoryController(ros::NodeHandle pn) :
-    has_active_goal_(false)
+    has_active_goal_(false), trajectory_finished_(true)
 {
 
   GRKAPoint default_point = {0.0, 0.0};
@@ -113,7 +113,7 @@ void KatanaGripperJointTrajectoryController::checkGoalStatus()
 
   bool inside_goal_constraints = false;
 
-  if (this->isEmptyQueue())
+  if (this->isTrajectoryFinished())
   {
 
     if (this->currentIsDesiredAngle())
@@ -173,7 +173,7 @@ void KatanaGripperJointTrajectoryController::goalCB(GoalHandle gh)
   if (has_active_goal_)
   {
     // Stops the controller.
-    this->clearQueue();
+    //this->clearQueue();
 
     // Marks the current goal as canceled.
     active_goal_.setCanceled();
@@ -195,7 +195,8 @@ void KatanaGripperJointTrajectoryController::cancelCB(GoalHandle gh)
   if (active_goal_ == gh)
   {
     // stop sending points
-    this->clearQueue();
+//    this->clearQueue();
+    trajectory_finished_ = true;
 
     // Marks the current goal as canceled.
     active_goal_.setCanceled();
@@ -212,62 +213,177 @@ void KatanaGripperJointTrajectoryController::publish(trajectory_msgs::JointTraje
     return;
   }
 
+  this->trajectory_finished_ = false;
+  this->current_traj_ = traj;
+
+//
+//  size_t numof_points = traj.points.size();
+//  for (size_t i = 1; i < numof_points; i++)
+//  {
+//    // ensure there are 2 positions in each point
+//    if (traj.points[i].positions.size() != 2)
+//    {
+//      ROS_WARN("Trajectory contains positions with more or less than 2 positions");
+//      continue;
+//    }
+//
+//    size_t start_index = i - 1;
+//    size_t end_index = i;
+//
+//    // use first point, because both must be the same!
+//    // TODO: any check of equality?
+//    double start_pos = traj.points[start_index].positions[0];
+//    double start_vel = traj.points[start_index].velocities[0];
+//    double start_acc = traj.points[start_index].accelerations[0];
+//
+//    double end_pos = traj.points[end_index].positions[0];
+//    double end_vel = traj.points[end_index].velocities[0];
+//    double end_acc = traj.points[end_index].accelerations[0];
+//
+//    double time_from_start = traj.points[end_index].time_from_start.toSec();
+//
+//    std::vector<double> coefficients;
+//
+//    spline_smoother::getCubicSplineCoefficients(start_pos, start_vel, end_pos, end_vel, time_from_start, coefficients);
+//
+//    for (double t = 0.0; t < time_from_start; t = t + GRIPPER_SAMPLING_TIME_STEPS)
+//    {
+//
+//      double sample_pos, sample_vel, sample_acc;
+//      spline_smoother::sampleQuinticSpline(coefficients, t, sample_pos, sample_vel, sample_acc);
+//
+//      ROS_DEBUG("point %i: time %f sample_pos %f to queue", i, t, sample_pos);
+//
+//      // add point to queue
+//      GRKAPoint point = {sample_pos, sample_vel};
+//      this->desired_points_queue_.push_back(point);
+//
+//    }
+//
+//  }
+
+}
+
+GRKAPoint KatanaGripperJointTrajectoryController::getNextDesiredPoint(ros::Time time)
+{
+
+  trajectory_msgs::JointTrajectory traj = current_traj_;
+
+  // calculate relative time
+  ros::Duration relative_time = ros::Duration(time.toSec() - traj.header.stamp.toSec());
+
+  // search for correct trajectory segment
+  size_t traj_segment = 0;
+  bool found_traj_seg = false;
   size_t numof_points = traj.points.size();
   for (size_t i = 1; i < numof_points; i++)
   {
-    // ensure there are 2 positions in each point
-    if (traj.points[i].positions.size() != 2)
-    {
-      ROS_WARN("Trajectory contains positions with more or less than 2 positions");
-      continue;
-    }
 
-    size_t start_index = i - 1;
-    size_t end_index = i;
-
-    // use first point, because both must be the same!
-    // TODO: any check of equality?
-    double start_pos = traj.points[start_index].positions[0];
-    double start_vel = traj.points[start_index].velocities[0];
-    double start_acc = traj.points[start_index].accelerations[0];
-
-    double end_pos = traj.points[end_index].positions[0];
-    double end_vel = traj.points[end_index].velocities[0];
-    double end_acc = traj.points[end_index].accelerations[0];
-
-    double time_from_start = traj.points[end_index].time_from_start.toSec();
-
-    std::vector<double> coefficients;
-
-    spline_smoother::getCubicSplineCoefficients(start_pos, start_vel, end_pos, end_vel, time_from_start, coefficients);
-
-    for (double t = 0.0; t < time_from_start; t = t + GRIPPER_SAMPLING_TIME_STEPS)
+    if (traj.points[i].time_from_start >= relative_time)
     {
 
-      double sample_pos, sample_vel, sample_acc;
-      spline_smoother::sampleQuinticSpline(coefficients, t, sample_pos, sample_vel, sample_acc);
-
-      ROS_DEBUG("point %i: time %f sample_pos %f to queue", i, t, sample_pos);
-
-      // add point to queue
-      GRKAPoint point = {sample_pos, sample_vel};
-      this->desired_points_queue_.push_back(point);
+      i = traj_segment;
+      found_traj_seg = true;
+      break;
 
     }
 
   }
 
+  // segment found?
+  // not found happens only if the time is beyond of any time_from_start values of the points in the trajectory
+  if (!found_traj_seg)
+  {
+    ROS_INFO("Could not find the trajectory segment for time %f", relative_time.toSec());
+
+    // set trajectory to finished
+    trajectory_finished_ = true;
+
+    // stay at the last point
+    return last_desired_point_;
+  }
+
+  // sample one point at current time
+  size_t start_index = traj_segment - 1;
+  size_t end_index = traj_segment;
+
+  double start_pos = traj.points[start_index].positions[0];
+  double start_vel = traj.points[start_index].velocities[0];
+//  double start_acc = traj.points[start_index].accelerations[0];
+
+  double end_pos = traj.points[end_index].positions[0];
+  double end_vel = traj.points[end_index].velocities[0];
+//  double end_acc = traj.points[end_index].accelerations[0];
+
+  double time_from_start = traj.points[end_index].time_from_start.toSec();
+//  double duration = traj.points[end_index].time_from_start.toSec()  - traj.points[start_index].time_from_start.toSec();
+
+  std::vector<double> coefficients;
+
+  spline_smoother::getCubicSplineCoefficients(start_pos, start_vel, end_pos, end_vel, time_from_start, coefficients);
+
+  double sample_pos, sample_vel, sample_acc;
+//  katana::sampleSplineWithTimeBounds(coefficients, duration, relative_time.toSec(), sample_pos, sample_vel, sample_acc);
+  spline_smoother::sampleQuinticSpline(coefficients, relative_time.toSec(), sample_pos, sample_vel, sample_acc);
+
+  GRKAPoint point = {sample_pos, sample_vel};
+
+  // set the last desired point
+  last_desired_point_ = point;
+
+  return point;
+
+  // ----------
+
+//  for (size_t i = 1; i < numof_points; i++)
+//  {
+//    // ensure there are 2 positions in each point
+//    if (traj.points[i].positions.size() != 2)
+//    {
+//      ROS_WARN("Trajectory contains positions with more or less than 2 positions");
+//      continue;
+//    }
+//
+//    size_t start_index = i - 1;
+//    size_t end_index = i;
+//
+//    // use first point, because both must be the same!
+//    // TODO: any check of equality?
+//    double start_pos = traj.points[start_index].positions[0];
+//    double start_vel = traj.points[start_index].velocities[0];
+//    double start_acc = traj.points[start_index].accelerations[0];
+//
+//    double end_pos = traj.points[end_index].positions[0];
+//    double end_vel = traj.points[end_index].velocities[0];
+//    double end_acc = traj.points[end_index].accelerations[0];
+//
+//    double time_from_start = traj.points[end_index].time_from_start.toSec();
+//
+//    std::vector<double> coefficients;
+//
+//    spline_smoother::getCubicSplineCoefficients(start_pos, start_vel, end_pos, end_vel, time_from_start, coefficients);
+//
+//    for (double t = 0.0; t < time_from_start; t = t + GRIPPER_SAMPLING_TIME_STEPS)
+//    {
+//
+//      double sample_pos, sample_vel, sample_acc;
+//      spline_smoother::sampleQuinticSpline(coefficients, t, sample_pos, sample_vel, sample_acc);
+//
+//      ROS_DEBUG("point %i: time %f sample_pos %f to queue", i, t, sample_pos);
+//
+//      // add point to queue
+//      GRKAPoint point = {sample_pos, sample_vel};
+//      this->desired_points_queue_.push_back(point);
+//
+//    }
+//
+//  }
+
 }
 
-void KatanaGripperJointTrajectoryController::clearQueue()
+bool KatanaGripperJointTrajectoryController::isTrajectoryFinished()
 {
-
-  desired_points_queue_.clear();
-}
-
-bool KatanaGripperJointTrajectoryController::isEmptyQueue()
-{
-  return desired_points_queue_.empty();
+  return trajectory_finished_;
 }
 
 } // end namespace
