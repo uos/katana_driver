@@ -97,7 +97,7 @@ private:
   static bool setsEqual(const std::vector<std::string> &a, const std::vector<std::string> &b);
   void checkGoalStatus();
   bool currentIsDesiredAngle();
-  void publish(trajectory_msgs::JointTrajectory traj);
+  void setCurrentTrajectory(trajectory_msgs::JointTrajectory traj);
 //  void clearQueue();
 //  bool isEmptyQueue();
   bool isTrajectoryFinished();
