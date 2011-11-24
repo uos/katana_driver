@@ -43,7 +43,7 @@ KatanaGripperJointTrajectoryController::KatanaGripperJointTrajectoryController(r
   joint_names_.push_back((std::string)"r_finger_joint"); // katana_r_finger_joint
   joint_names_.push_back((std::string)"l_finger_joint"); // katana_l_finger_joint
 
-  pn.param("constraints/goal_time", goal_time_constraint_, 0.0);
+  pn.param("constraints/goal_time", goal_time_constraint_, 5.0);
 
   // Gets the constraints for each joint.
   for (size_t i = 0; i < joint_names_.size(); ++i)
@@ -136,7 +136,8 @@ void KatanaGripperJointTrajectoryController::checkGoalStatus()
   }
   else
   {
-    ROS_WARN("Aborting because we wound up outside the goal constraints");
+    ROS_WARN(
+        "Aborting because we wound up outside the goal constraints [current_angle: %f last_desired_angle: %f ]", current_point_.position, last_desired_point_.position);
     active_goal_.setAborted();
     has_active_goal_ = false;
   }
@@ -210,6 +211,11 @@ void KatanaGripperJointTrajectoryController::setCurrentTrajectory(trajectory_msg
     return;
   }
 
+  //TODO: check current position of the gripper to avoid too big efforts
+
+  // traj.points.resize(traj.points.size()+1);
+
+
   this->current_traj_ = traj;
   // set the finished flag to false for this new trajectory
   this->trajectory_finished_ = false;
@@ -218,15 +224,16 @@ void KatanaGripperJointTrajectoryController::setCurrentTrajectory(trajectory_msg
 
 GRKAPoint KatanaGripperJointTrajectoryController::getNextDesiredPoint(ros::Time time)
 {
-  ROS_INFO("getNextDesiredPoint");
+  //ROS_INFO("getNextDesiredPoint");
 
+  trajectory_msgs::JointTrajectory traj = current_traj_;
+
+  // is there a active trajectory?
   if (trajectory_finished_)
   {
     // just send the last point (default 0.0)
     return current_point_;
   }
-
-  trajectory_msgs::JointTrajectory traj = current_traj_;
 
   // should we start already??
   if (time.toSec() < traj.header.stamp.toSec())
@@ -234,10 +241,11 @@ GRKAPoint KatanaGripperJointTrajectoryController::getNextDesiredPoint(ros::Time 
     // just send the last point (default 0.0)
     return current_point_;
   }
+
   ros::Duration relative_time = ros::Duration(time.toSec() - traj.header.stamp.toSec());
 
-  ROS_INFO("time: %f | header.stamp %f", time.toSec(), traj.header.stamp.toSec());
-  ROS_INFO("relative_time %f", relative_time.toSec());
+  //ROS_INFO("time: %f | header.stamp %f", time.toSec(), traj.header.stamp.toSec());
+  //ROS_INFO("relative_time %f", relative_time.toSec());
 
   // search for correct trajectory segment
   size_t traj_segment = 0;
@@ -257,7 +265,8 @@ GRKAPoint KatanaGripperJointTrajectoryController::getNextDesiredPoint(ros::Time 
   // not found happens only if the time is beyond of any time_from_start values of the points in the trajectory
   if (!found_traj_seg)
   {
-    ROS_INFO("Could not find the trajectory segment for time %f", relative_time.toSec());
+    ROS_INFO(
+        "Trajectory finished after (requested time %f time_from_start[last_point]: %f)", relative_time.toSec(), traj.points[traj.points.size()-1].time_from_start.toSec());
 
     // set trajectory to finished
     trajectory_finished_ = true;
@@ -272,18 +281,20 @@ GRKAPoint KatanaGripperJointTrajectoryController::getNextDesiredPoint(ros::Time 
 
   double start_pos = traj.points[start_index].positions[0];
   double start_vel = traj.points[start_index].velocities[0];
+//  double start_acc = traj.points[start_index].accelerations[0];
 
-  ROS_INFO("start_index %i: start_pos %f start_vel %f", start_index, start_pos, start_vel);
+  //ROS_INFO("start_index %i: start_pos %f start_vel %f", start_index, start_pos, start_vel);
 
   double end_pos = traj.points[end_index].positions[0];
   double end_vel = traj.points[end_index].velocities[0];
+//  double end_acc = traj.points[end_index].accelerations[0];
 
-  ROS_INFO("end_index %i: end_pos %f end_vel %f", end_index, end_pos, end_vel);
+  //ROS_INFO("end_index %i: end_pos %f end_vel %f", end_index, end_pos, end_vel);
 
   double time_from_start = traj.points[end_index].time_from_start.toSec();
 //  double duration = traj.points[end_index].time_from_start.toSec()  - traj.points[start_index].time_from_start.toSec();
 
-  ROS_INFO("time_from_start %f | relative_time.toSec() %f", time_from_start, relative_time.toSec());
+  //ROS_INFO("time_from_start %f | relative_time.toSec() %f", time_from_start, relative_time.toSec());
 
   //TODO: save the coefficients for each segment
   std::vector<double> coefficients;
@@ -292,9 +303,9 @@ GRKAPoint KatanaGripperJointTrajectoryController::getNextDesiredPoint(ros::Time 
 
   double sample_pos = 0, sample_vel = 0, sample_acc = 0;
 //  katana::sampleSplineWithTimeBounds(coefficients, duration, relative_time.toSec(), sample_pos, sample_vel, sample_acc);
-  spline_smoother::sampleQuinticSpline(coefficients, relative_time.toSec(), sample_pos, sample_vel, sample_acc);
+  spline_smoother::sampleCubicSpline(coefficients, relative_time.toSec(), sample_pos, sample_vel, sample_acc);
 
-  ROS_INFO("sample_pos: %f, sample_vel: %f", sample_pos, sample_vel);
+  //ROS_INFO("sample_pos: %f, sample_vel: %f", sample_pos, sample_vel);
 
   GRKAPoint point = {sample_pos, sample_vel};
 
