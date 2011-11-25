@@ -4,7 +4,7 @@
   xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
   xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
   xmlns:xacro="http://ros.org/wiki/xacro"
-  name="katana_300_6m180">
+  name="katana_400_6m180">
 
   <include filename="$(find katana_description)/urdf/transmissions.urdf.xacro"/>
   <include filename="$(find katana_description)/urdf/gazebo.urdf.xacro"/>
