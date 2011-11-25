@@ -29,7 +29,7 @@ rosrun collada_urdf urdf_to_collada $KATANA_TYPE.urdf $KATANA_TYPE.dae
 #
 # optionally, check the links:
 
-export PYTHONPATH=$(rospack find openrave)/lib/python2.6/site-packages:$PYTHONPATH
+export PYTHONPATH=$(rospack find openrave)/lib/python2.?/site-packages:$PYTHONPATH
 rosrun openrave openrave0.4-robot.py $KATANA_TYPE.dae --list links
 
 # optionally, visualize the model:
