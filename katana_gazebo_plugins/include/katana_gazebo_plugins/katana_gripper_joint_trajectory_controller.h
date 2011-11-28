@@ -28,13 +28,9 @@
 #ifndef KATANA_GRIPPER_JOINT_TRAJECTORY_CONTROLLER_H_
 #define KATANA_GRIPPER_JOINT_TRAJECTORY_CONTROLLER_H_
 
-#include <deque>
-
 #include <ros/ros.h>
 #include <actionlib/server/action_server.h>
 #include <spline_smoother/splines.h>
-
-//#include <katana/spline_functions.h>
 
 #include <trajectory_msgs/JointTrajectory.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
@@ -48,8 +44,7 @@ namespace katana_gazebo_plugins
 /**
  *  allowed difference between desired and actual position
  */
-static const double GRIPPER_ANGLE_THRESHOLD = 0.03;
-
+static const double GRIPPER_ANGLE_THRESHOLD = 0.002;
 
 /**
  * This class allows you to send JointTrajectory messages to the Katana Arm simulated in Gazebo
@@ -78,7 +73,6 @@ private:
   // the internal state of the gripper
   GRKAPoint current_point_;
   GRKAPoint last_desired_point_;
-//  std::deque<GRKAPoint> desired_points_queue_;
 
   std::vector<std::string> joint_names_;
   std::map<std::string, double> goal_constraints_;
@@ -95,26 +89,12 @@ private:
   void checkGoalStatus();
   bool currentIsDesiredAngle();
   void setCurrentTrajectory(trajectory_msgs::JointTrajectory traj);
-//  void clearQueue();
-//  bool isEmptyQueue();
   bool isTrajectoryFinished();
 
 public:
   // public methods defined by interface IGazeboRosKatanaGripperAction
 
   GRKAPoint getNextDesiredPoint(ros::Time time);
-//  {
-//    // get next value out of the list
-//    if (!desired_points_queue_.empty())
-//    {
-//      // get first element in queue
-//      last_desired_point_ = desired_points_queue_.front();
-//      // remove the first element
-//      desired_points_queue_.pop_front();
-//    }
-//
-//    return last_desired_point_;
-//  }
 
   void setCurrentPoint(GRKAPoint point)
   {
@@ -124,15 +104,7 @@ public:
 
   void cancelGoal()
   {
-//    if (has_active_goal_)
-//    {
     cancelCB(active_goal_);
-//    }
-//    else
-//    {
-//      this->clearQueue();
-//    }
-
   }
 
   /**

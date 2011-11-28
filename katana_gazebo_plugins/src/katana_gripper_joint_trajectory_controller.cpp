@@ -128,11 +128,13 @@ void KatanaGripperJointTrajectoryController::checkGoalStatus()
     ROS_DEBUG("Goal Succeeded!");
     active_goal_.setSucceeded();
     has_active_goal_ = false;
+    ROS_INFO("last_desired_point_.position: %f current_point_.position: %f", last_desired_point_.position, current_point_.position);
   }
   else if (now < end_time + ros::Duration(goal_time_constraint_))
   {
     // Still have some time left to make it.
     ROS_DEBUG("Still have some time left to make it.");
+    //ROS_INFO("Still have some time left to make it. current_point_.position: %f ", current_point_.position);
   }
   else
   {
@@ -266,7 +268,7 @@ GRKAPoint KatanaGripperJointTrajectoryController::getNextDesiredPoint(ros::Time 
   if (!found_traj_seg)
   {
     ROS_INFO(
-        "Trajectory finished after (requested time %f time_from_start[last_point]: %f)", relative_time.toSec(), traj.points[traj.points.size()-1].time_from_start.toSec());
+        "Trajectory finished (requested time %f time_from_start[last_point]: %f)", relative_time.toSec(), traj.points[traj.points.size()-1].time_from_start.toSec());
 
     // set trajectory to finished
     trajectory_finished_ = true;
@@ -306,6 +308,7 @@ GRKAPoint KatanaGripperJointTrajectoryController::getNextDesiredPoint(ros::Time 
   spline_smoother::sampleCubicSpline(coefficients, relative_time.toSec(), sample_pos, sample_vel, sample_acc);
 
   //ROS_INFO("sample_pos: %f, sample_vel: %f", sample_pos, sample_vel);
+  //ROS_INFO("current_point_.position: %f ", current_point_.position);
 
   GRKAPoint point = {sample_pos, sample_vel};
 
@@ -320,6 +323,14 @@ bool KatanaGripperJointTrajectoryController::isTrajectoryFinished()
 {
   return trajectory_finished_;
 }
+
+
+void KatanaGripperJointTrajectoryController::getGains(double &p, double &i, double &d, double &i_max, double &i_min) {
+  p = 6.0;
+  i = 0.2;
+  d = 0.1;
+}
+
 
 } // end namespace
 
