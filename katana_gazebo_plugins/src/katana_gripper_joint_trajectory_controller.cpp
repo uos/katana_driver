@@ -327,7 +327,7 @@ bool KatanaGripperJointTrajectoryController::isTrajectoryFinished()
 
 void KatanaGripperJointTrajectoryController::getGains(double &p, double &i, double &d, double &i_max, double &i_min) {
   p = 6.0;
-  i = 0.2;
+  i = 0.1;
   d = 0.1;
 }
 

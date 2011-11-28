@@ -44,7 +44,7 @@ namespace katana_gazebo_plugins
 /**
  *  allowed difference between desired and actual position
  */
-static const double GRIPPER_ANGLE_THRESHOLD = 0.002;
+static const double GRIPPER_ANGLE_THRESHOLD = 0.005;
 
 /**
  * This class allows you to send JointTrajectory messages to the Katana Arm simulated in Gazebo
@@ -95,6 +95,7 @@ public:
   // public methods defined by interface IGazeboRosKatanaGripperAction
 
   GRKAPoint getNextDesiredPoint(ros::Time time);
+  void getGains(double &p, double &i, double &d, double &i_max, double &i_min);
 
   void setCurrentPoint(GRKAPoint point)
   {
