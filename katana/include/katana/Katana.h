@@ -26,6 +26,7 @@
 #define KATANA_H_
 
 #include <ros/ros.h>
+#include <std_srvs/Empty.h>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread.hpp>
 
@@ -61,6 +62,9 @@ public:
   virtual bool allMotorsReady();
 
 private:
+  ros::ServiceServer switch_motors_off_srv_;
+  ros::ServiceServer switch_motors_on_srv_;
+
   boost::shared_ptr<CLMBase> kni;
   CCplSerialCRC* protocol;
   CCdlBase* device;
@@ -74,6 +78,9 @@ private:
   ros::Time last_encoder_update_;
 
   void calibrate();
+
+  bool switchMotorsOff(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
+  bool switchMotorsOn(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
 
   short round(const double x);
 

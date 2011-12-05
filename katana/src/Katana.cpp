@@ -31,6 +31,7 @@ namespace katana
 Katana::Katana() :
   AbstractKatana()
 {
+  ros::NodeHandle nh;
   ros::NodeHandle pn("~");
   motor_status_.resize(NUM_MOTORS);
 
@@ -130,6 +131,9 @@ Katana::Katana() :
 
   // boost::thread worker_thread(&Katana::test_speed, this);
 
+  /* ********* services ********* */
+  switch_motors_off_srv_ = nh.advertiseService("switch_motors_off", &Katana::switchMotorsOff, this);
+  switch_motors_on_srv_ = nh.advertiseService("switch_motors_on", &Katana::switchMotorsOn, this);
 }
 
 Katana::~Katana()
@@ -560,6 +564,27 @@ void Katana::calibrate()
     kni->enableCrashLimits();
   }
 }
+
+/**
+ * This service is dangerous to call! It will switch all motors off. If the arm is not in a
+ * stable position, it will crash down, potentially damaging itself or the environment!
+ */
+bool Katana::switchMotorsOff(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
+{
+  ROS_WARN("Switching all motors off!");
+  boost::recursive_mutex::scoped_lock lock(kni_mutex);
+  kni->switchRobotOff();
+  return true;
+}
+
+bool Katana::switchMotorsOn(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response)
+{
+  ROS_INFO("Switching all motors back on.");
+  boost::recursive_mutex::scoped_lock lock(kni_mutex);
+  kni->switchRobotOn();
+  return true;
+}
+
 
 void Katana::test_speed()
 {
