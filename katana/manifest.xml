@@ -19,6 +19,7 @@
   <depend package="roscpp"/>
   <depend package="kni"/>
   <depend package="std_msgs"/>
+  <depend package="std_srvs"/>
 
   <!-- for JointStatePublisher -->
   <depend package="sensor_msgs"/>

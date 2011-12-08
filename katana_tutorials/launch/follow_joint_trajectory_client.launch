@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <include file="$(find katana_tutorials)/launch/trajectory_filter.launch" />
+
+  <node pkg="katana_tutorials" name="follow_joint_trajectory_client" type="follow_joint_trajectory_client" />
+</launch>
