@@ -1,0 +1,5 @@
+<?xml version="1.0" ?>
+<launch>
+  <node pkg="orrosplanning" type="graspplanning_openrave.py" name="openrave_armplanning" args="--scene=$(find katana_description)/collada/$(env KATANA_TYPE).robot.xml" output="screen"/>
+  <node pkg="katana_openrave_test" type="testgraspplanning.py" name="testarmplanning" output="screen"/>
+</launch>

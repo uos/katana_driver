@@ -161,9 +161,10 @@ void move_to_pose(geometry_msgs::Pose & desired_pose,
 
       ompl::RNG rng = ompl::RNG();
 
-      pose1.position.x = rng.uniformReal(-0.48, 0.48);
-      pose1.position.y = rng.uniformReal(-0.48, 0.48);
-      pose1.position.z = rng.uniformReal(-0.12, 0.68);
+
+      pose1.position.x = rng.uniformReal(0.1, 0.15);
+      pose1.position.y = rng.uniformReal(0.1, 0.15);
+      pose1.position.z = rng.uniformReal(0.05, 0.45);
 
       double value2[4];
 
@@ -173,15 +174,14 @@ void move_to_pose(geometry_msgs::Pose & desired_pose,
       pose1.orientation.y = value2[1];
       pose1.orientation.z = value2[2];
       pose1.orientation.w = value2[3];
-      // ROS_INFO("Sending move_arm goal for pose 1 (all random)");
+      ROS_INFO("Sending move_arm goal for pose 1 (new)");
 
       move_to_pose(pose1, move_arm);
 
       geometry_msgs::Pose pose2;
-
-      pose2.position.x = rng.uniformReal(-0.48, 0.48);
-      pose2.position.y = rng.uniformReal(-0.48, 0.48);
-      pose2.position.z = rng.uniformReal(-0.12, 0.68);
+      pose2.position.x = rng.uniformReal(-0.15, 0.15);
+      pose2.position.y = rng.uniformReal(-0.15, 0.15);
+      pose2.position.z = rng.uniformReal(0.05, 0.45);
 
       double value[4];
 
@@ -191,51 +191,66 @@ void move_to_pose(geometry_msgs::Pose & desired_pose,
       pose2.orientation.y = value2[1];
       pose2.orientation.z = value2[2];
       pose2.orientation.w = value2[3];
-      // ROS_INFO("Sending move_arm goal for pose 2 (all random)");
+      // ROS_INFO("Sending move_arm goal for pose 2 (new)");
 
-      move_to_pose(pose2, move_arm);
+      //move_to_pose(pose2, move_arm);
+
 
       ///
       /// OPEN RAVE APPROVED POSITIONS
       ///
 
-      /*
+
        //    [ INFO] [1307438122.669621150]: pose position: -0.183997, 0.183440, 0.415803
        //    [ INFO] [1307438122.669667690]: pose orientation: 0.209215, -0.875412, -0.396642, 0.1804
+     /* 0.0826566386589
+        -0.105906316163
+        0.519365423008
+        [ 0.1485272   0.6907988   0.21326708  0.67472501]
+      */
+ /*
+      geometry_msgs::Pose pose1;
 
-       geometry_msgs::Pose pose1;
-       pose1.position.x = -0.183997;
-       pose1.position.y = 0.183440;
-       pose1.position.z = 0.415803;
+       pose1.position.x = 0.0826566386589;
+       pose1.position.y = -0.105906316163;
+       pose1.position.z = 0.519365423008;
 
-       pose1.orientation.x = 0.209215;
-       pose1.orientation.y = -0.875412;
-       pose1.orientation.z = -0.396642;
-       pose1.orientation.w = 0.180439;
+       pose1.orientation.x = 0.1485272;
+       pose1.orientation.y = 0.6907988;
+       pose1.orientation.z = 0.21326708;
+       pose1.orientation.w = 0.67472501;
        ROS_INFO("Sending move_arm goal for pose 1 (OpenRave approved)");
 
        move_to_pose(pose1, move_arm);
-
+*/
        // determined with get_constraint_aware_ik_test to have an openrave ik solution
        // [INFO] [1307438247.951109908]: pose position: -0.018995, -0.270915, 0.369523
        // [INFO] [1307438247.951154217]: pose orientation: -0.664450, 0.151834, 0.036378, -0.730842
        // [INFO] [1307438247.951195536]: ...
 
-       geometry_msgs::Pose pose2;
-       pose2.position.x = -0.018995;
-       pose2.position.y = -0.270915;
-       pose2.position.z = 0.369523;
+       /*
+        0.107560697725
+        0.0477060075151
+        0.537819082027
+        [ 0.01373857  0.59140089  0.6834396   0.42774589]
 
-       pose2.orientation.x = -0.664450;
-       pose2.orientation.y = 0.151834;
-       pose2.orientation.z = 0.036378;
-       pose2.orientation.w = -0.730842;
+        */
+/*
+       geometry_msgs::Pose pose2;
+       pose2.position.x = 0.107560697725;
+       pose2.position.y = 0.0477060075151;
+       pose2.position.z = 0.537819082027;
+
+       pose2.orientation.x = 0.01373857;
+       pose2.orientation.y =  0.59140089;
+       pose2.orientation.z = 0.6834396;
+       pose2.orientation.w = 0.42774589;
 
        ROS_INFO("Sending move_arm goal for pose 2 (OpenRave approved)");
 
        move_to_pose(pose2, move_arm);
 
-       */
+*/
 
       ///
       /// ALL JOINTS 1.5 and 1.8 rad

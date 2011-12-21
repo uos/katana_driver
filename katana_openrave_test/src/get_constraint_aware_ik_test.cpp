@@ -117,9 +117,9 @@ int main(int argc, char **argv)
 
 
 */
-    gcapik_req.ik_request.pose_stamped.pose.position.x = rng.uniformReal(-0.48, 0.48);
-    gcapik_req.ik_request.pose_stamped.pose.position.y = rng.uniformReal(-0.48, 0.48);
-    gcapik_req.ik_request.pose_stamped.pose.position.z = rng.uniformReal(-0.12, 0.68);
+    gcapik_req.ik_request.pose_stamped.pose.position.x = rng.uniformReal(-0.15, 0.15);
+    gcapik_req.ik_request.pose_stamped.pose.position.y = rng.uniformReal(-0.15, 0.15);
+    gcapik_req.ik_request.pose_stamped.pose.position.z = rng.uniformReal(-0.10, 0.40);
 
     double value[4];
 
