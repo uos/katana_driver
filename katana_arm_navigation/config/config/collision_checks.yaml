@@ -24,6 +24,14 @@ default_collision_operations:
     operation: enable
 
 # disable collision checks between adjacent links in separate planning groups
+  - object1: katana_motor2_lift_link
+    object2: katana_base_link
+    operation: disable
+    
+  - object1: katana_motor4_lift_link
+    object2: katana_internal_controlbox_link
+    operation: disable
+
   - object1: katana_motor1_pan_link
     object2: robot_body
     operation: disable
