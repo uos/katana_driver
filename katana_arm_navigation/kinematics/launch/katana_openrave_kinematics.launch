@@ -5,7 +5,8 @@
   <remap from="GetPositionIK" to="GetPositionIK" />
   <remap from="collision_map/collision_map" to="collision_map_occ" />
 
-  <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=$(find katana_description)/collada/$(env KATANA_TYPE).robot.xml --viewer='' --collision_map=collision_map_occ" output="screen"> 
+  <!-- - -viewer='' - -collision_map=collision_map_occ" -->
+  <node pkg="orrosplanning" type="ik_openrave.py" name="ik_openrave" args="--scene=$(find katana_description)/collada/$(env KATANA_TYPE).robot.xml" output="screen"> 
   </node> 
 
   <!-- which joints does this katana instance control? -->
