@@ -1,0 +1,174 @@
+<?xml version="1.0"?>
+
+ <robot xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
+       xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller"
+       xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface"
+       xmlns:xacro="http://ros.org/wiki/xacro"
+       name="kurtana_rack">
+
+  <property name="M_PI" value="3.1415926535897931" />
+
+  <!-- all values measured by hand - maybe they need to be optimized later -->
+  <property name="rackplate_length" value="0.51" />
+  <property name="rackplate_width" value="0.368" />
+  <property name="rackplate_height" value="0.023" />
+  <property name="baseplate_length" value="0.51" />
+  <property name="baseplate_width" value="0.368" />
+  <property name="baseplate_height" value="0.005" />
+  <property name="rackgap" value="0.055" />
+  <property name="pole_radius" value="0.025"/>
+  <property name="pole_length" value="0.70"/>
+  <property name="poletop_radius" value="0.025"/>
+  <property name="poletop_length" value="0.04"/>
+  <property name="pitchpole_radius" value="0.012"/>
+  <property name="pitchpole_length" value="0.23"/>
+  <property name="kinect_length" value="0.30" />
+  <property name="kinect_width" value="0.08" />
+  <property name="kinect_height" value="0.08" />
+  <property name="kinect_gap" value="0.015" />
+
+<!-- ******************** -->
+<!-- *** KURTana Rack *** -->
+<!-- ******************** -->
+
+  <link name="kurtana_rackplate_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="${rackplate_length} ${rackplate_width} ${rackplate_height}" />
+        </geometry>
+
+        <material name="grey">
+          <color rgba="0.8 0.8 0.8 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+            <box size="${rackplate_length} ${rackplate_width} ${rackplate_height}" />
+        </geometry>
+      </collision>
+      <inertial>
+        <mass value="0.05" />
+        <origin xyz="0.0 0.0 10.0" />
+        <inertia ixx="1.0" ixy="0.0" ixz="0.0"
+                 iyy="1.0" iyz="0.0"
+                 izz="1.0" />
+      </inertial>
+  </link>
+
+  <joint name="kurtana_baseplate_joint" type="fixed">
+    <parent link="kurtana_rackplate_link"/>
+    <child link="kurtana_baseplate_link"/>
+    <origin xyz="0 0 0.055"/>
+  </joint>
+
+  <link name="kurtana_baseplate_link">
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="${baseplate_length} ${baseplate_width} ${baseplate_height}" />
+        </geometry>
+
+        <material name="grey" />
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <box size="${baseplate_length} ${baseplate_width} ${baseplate_height}" />
+        </geometry>
+      </collision>
+  </link>
+  
+   <joint name="kurtana_pole_joint" type="fixed">
+    <parent link="kurtana_baseplate_link"/>
+    <child link="kurtana_pole_link"/>
+    <origin xyz="-0.19 0 0"/>
+   </joint>
+
+  <link name="kurtana_pole_link">
+      <visual>
+        <origin xyz="0 0 ${pole_length/2}" rpy="0 0 0" />
+        <geometry>
+         <cylinder radius="${pole_radius}" length="${pole_length}"/>
+        </geometry>
+
+        <material name="grey" />
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${pole_length/2}" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="${pole_radius}" length="${pole_length}"/>
+        </geometry>
+      </collision>
+  </link>
+    
+  <joint name="kurtana_stretch_joint" type="prismatic">
+    <parent link="kurtana_pole_link"/>
+    <child link="kurtana_poletop_stretch_link"/>
+    <origin xyz="0 0 ${pole_length}" rpy="0 0 0"/> 
+    <limit effort="1000.0" lower="0" upper="0.515" velocity="0.5"/>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+ <link name="kurtana_poletop_stretch_link">
+        <collision>
+        <origin xyz="0 0 ${poletop_length/2}" rpy="0 0 0" />
+        <geometry>
+         <cylinder radius="${poletop_radius}" length="${poletop_length}"/>
+        </geometry>
+      </collision>
+  </link>
+
+   <joint name="kurtana_roll_joint" type="revolute">
+    <parent link="kurtana_poletop_stretch_link"/>
+    <child link="kurtana_poletop_roll_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+    <axis xyz="0 0 1"/>
+    <limit effort="1000.0" lower="${-M_PI/2}" upper="${M_PI/2}" velocity="2.0"/> 
+  </joint>
+
+  <link name="kurtana_poletop_roll_link">
+      <visual>
+        <origin xyz="0 0 ${poletop_length/2}" rpy="0 0 0" />
+        <geometry>
+          <cylinder radius="${poletop_radius}" length="${poletop_length}"/>
+        </geometry>
+        <material name="red">
+          <color rgba="0.8 0.5 0.8 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 ${poletop_length/2}" rpy="0 0 0" />
+        <geometry>
+         <cylinder radius="${poletop_radius}" length="${poletop_length}"/>
+        </geometry>
+      </collision>
+  </link>
+
+  <joint name="kurtana_pitch_joint" type="revolute">
+    <parent link="kurtana_poletop_roll_link" />
+    <child link="kurtana_pitchpole_link" />
+    <origin xyz="0 0 ${poletop_length/2}" rpy="0 0 0"/> 
+    <axis xyz="0 1 0"/> 
+    <limit effort="1000.0" lower="${-M_PI/2}" upper="${M_PI/2}" velocity="2.0"/>  
+  </joint>
+
+  <link name="kurtana_pitchpole_link">
+      <visual>
+        <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
+        <geometry>
+          <cylinder radius="${pitchpole_radius}" length="${pitchpole_length}"/>
+        </geometry>
+        <material name="grey" />
+      </visual>
+      <collision>
+        <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
+        <geometry>
+         <cylinder radius="${pitchpole_radius}" length="${pitchpole_length}"/>
+        </geometry>
+      </collision>
+  </link>
+
+</robot>

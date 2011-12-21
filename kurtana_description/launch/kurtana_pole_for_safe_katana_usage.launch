@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!-- launch file to add the krutana_rack_pole as a collision object to the environment -->
+<!-- to be used while working on the katana packages with the katana mounted on the Kurtana Rack -->
+
+<!-- TO DO: maybe add the full geometry of the kurtana rack, currently only the pole is supported because it's the most dangerous part -->
+ 
+<launch>
+    
+  <node pkg="kurtana_description" type="addKurtanaPole" name="add_kurtana_pole"/>
+
+  </launch>

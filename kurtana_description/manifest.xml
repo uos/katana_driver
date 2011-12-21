@@ -1,0 +1,21 @@
+<package>
+  <description brief="URDF description of the KURTana robot">
+
+     This package contains an URDF description of the KURTana Robot and all supporting mesh files.
+     
+     NOTICE: the construction is custom-made, so it's relatively unlikely that it serves for more than an exemplar
+             but if you have comments or questions regarding the KURTana project, feel free to contact us  
+
+  </description>
+  <author>Henning Deeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kurtana_description</url>
+  <depend package="urdf"/>
+  <depend package="convex_decomposition"/>
+  <depend package="ivcon"/>
+  <depend package="mapping_msgs"/>
+  <depend package="geometric_shapes_msgs"/>
+</package>
+
+
