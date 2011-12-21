@@ -4,6 +4,7 @@
   <!-- start katana node -->
   <include file="$(find katana)/launch/$(env KATANA_TYPE).launch" />
 
+
   <!-- motion planning -->
   <include file="$(find katana_arm_navigation)/planning/launch/ompl_planning.launch"/>
 
@@ -11,7 +12,7 @@
   <include file="$(find katana_arm_navigation)/perception/launch/kinect_perception.launch"/>
 
   <!-- send planning environment parameters -->
-  <include file="$(find katana_arm_navigation)/config/launch/katana_planning_environment.launch" />
+  <include file="$(find katana_arm_navigation)/config/launch/planning_environment.launch" />
 
   <!-- trajectory filtering (spline smoother) -->
   <include file="$(find katana_arm_navigation)/filtering/launch/trajectory_filter.launch"/>
@@ -20,11 +21,13 @@
   <!-- <include file="$(find katana_arm_navigation)/kinematics/launch/urdf_arm_kinematics.launch"/> -->
   <!-- <include file="$(find katana_arm_navigation)/kinematics/launch/katana_arm_kinematics.launch"/> -->
   <!-- <include file="$(find katana_arm_navigation)/kinematics/launch/katana_openrave_kinematics.launch"/> -->
- <include file="$(find katana_openrave_kinematics)/launch/katana_constraint_aware_kinematics.launch"/> 
- <!-- <include file="$(find katana_openrave_kinematics)/launch/katana_kdl_constraint_aware_kinematics.launch"/> -->
+  <!-- <include file="$(find katana_openrave_kinematics)/launch/katana_kdl_constraint_aware_kinematics.launch"/> -->
 
+  <include file="$(find katana_openrave_kinematics)/launch/katana_constraint_aware_kinematics.launch"/> 
+  
   <!-- load planning_environment -->
   <!-- <param name="environment_server/use_collision_map" type="bool" value="false" /> -->
+
   <include file="$(find katana_arm_navigation)/actions/launch/environment_server.launch"/>
 
   <!-- load move_arm -->

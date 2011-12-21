@@ -11,7 +11,7 @@
   <!-- <include file="$(find katana_arm_navigation)/perception/launch/kinect_perception.launch"/> -->
 
   <!-- send planning environment parameters -->
-  <include file="$(find katana_arm_navigation)/config/launch/katana_planning_environment.launch" />
+  <include file="$(find katana_arm_navigation)/config/launch/planning_environment.launch" />
 
   <!-- trajectory filtering (spline smoother) -->
   <include file="$(find katana_arm_navigation)/filtering/launch/trajectory_filter.launch"/>
