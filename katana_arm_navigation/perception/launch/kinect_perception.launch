@@ -1,35 +1,38 @@
 <?xml version="1.0"?>
 <launch>
-  <node pkg="tf" type="static_transform_publisher" name="kinect_rgb_to_kinect_depth"
-    args="-0.03 0.0 0.0 0.0 0.0 0.0 /kinect_rgb /kinect_depth 10" />
-
-  <!-- since the transformation between katana and kinect is not fixed (yet), we start a GUI to adjust it instead of the static transform -->
- <!-- <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
-    args="-0.81 -0.35 0.12 -1.58 0.01 -1.06 /katana_base_link /kinect_rgb 10" /> -->
-  
-  <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" />
-
+  <!-- launch kinect -->
   <include file="$(find kinect_camera)/launch/kinect_node.launch" />
 
   <!-- drop frames to speed things up; the Kinect publishes at around 10 Hz, which is way too much 
        for the collision map, so drop 9 out of 10 frames -->
   <node pkg="topic_tools" type="drop" name="drop" args="/kinect/depth/points 9 10 /kinect/depth/points_drop" output="screen" />
+ 
+  <!-- set the depth frame relative to the rgb frame -->
+  <node pkg="tf" type="static_transform_publisher" name="kinect_rgb_to_kinect_depth"
+    args="-0.03 0.0 0.0 0.0 0.0 0.0 /kinect_rgb /kinect_depth 10" />
 
+  <!-- kinect_katana calibration -->
+  <!-- since the transformation between katana and kinect is not fixed, we start a GUI to adjust it --> 
+  <!-- <include file="$(find katana_arm_navigation)/perception/launch/tf_publisher_gui.launch" /> -->
+  <!-- or instead use a static transform -->
+  <node pkg="tf" type="static_transform_publisher" name="base_to_kinect_rgb"
+    args="-0.1012 -0.00521 0.9332 0.699987 -0.703072 0.088819 -0.088429 /katana_base_link /kinect_rgb 10" /> 
+  
   <!-- need to clear known objects from scans -->
   <node pkg="planning_environment" type="clear_known_objects" name="clear_known_objects" output="screen">
     <remap from="cloud_in" to="kinect/depth/points_drop" />
-    <remap from="cloud_out" to="tilt_scan_cloud_known" />
+    <remap from="cloud_out" to="kinect_depth_cleared_from_known" />
     <param name="sensor_frame" type="string" value="kinect_depth" />
     <param name="fixed_frame" type="string" value="/katana_base_link" /> <!-- TODO: use world frame (e.g., "odom_combined", "map") -->
     <param name="object_padd" type="double" value="0.02" />
     <param name="object_scale" type="double" value="1.0" />
   </node>
 
-    <node pkg="point_cloud_converter" name="point_cloud_converter_preself" type="point_cloud_converter" output="screen">
-	<remap from="/points_in" to="/tilt_scan_cloud_known" />
-        <remap from="/points2_out" to="/tilt_scan_cloud_known2" />
-      </node>
-
+  <node pkg="point_cloud_converter" name="point_cloud_converter_preself" type="point_cloud_converter" output="screen">
+	<remap from="/points_in" to="/kinect_depth_cleared_from_known" />
+    <remap from="/points2_out" to="/kinect_depth_cleared_from_known2" />
+  </node>
+      
   <!-- displaying known model markers -->
   <node pkg="planning_environment" name="display_planner_collision_model_environment_server" 
       type="display_planner_collision_model" respawn="false" output="screen">
@@ -46,10 +49,10 @@
   <node pkg="robot_self_filter" type="self_filter" respawn="true" name="self_filter" output="screen">
 
     <!-- The topic for the input cloud -->
-    <remap from="cloud_in" to="tilt_scan_cloud_known2" />
+    <remap from="cloud_in" to="/kinect_depth_cleared_from_known2" />
 
     <!-- The topic for the output cloud -->
-    <remap from="cloud_out" to="tilt_scan_cloud_filtered2" />
+    <remap from="cloud_out" to="kinect_depth_robot_filtered2" />
 
     <!-- The frame of the sensor used to obtain the data to be
        filtered; This parameter is optional. If it is not specified,
@@ -60,10 +63,24 @@
 
     <rosparam command="load" file="$(find katana_arm_navigation)/perception/config/self_filter.yaml" />
   </node>
-
+  
+  <!-- cut the point_cloud below a specific z-value (below the table) to avoid wrong table detections (e.g. on the floor) -->
+  <node pkg="nodelet" type="nodelet" name="pcl_manager" args="manager" output="screen" />
+   <!-- run a passthrough filter to clean NaNs -->  
+   <node pkg="nodelet" type="nodelet" name="passthrough" args="load pcl/PassThrough pcl_manager" output="screen">
+    <remap from="~input" to="kinect_depth_robot_filtered2" />
+	<remap from="~output" to="kinect_depth_passthrough_filtered2" />
+    <rosparam>
+      filter_field_name: z
+      filter_limit_min: 0.6
+      filter_limit_max: 0.91
+      filter_limit_negative: False
+    </rosparam>
+  </node>
+  
   <node pkg="point_cloud_converter" name="point_cloud_converter_postself" type="point_cloud_converter" output="screen">
-	<remap from="/points2_in" to="/tilt_scan_cloud_filtered2" />
-        <remap from="/points_out" to="/tilt_scan_cloud_filtered" />
+	<remap from="/points2_in" to="/kinect_depth_robot_filtered2" />
+        <remap from="/points_out" to="/kinect_depth_fully_filtered" />
   </node>
 
   <!-- start collision map -->
