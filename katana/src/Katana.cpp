@@ -633,27 +633,26 @@ void Katana::test_speed()
       ROS_INFO("Moving to min");
       {
         boost::recursive_mutex::scoped_lock lock(kni_mutex);
-        kni->moveMotorToEnc(i, pos1_encoders, true,50,60000);
+        kni->moveMotorToEnc(i, pos1_encoders);
       }
 
-//      do
-//      {
-//        idleWait.sleep();
-//        refreshMotorStatus();
-//
-//      } while (!allMotorsReady());
+      do
+      {
+        idleWait.sleep();
+        refreshMotorStatus();
+      } while (!allMotorsReady());
 
       ROS_INFO("Moving to max");
       {
         boost::recursive_mutex::scoped_lock lock(kni_mutex);
-        kni->moveMotorToEnc(i, pos2_encoders, true , 50, 60000);
+        kni->moveMotorToEnc(i, pos2_encoders);
       }
 
-//      do
-//      {
-//        idleWait.sleep();
-//        refreshMotorStatus();
-//      } while (!allMotorsReady());
+      do
+      {
+        idleWait.sleep();
+        refreshMotorStatus();
+      } while (!allMotorsReady());
     }
   }
 
