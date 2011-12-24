@@ -114,7 +114,6 @@ Katana::Katana() :
     return;
   }
 
-  //Limtis als externe Funktion für Katana300 Erweiterung
   setLimits();
 
   /* ********* calibrate ********* */
