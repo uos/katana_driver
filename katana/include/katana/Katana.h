@@ -51,8 +51,6 @@ public:
   Katana();
   virtual ~Katana();
 
-  virtual void setLimits(void);
-
   void refreshEncoders();
   bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
   virtual void freezeRobot();
@@ -64,18 +62,20 @@ public:
   virtual bool allMotorsReady();
 
 protected:
+  boost::shared_ptr<CLMBase> kni;
+  boost::recursive_mutex kni_mutex;
+  std::vector<TMotStsFlg> motor_status_;
+
+  virtual void setLimits(void);
+
+private:
   ros::ServiceServer switch_motors_off_srv_;
   ros::ServiceServer switch_motors_on_srv_;
 
-  boost::shared_ptr<CLMBase> kni;
   CCplSerialCRC* protocol;
   CCdlBase* device;
 
   KNIConverter* converter;
-
-  boost::recursive_mutex kni_mutex;
-
-  std::vector<TMotStsFlg> motor_status_;
 
   ros::Time last_encoder_update_;
 
@@ -86,9 +86,7 @@ protected:
 
   short round(const double x);
 
-public:
   void test_speed();
-
 };
 
 }
