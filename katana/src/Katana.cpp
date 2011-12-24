@@ -114,14 +114,8 @@ Katana::Katana() :
     return;
   }
 
-  for (size_t i = 0; i < NUM_MOTORS; i++)
-  {
-    // These two settings probably only influence KNI functions like moveRobotToEnc(),
-    // openGripper() and so on, and not the spline trajectories. We still set them
-    // just to be sure.
-    kni->setMotorAccelerationLimit(i, KNI_MAX_ACCELERATION);
-    kni->setMotorVelocityLimit(i, KNI_MAX_VELOCITY);
-  }
+  //Limtis als externe Funktion für Katana300 Erweiterung
+  setLimits();
 
   /* ********* calibrate ********* */
   calibrate();
@@ -146,6 +140,16 @@ Katana::~Katana()
   delete protocol;
   delete device;
   delete converter;
+}
+
+void Katana::setLimits(void) {
+	for (size_t i = 0; i < NUM_MOTORS; i++) {
+		// These two settings probably only influence KNI functions like moveRobotToEnc(),
+		// openGripper() and so on, and not the spline trajectories. We still set them
+		// just to be sure.
+		kni->setMotorAccelerationLimit(i, KNI_MAX_ACCELERATION);
+		kni->setMotorVelocityLimit(i, KNI_MAX_VELOCITY);
+	}
 }
 
 void Katana::refreshEncoders()
@@ -629,26 +633,27 @@ void Katana::test_speed()
       ROS_INFO("Moving to min");
       {
         boost::recursive_mutex::scoped_lock lock(kni_mutex);
-        kni->moveMotorToEnc(i, pos1_encoders);
+        kni->moveMotorToEnc(i, pos1_encoders, true,50,60000);
       }
 
-      do
-      {
-        idleWait.sleep();
-        refreshMotorStatus();
-      } while (!allMotorsReady());
+//      do
+//      {
+//        idleWait.sleep();
+//        refreshMotorStatus();
+//
+//      } while (!allMotorsReady());
 
       ROS_INFO("Moving to max");
       {
         boost::recursive_mutex::scoped_lock lock(kni_mutex);
-        kni->moveMotorToEnc(i, pos2_encoders);
+        kni->moveMotorToEnc(i, pos2_encoders, true , 50, 60000);
       }
 
-      do
-      {
-        idleWait.sleep();
-        refreshMotorStatus();
-      } while (!allMotorsReady());
+//      do
+//      {
+//        idleWait.sleep();
+//        refreshMotorStatus();
+//      } while (!allMotorsReady());
     }
   }
 

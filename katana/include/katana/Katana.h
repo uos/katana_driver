@@ -51,6 +51,8 @@ public:
   Katana();
   virtual ~Katana();
 
+  virtual void setLimits(void);
+
   void refreshEncoders();
   bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
   virtual void freezeRobot();
@@ -61,7 +63,7 @@ public:
   virtual bool allJointsReady();
   virtual bool allMotorsReady();
 
-private:
+protected:
   ros::ServiceServer switch_motors_off_srv_;
   ros::ServiceServer switch_motors_on_srv_;
 
@@ -84,6 +86,7 @@ private:
 
   short round(const double x);
 
+public:
   void test_speed();
 
 };

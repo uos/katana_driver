@@ -34,6 +34,7 @@
 
 #include <katana/AbstractKatana.h>
 #include <katana/Katana.h>
+#include <katana/Katana300.h>
 #include <katana/SimulatedKatana.h>
 
 namespace katana

@@ -33,10 +33,17 @@ KatanaNode::KatanaNode()
   ros::NodeHandle pn("~");
   pn.param("simulation", simulation, false);
 
+  char *katanaType = getenv("KATANA_TYPE");
+
   if (simulation)
     katana.reset(new SimulatedKatana());
   else
-    katana.reset(new Katana());
+  {
+	if(strcmp(katanaType,"katana_300_6m180") == 0 )
+	  katana.reset(new Katana300());
+	else
+	  katana.reset(new Katana());
+  }
 }
 
 KatanaNode::~KatanaNode()
@@ -45,6 +52,8 @@ KatanaNode::~KatanaNode()
 
 int KatanaNode::loop()
 {
+//	((Katana*)katana.get())->test_speed();
+
   ros::Rate loop_rate(25);
 
   JointStatePublisher jointStatePublisher(katana);
