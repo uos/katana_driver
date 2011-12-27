@@ -62,12 +62,19 @@ void Katana300::setLimits()
 
 }
 
+/**
+ * The Katana 300 moves to a weird configuration whenever flushMoveBuffers() is called.
+ * That's why we override freezeRobot() and skip this call.
+ */
 void Katana300::freezeRobot()
 {
   boost::recursive_mutex::scoped_lock lock(kni_mutex);
   kni->freezeRobot();
 }
 
+/**
+ * Override to store desired_angles_.
+ */
 bool Katana300::moveJoint(int jointIndex, double turningAngle)
 {
 
@@ -76,12 +83,20 @@ bool Katana300::moveJoint(int jointIndex, double turningAngle)
   return Katana::moveJoint(jointIndex, turningAngle);
 }
 
+/**
+ * We have to call refreshEncoders() because we're using the destination position
+ * instead of the motor status flags in allJointsReady/allMotorsReady.
+ */
 void Katana300::refreshMotorStatus()
 {
   Katana::refreshEncoders();
   Katana::refreshMotorStatus();
 }
 
+/**
+ * The Katana 300 never returns MSF_DESPOS or MSF_NLINMOV, so we have to check
+ * manually whether the arm stopped at the target position.
+ */
 bool Katana300::allJointsReady()
 {
   std::vector<double> motor_angles = getMotorAngles();
@@ -99,6 +114,10 @@ bool Katana300::allJointsReady()
   return true;
 }
 
+/**
+ * The Katana 300 never returns MSF_DESPOS or MSF_NLINMOV, so we have to check
+ * manually whether the arm stopped at the target position.
+ */
 bool Katana300::allMotorsReady()
 {
   std::vector<double> motor_angles = getMotorAngles();
