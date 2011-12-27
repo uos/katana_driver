@@ -56,6 +56,9 @@ public:
   virtual bool allJointsReady();
   virtual bool allMotorsReady();
 
+  static const double JOINTS_STOPPED_POS_TOLERANCE = 0.01;
+  static const double JOINTS_STOPPED_VEL_TOLERANCE = 0.01;
+
 private:
   std::vector<double> desired_angles_;
 

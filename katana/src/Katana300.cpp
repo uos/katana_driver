@@ -83,15 +83,11 @@ bool Katana300::allJointsReady()
 
   for (size_t i = 0; i < NUM_JOINTS; i++)
   {
-    //Velocity 0 might be a problem
     if (motor_status_[i] == MSF_MOTCRASHED)
       return false;
-    else if (fabs(desired_angles_[i] - motor_angles[i]) < 0.01)
-    {
-      if (motor_velocities_[i] != 0)
-        return false;
-    }
-    else
+    if (fabs(desired_angles_[i] - motor_angles[i]) > JOINTS_STOPPED_POS_TOLERANCE)
+      return false;
+    if (fabs(motor_velocities_[i]) > JOINTS_STOPPED_VEL_TOLERANCE)
       return false;
   }
 
@@ -102,19 +98,13 @@ bool Katana300::allMotorsReady()
 {
   std::vector<double> motor_angles = getMotorAngles();
 
-  for (size_t i = 0; i < NUM_JOINTS; i++)
+  for (size_t i = 0; i < NUM_MOTORS; i++)
   {
-    //Velocity 0 might be a problem
     if (motor_status_[i] == MSF_MOTCRASHED)
       return false;
-    else if (fabs(desired_angles_[i] - motor_angles[i]) < 10)
-    {
-      if (motor_velocities_[i] != 0)
-      {
-        return false;
-      }
-    }
-    else
+    if (fabs(desired_angles_[i] - motor_angles[i]) > JOINTS_STOPPED_POS_TOLERANCE)
+      return false;
+    if (fabs(motor_velocities_[i]) > JOINTS_STOPPED_VEL_TOLERANCE)
       return false;
   }
 
