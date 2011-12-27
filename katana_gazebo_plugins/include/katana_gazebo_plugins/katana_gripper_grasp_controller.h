@@ -65,6 +65,8 @@ public:
     return has_new_desired_angle_;
   }
 
+  void getGains(double &p, double &i, double &d, double &i_max, double &i_min);
+
   void cancelGoal()
   {
     has_new_desired_angle_ = false;

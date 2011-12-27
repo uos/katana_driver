@@ -35,9 +35,4 @@ void IGazeboRosKatanaGripperAction::setCurrentPoint(double pos, double vel)
   setCurrentPoint(point);
 }
 
-void IGazeboRosKatanaGripperAction::getGains(double &p, double &i, double &d, double &i_max, double &i_min)
-{
-  // empty default impl.
-}
-
 }

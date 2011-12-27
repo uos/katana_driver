@@ -163,17 +163,15 @@ void GazeboRosKatanaGripper::UpdateChild()
   // check for new goals, this my change the active_gripper_action_
   this->updateActiveGripperAction();
 
-
   // PID Controller paramters (gains)
 
-  double p,i,d,i_max,i_min;
+  double p, i, d, i_max, i_min;
   // get current values
-  pid_controller_.getGains(p,i,d,i_max,i_min);
+  pid_controller_.getGains(p, i, d, i_max, i_min);
   // change values by the active action
-  active_gripper_action_->getGains(p,i,d,i_max,i_min);
+  active_gripper_action_->getGains(p, i, d, i_max, i_min);
   // set changed values
-  pid_controller_.setGains(p,i,d,i_max,i_min);
-
+  pid_controller_.setGains(p, i, d, i_max, i_min);
 
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
@@ -182,7 +180,6 @@ void GazeboRosKatanaGripper::UpdateChild()
     //  desired_pos[i] = 0.3;
     //else
     //  desired_pos[i] = -0.44;
-
 
     desired_pos[i] = active_gripper_action_->getNextDesiredPoint(ros::Time::now()).position;
     actual_pos[i] = joints_[i]->GetAngle(0).GetAsRadian();

@@ -50,7 +50,7 @@ public:
   virtual bool hasActiveGoal() const = 0;
   virtual void cancelGoal() = 0;
 
-  virtual void getGains(double &p, double &i, double &d, double &i_max, double &i_min);
+  virtual void getGains(double &p, double &i, double &d, double &i_max, double &i_min) = 0;
   virtual void setCurrentPoint(double pos, double vel);
 
 };
