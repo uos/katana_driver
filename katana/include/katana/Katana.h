@@ -74,6 +74,7 @@ protected:
 private:
   ros::ServiceServer switch_motors_off_srv_;
   ros::ServiceServer switch_motors_on_srv_;
+  ros::ServiceServer test_speed_srv_;
 
   CCplSerialCRC* protocol;
   CCdlBase* device;
@@ -84,6 +85,7 @@ private:
 
   bool switchMotorsOff(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
   bool switchMotorsOn(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
+  bool testSpeedSrv(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
 
   short round(const double x);
 };

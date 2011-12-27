@@ -52,8 +52,6 @@ KatanaNode::~KatanaNode()
 
 int KatanaNode::loop()
 {
-//	((Katana*)katana.get())->test_speed();
-
   ros::Rate loop_rate(25);
 
   JointStatePublisher jointStatePublisher(katana);

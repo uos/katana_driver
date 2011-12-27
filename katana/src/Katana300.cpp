@@ -141,26 +141,24 @@ void Katana300::testSpeed()
   pos1_angles[5] = -0.44;
   pos2_angles[5] = 0.30;
 
-  while (ros::ok())
+  for (size_t i = 0; i < NUM_MOTORS; i++)
   {
-    for (size_t i = 0; i < NUM_MOTORS; i++)
+    int pos1_encoders = (int)converter->angle_rad2enc(i, pos1_angles[i]);
+    int pos2_encoders = (int)converter->angle_rad2enc(i, pos2_angles[i]);
+
+    int accel = kni->getMotorAccelerationLimit(i);
+    int max_vel = kni->getMotorVelocityLimit(i);
+
+    ROS_INFO("Motor %zu - acceleration: %d (= %f), max speed: %d (=%f)", i, accel, 2.0 * converter->acc_enc2rad(i, accel), max_vel, converter->vel_enc2rad(i, max_vel));
+    ROS_INFO("KNI encoders: %d, %d", kni->GetBase()->GetMOT()->arr[i].GetEncoderMinPos(), kni->GetBase()->GetMOT()->arr[i].GetEncoderMaxPos());
+    ROS_INFO("moving to encoders: %d, %d", pos1_encoders, pos2_encoders);
+    ROS_INFO("current encoders: %d", kni->getMotorEncoders(i, true));
+
+    ROS_INFO("Moving to min");
     {
-      int pos1_encoders = (int)converter->angle_rad2enc(i, pos1_angles[i]);
-      int pos2_encoders = (int)converter->angle_rad2enc(i, pos2_angles[i]);
-
-      int accel = kni->getMotorAccelerationLimit(i);
-      int max_vel = kni->getMotorVelocityLimit(i);
-
-      ROS_INFO("Motor %zu - acceleration: %d (= %f), max speed: %d (=%f)", i, accel, 2.0 * converter->acc_enc2rad(i, accel), max_vel, converter->vel_enc2rad(i, max_vel));
-      ROS_INFO("KNI encoders: %d, %d", kni->GetBase()->GetMOT()->arr[i].GetEncoderMinPos(), kni->GetBase()->GetMOT()->arr[i].GetEncoderMaxPos());
-      ROS_INFO("moving to encoders: %d, %d", pos1_encoders, pos2_encoders);
-      ROS_INFO("current encoders: %d", kni->getMotorEncoders(i, true));
-
-      ROS_INFO("Moving to min");
-      {
-        boost::recursive_mutex::scoped_lock lock(kni_mutex);
-        kni->moveMotorToEnc(i, pos1_encoders, true,50,60000);
-      }
+      boost::recursive_mutex::scoped_lock lock(kni_mutex);
+      kni->moveMotorToEnc(i, pos1_encoders, true, 50, 60000);
+    }
 
 //      do
 //      {
@@ -169,18 +167,17 @@ void Katana300::testSpeed()
 //
 //      } while (!allMotorsReady());
 
-      ROS_INFO("Moving to max");
-      {
-        boost::recursive_mutex::scoped_lock lock(kni_mutex);
-        kni->moveMotorToEnc(i, pos2_encoders, true , 50, 60000);
-      }
+    ROS_INFO("Moving to max");
+    {
+      boost::recursive_mutex::scoped_lock lock(kni_mutex);
+      kni->moveMotorToEnc(i, pos2_encoders, true, 50, 60000);
+    }
 
 //      do
 //      {
 //        idleWait.sleep();
 //        refreshMotorStatus();
 //      } while (!allMotorsReady());
-    }
   }
 
   // Result:
