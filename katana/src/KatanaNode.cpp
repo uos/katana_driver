@@ -30,19 +30,34 @@ namespace katana
 KatanaNode::KatanaNode()
 {
   bool simulation;
+  std::string katana_type;
   ros::NodeHandle pn("~");
-  pn.param("simulation", simulation, false);
+  ros::NodeHandle n;
 
-  char *katanaType = getenv("KATANA_TYPE");
+  pn.param("simulation", simulation, false);
 
   if (simulation)
     katana.reset(new SimulatedKatana());
   else
   {
-	if(strcmp(katanaType,"katana_300_6m180") == 0 )
-	  katana.reset(new Katana300());
-	else
-	  katana.reset(new Katana());
+    bool has_katana_type = pn.getParam("katana_type", katana_type);
+    if (!has_katana_type)
+    {
+      ROS_ERROR("Parameter katana_type was not set!");
+      exit(-1);
+    }
+
+    if (katana_type == "katana_300_6m180")
+      katana.reset(new Katana300());
+    else if (katana_type == "katana_400_6m180" || katana_type == "katana_450_6m90a"
+        || katana_type == "katana_450_6m90b")
+      katana.reset(new Katana());
+    else
+    {
+      ROS_ERROR(
+          "Parameter katana_type was set to invalid value: %s; please use one of the following: katana_300_6m180, katana_400_6m180, katana_450_6m90a, katana_450_6m90b", katana_type.c_str());
+      exit(-1);
+    }
   }
 }
 
