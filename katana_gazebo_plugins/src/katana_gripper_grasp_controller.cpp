@@ -106,20 +106,8 @@ void KatanaGripperGraspController::executeCB(
       // well, we don't really use the grasp_posture.position value here, we just instruct
       // the gripper to open  all the way...
       // that might change in the future and we might do something more interesting
-      //      for (unsigned int i = 0; i < goal->grasp.pre_grasp_posture.position.size(); i++)
-      //      {
-      //        katana_->moveJoint(katana_->getJointIndex(goal->grasp.pre_grasp_posture.name[i]),
-      //                           goal->grasp.pre_grasp_posture.position[i]);
-      //      }
-      if (goal->grasp.grasp_posture.position.size() == 0)
-      {
-        ROS_WARN("Pre-grasp posture position list was empty!");
-      }
-      else
-      {
-        setDesiredAngle(goal->grasp.pre_grasp_posture.position[0]);
-        last_command_was_close_ = false;
-      }
+      setDesiredAngle(goal->grasp.pre_grasp_posture.position[0]);
+      last_command_was_close_ = false;
       break;
 
     case object_manipulation_msgs::GraspHandPostureExecutionGoal::RELEASE:
