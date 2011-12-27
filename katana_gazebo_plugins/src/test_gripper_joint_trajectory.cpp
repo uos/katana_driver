@@ -27,6 +27,7 @@
 #include <ros/ros.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
 #include <actionlib/client/simple_action_client.h>
+#include <sensor_msgs/JointState.h>
 
 typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> TrajClient;
 
@@ -49,9 +50,52 @@ private:
   // used to trigger the arm movement action
   TrajClient* traj_client_;
 
-public:
-  TestGripperJointTrajectory()
+  ros::NodeHandle nh_;
+
+  ros::Subscriber joint_state_sub_;
+  std::vector<std::string> joint_names_;
+  bool got_joint_state_;
+  std::vector<double> current_joint_state_;
+  ros::AsyncSpinner spinner_;
+
+
+  void jointStateCB(const sensor_msgs::JointState::ConstPtr &msg)
   {
+    std::vector<double> ordered_js;
+
+    ordered_js.resize(joint_names_.size());
+
+    for (size_t i = 0; i < joint_names_.size(); ++i)
+    {
+      bool found = false;
+      for (size_t j = 0; j < msg->name.size(); ++j)
+      {
+        if (joint_names_[i] == msg->name[j])
+        {
+          ordered_js[i] = msg->position[j];
+          found = true;
+          break;
+        }
+      }
+      if (!found)
+        return;
+    }
+
+    ROS_INFO_ONCE("Got joint state!");
+    current_joint_state_ = ordered_js;
+    got_joint_state_ = true;
+  }
+
+public:
+  TestGripperJointTrajectory() :
+    got_joint_state_(false), spinner_(1)
+  {
+    joint_names_.push_back("katana_l_finger_joint");
+    joint_names_.push_back("katana_r_finger_joint");
+
+    joint_state_sub_ = nh_.subscribe("/joint_states", 1, &TestGripperJointTrajectory::jointStateCB, this);
+    spinner_.start();
+
     // tell the action client that we want to spin a thread by default
     traj_client_ = new TrajClient("katana_arm_controller/gripper_joint_trajectory_action", true);
 
@@ -83,8 +127,7 @@ public:
     pr2_controllers_msgs::JointTrajectoryGoal goal;
 
     // set up the joint names
-    goal.trajectory.joint_names.push_back("r_finger_joint");
-    goal.trajectory.joint_names.push_back("l_finger_joint");
+    goal.trajectory.joint_names = joint_names_;
 
     // set some values
 
@@ -95,10 +138,10 @@ public:
     goal.trajectory.points[0].positions.resize(2);
     goal.trajectory.points[0].velocities.resize(2);
 
-    goal.trajectory.points[0].positions[0] = GRIPPER_OPEN_ANGLE;
+    goal.trajectory.points[0].positions[0] = current_joint_state_[0];
     goal.trajectory.points[0].velocities[0] = 0.0;
 
-    goal.trajectory.points[0].positions[1] = GRIPPER_OPEN_ANGLE;
+    goal.trajectory.points[0].positions[1] = current_joint_state_[1];
     goal.trajectory.points[0].velocities[1] = 0.0;
 
     goal.trajectory.points[0].time_from_start = ros::Duration(0.0);
@@ -126,8 +169,7 @@ public:
     pr2_controllers_msgs::JointTrajectoryGoal goal;
 
     // set up the joint names
-    goal.trajectory.joint_names.push_back("r_finger_joint");
-    goal.trajectory.joint_names.push_back("l_finger_joint");
+    goal.trajectory.joint_names = joint_names_;
 
     // set some values
 
@@ -138,10 +180,10 @@ public:
     goal.trajectory.points[0].positions.resize(2);
     goal.trajectory.points[0].velocities.resize(2);
 
-    goal.trajectory.points[0].positions[0] = GRIPPER_CLOSED_ANGLE;
+    goal.trajectory.points[0].positions[0] = current_joint_state_[0];
     goal.trajectory.points[0].velocities[0] = 0.0;
 
-    goal.trajectory.points[0].positions[1] = GRIPPER_CLOSED_ANGLE;
+    goal.trajectory.points[0].positions[1] = current_joint_state_[1];
     goal.trajectory.points[0].velocities[1] = 0.0;
 
     goal.trajectory.points[0].time_from_start = ros::Duration(0.0);
@@ -192,7 +234,7 @@ int main(int argc, char** argv)
 
     ROS_INFO("closeGoal %s", test.getState().toString().c_str());
 
-    usleep(10000000); // 10 sec
+    usleep(1000000); // 1 sec
 
     ROS_INFO("Send openGoal");
     test.startTrajectory(test.openGoal());
@@ -203,7 +245,7 @@ int main(int argc, char** argv)
 
     ROS_INFO("openGoal %s", test.getState().toString().c_str());
 
-    usleep(10000000); // 10 sec
+    usleep(1000000); // 1 sec
 
   }
 
