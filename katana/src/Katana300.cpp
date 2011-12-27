@@ -42,6 +42,11 @@ Katana300::~Katana300()
 
 void Katana300::setLimits()
 {
+  // TODO: constants
+
+  // TODO: setting the limits this low shouldn't be necessary; the limits should
+  //       be set to 2 (acc.) and 180 (vel.) and tested on real Katana 300
+
 
   kni->setMotorAccelerationLimit(0, 1);
   kni->setMotorVelocityLimit(0, 30);
