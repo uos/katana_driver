@@ -40,8 +40,8 @@ KatanaGripperJointTrajectoryController::KatanaGripperJointTrajectoryController(r
   last_desired_point_ = default_point;
 
   // set the joints fixed here
-  joint_names_.push_back((std::string)"r_finger_joint"); // katana_r_finger_joint
-  joint_names_.push_back((std::string)"l_finger_joint"); // katana_l_finger_joint
+  joint_names_.push_back((std::string)"katana_r_finger_joint");
+  joint_names_.push_back((std::string)"katana_l_finger_joint");
 
   pn.param("constraints/goal_time", goal_time_constraint_, 5.0);
 
@@ -168,6 +168,13 @@ void KatanaGripperJointTrajectoryController::goalCB(GoalHandle gh)
   if (!setsEqual(joint_names_, gh.getGoal()->trajectory.joint_names))
   {
     ROS_ERROR("KatanaGripperJointTrajectoryController::goalCB: Joints on incoming goal don't match our joints");
+    gh.setRejected();
+    return;
+  }
+
+  double desired_start_pos = gh.getGoal()->trajectory.points[0].positions[0];
+  if (fabs(desired_start_pos - current_point_.position) > 0.05) {
+    ROS_ERROR("Input trajectory is invalid (difference between desired and current point too high: %f). This might crash Gazebo with error \"The minimum corner of the box must be less than or equal to maximum corner\".", fabs(desired_start_pos - current_point_.position));
     gh.setRejected();
     return;
   }
