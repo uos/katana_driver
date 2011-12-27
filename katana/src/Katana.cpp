@@ -589,7 +589,7 @@ bool Katana::switchMotorsOn(std_srvs::Empty::Request &request, std_srvs::Empty::
 }
 
 
-void Katana::test_speed()
+void Katana::testSpeed()
 {
   ros::Rate idleWait(5);
   std::vector<double> pos1_angles(NUM_MOTORS);

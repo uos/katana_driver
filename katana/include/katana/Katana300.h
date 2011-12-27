@@ -56,6 +56,8 @@ public:
   virtual bool allJointsReady();
   virtual bool allMotorsReady();
 
+  virtual void testSpeed();
+
   static const double JOINTS_STOPPED_POS_TOLERANCE = 0.01;
   static const double JOINTS_STOPPED_VEL_TOLERANCE = 0.01;
 

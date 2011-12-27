@@ -61,12 +61,15 @@ public:
   virtual bool allJointsReady();
   virtual bool allMotorsReady();
 
+  virtual void setLimits(void);
+  virtual void testSpeed();
+
 protected:
   boost::shared_ptr<CLMBase> kni;
   boost::recursive_mutex kni_mutex;
   std::vector<TMotStsFlg> motor_status_;
 
-  virtual void setLimits(void);
+  KNIConverter* converter;
 
 private:
   ros::ServiceServer switch_motors_off_srv_;
@@ -74,8 +77,6 @@ private:
 
   CCplSerialCRC* protocol;
   CCdlBase* device;
-
-  KNIConverter* converter;
 
   ros::Time last_encoder_update_;
 
@@ -85,8 +86,6 @@ private:
   bool switchMotorsOn(std_srvs::Empty::Request &request, std_srvs::Empty::Response &response);
 
   short round(const double x);
-
-  void test_speed();
 };
 
 }

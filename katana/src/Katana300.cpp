@@ -116,4 +116,84 @@ bool Katana300::allMotorsReady()
   return true;
 }
 
+void Katana300::testSpeed()
+{
+  ros::Rate idleWait(5);
+  std::vector<double> pos1_angles(NUM_MOTORS);
+  std::vector<double> pos2_angles(NUM_MOTORS);
+
+  // these are safe values, i.e., no self-collision is possible
+  pos1_angles[0] = 2.88;
+  pos2_angles[0] = -3.02;
+
+  pos1_angles[1] = 0.15;
+  pos2_angles[1] = 2.16;
+
+  pos1_angles[2] = 1.40;
+  pos2_angles[2] = -2.21;
+
+  pos1_angles[3] = 0.50;
+  pos2_angles[3] = -2.02;
+
+  pos1_angles[4] = 2.86;
+  pos2_angles[4] = -2.98;
+
+  pos1_angles[5] = -0.44;
+  pos2_angles[5] = 0.30;
+
+  while (ros::ok())
+  {
+    for (size_t i = 0; i < NUM_MOTORS; i++)
+    {
+      int pos1_encoders = (int)converter->angle_rad2enc(i, pos1_angles[i]);
+      int pos2_encoders = (int)converter->angle_rad2enc(i, pos2_angles[i]);
+
+      int accel = kni->getMotorAccelerationLimit(i);
+      int max_vel = kni->getMotorVelocityLimit(i);
+
+      ROS_INFO("Motor %zu - acceleration: %d (= %f), max speed: %d (=%f)", i, accel, 2.0 * converter->acc_enc2rad(i, accel), max_vel, converter->vel_enc2rad(i, max_vel));
+      ROS_INFO("KNI encoders: %d, %d", kni->GetBase()->GetMOT()->arr[i].GetEncoderMinPos(), kni->GetBase()->GetMOT()->arr[i].GetEncoderMaxPos());
+      ROS_INFO("moving to encoders: %d, %d", pos1_encoders, pos2_encoders);
+      ROS_INFO("current encoders: %d", kni->getMotorEncoders(i, true));
+
+      ROS_INFO("Moving to min");
+      {
+        boost::recursive_mutex::scoped_lock lock(kni_mutex);
+        kni->moveMotorToEnc(i, pos1_encoders, true,50,60000);
+      }
+
+//      do
+//      {
+//        idleWait.sleep();
+//        refreshMotorStatus();
+//
+//      } while (!allMotorsReady());
+
+      ROS_INFO("Moving to max");
+      {
+        boost::recursive_mutex::scoped_lock lock(kni_mutex);
+        kni->moveMotorToEnc(i, pos2_encoders, true , 50, 60000);
+      }
+
+//      do
+//      {
+//        idleWait.sleep();
+//        refreshMotorStatus();
+//      } while (!allMotorsReady());
+    }
+  }
+
+  // Result:
+  //  Motor 0 - acceleration: 2 (= -4.908739), max speed: 180 (=-2.208932)
+  //  Motor 1 - acceleration: 2 (= -2.646220), max speed: 180 (=-1.190799)
+  //  Motor 2 - acceleration: 2 (= 5.292440), max speed: 180 (=2.381598)
+  //     --> wrong! the measured values are more like 2.6, 1.2
+  //
+  //  Motor 3 - acceleration: 2 (= -4.908739), max speed: 180 (=-2.208932)
+  //  Motor 4 - acceleration: 2 (= -4.908739), max speed: 180 (=-2.208932)
+  //  Motor 5 - acceleration: 2 (= 1.597410), max speed: 180 (=0.718834)
+  //     (TODO: the gripper duration can be calculated from this)
+}
+
+
 }
