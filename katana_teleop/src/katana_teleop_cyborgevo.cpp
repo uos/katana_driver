@@ -41,7 +41,7 @@ KatanaTeleopCyborgEvo::KatanaTeleopCyborgEvo() :
   // register service and action clients
   action_client.waitForServer();
 
-  n_private.param<std::string> ("ik_service", ik_service, "katana_openrave_kinematics/get_openrave_ik");
+  n_private.param<std::string> ("ik_service", ik_service, "katana_kinematics_constraint_aware/get_openrave_ik");
   //n_private.param<std::string> ("ik_service", ik_service, "non_constraint_aware_ik_adapter/get_constraint_aware_ik");
   n_private.param<std::string> ("fk_service", fk_service, "get_fk");
   n_private.param<std::string> ("ik_solver_info", ik_solver_info, "get_kinematic_solver_info");
