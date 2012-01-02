@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+	<param name="/katana_interpolated_ik_motion_planner/num_steps" value="6"/>
+	<param name="/katana_interpolated_ik_motion_planner/consistent_angle" value="0.349"/>
+	<param name="/katana_interpolated_ik_motion_planner/collision_check_resolution" value="1"/>
+	<param name="/katana_interpolated_ik_motion_planner/steps_before_abort" value="-1"/>
+	<param name="/katana_interpolated_ik_motion_planner/pos_spacing" value="0.01"/>
+	<param name="/katana_interpolated_ik_motion_planner/rot_spacing" value="0.1"/>
+	<param name="/katana_interpolated_ik_motion_planner/collision_aware" value="1"/>
+	<param name="/katana_interpolated_ik_motion_planner/start_from_end" value="1"/>
+	<param name="/katana_interpolated_ik_motion_planner/max_joint_vels" value="[.1]*5"/>
+	<param name="/katana_interpolated_ik_motion_planner/max_joint_accs" value="[.1]*5"/>
+
+	<param name="/katana_interpolated_ik_motion_planner/base_link_frame" value="katana_base_link"/>
+	<param name="/katana_interpolated_ik_motion_planner/num_dof" value="5"/>
+	<param name="/katana_interpolated_ik_motion_planner/collision_aware_ik" value="1"/>
+	<param name="/katana_interpolated_ik_motion_planner/get_ik_service_name" value="/katana_constraint_aware_kinematics/get_ik"/>
+	<param name="/katana_interpolated_ik_motion_planner/get_constraint_aware_ik_service_name" value="/katana_constraint_aware_kinematics/get_constraint_aware_ik"/>
+	<param name="/katana_interpolated_ik_motion_planner/get_ik_solver_info_service_name" value="/katana_constraint_aware_kinematics/get_ik_solver_info"/>
+	<param name="/katana_interpolated_ik_motion_planner/get_fk_service_name" value="/katana_constraint_aware_kinematics/get_fk"/>
+	<param name="/katana_interpolated_ik_motion_planner/get_state_validity_service_name" value="/environment_server/get_state_validity"/>
+	<param name="/katana_interpolated_ik_motion_planner/default_max_vel" value=".2"/>
+	<param name="/katana_interpolated_ik_motion_planner/default_max_acc" value=".5"/>
+
+ <node pkg="katana_interpolated_ik_motion_planner" type="katana_interpolated_ik_motion_planner.py" name="katana_interpolated_ik_motion_planner" output="screen">
+  <param name="~node_name" value="katana_interpolated_ik_motion_planner"/>
+ </node>
+</launch>
