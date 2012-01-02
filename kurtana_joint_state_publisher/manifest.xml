@@ -1,7 +1,7 @@
 <package>
-  <description brief="kurtana_joint_state_publisher">
+  <description brief="joint state publisher + muxer to merge Kurtana (Kinect rack) joint states and Katana joint states into joint_states">
 
-     kurtana_joint_state_publisher
+    This package contains a joint state publisher and a muxer to merge Kurtana (Kinect rack) joint states and Katana joint states into joint_states. This is necessary because some packages can't cope with multiple publishers on the /joint_states topic.
 
   </description>
   <author>hdeeken</author>
