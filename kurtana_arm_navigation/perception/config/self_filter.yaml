@@ -1,0 +1,41 @@
+min_sensor_dist: .05
+
+# The default padding to be added for the body parts the robot can see
+self_see_default_padding: .04
+
+# The default scaling to be added for the body parts the robot can see
+self_see_default_scale: 1.0
+
+self_see_links:
+  - name: kurtana_rackplate_link
+    padding: 0.01
+  - name: kurtana_baseplate_link
+    padding: 0.01
+  - name: kurtana_pole_link
+    padding: 0.01
+  - name: kurtana_poletop_stretch_link
+    padding: 0.01
+  - name: kurtana_poletop_roll_link
+    padding: 0.01
+  - name: kurtana_pitchpole_link
+    padding: 0.01
+  - name: katana_internal_controlbox_link
+    padding: 0.01
+  - name: katana_base_link
+    padding: 0.01
+  - name: katana_motor1_pan_link
+    padding: 0.01
+  - name: katana_motor2_lift_link
+    padding: 0.06
+  - name: katana_motor3_lift_link
+    padding: 0.06
+  - name: katana_motor4_lift_link
+    padding: 0.06
+  - name: katana_motor5_wrist_roll_link
+    padding: 0.03
+  - name: katana_gripper_link
+    padding: 0.03
+  - name: katana_l_finger_link
+    padding: 0.02
+  - name: katana_r_finger_link
+    padding: 0.02

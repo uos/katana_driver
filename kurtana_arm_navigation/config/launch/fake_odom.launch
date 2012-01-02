@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- fake transforms necessary for operation without a mobile Kurt base -->
+  <node pkg="tf" type="static_transform_publisher" name="odom_combined_to_kurtana_rackplate_link"
+    args="0.0 0.0 0.0 0.0 0.0 0.0 /odom_combined /kurtana_rackplate_link 10" />
+</launch>

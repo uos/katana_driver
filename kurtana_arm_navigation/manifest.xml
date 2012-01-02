@@ -1,0 +1,16 @@
+<package>
+  <description brief="kurtana_arm_navigation">
+
+     kurtana_arm_navigation
+
+  </description>
+  <author>hdeeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kurtana_arm_navigation</url>
+
+  <depend package="rospy"/>
+  <depend package="sensor_msgs"/>
+  <rosdep name="wxpython"/>
+
+</package>
