@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- client for object database running on remote server at Willow Garage -->
+  <!-- DOES NOT WORK IN TRUNK RIGHT NOW -->
+  <!-- <include file="$(find household_objects_database)/launch/objects_database_remote_client.launch"/> -->
+
+  <!-- alternative option: database server running on a local machine -->
+  <param name="/household_objects_database/database_host" value="localhost"/>
+  <param name="/household_objects_database/database_port" value="5432"/>
+  <param name="/household_objects_database/database_user" value="hdeeken"/>
+  <param name="/household_objects_database/database_pass" value="sgt.p3pp3r"/>
+  <param name="/household_objects_database/database_name" value="household_objects_0.2"/>
+  <node pkg="household_objects_database" name="objects_database_node" type="objects_database_node"
+	respawn="true" output="screen"/>
+
+  <!-- manipulation prerequisites -->
+  <include file="$(find katana_object_manipulation_launch)/launch/kurtana_manipulation_prerequisites.launch" />
+
+  <!-- manipulation -->
+  <!-- <include file="$(find katana_object_manipulation_launch)/launch/katana_manipulation.launch"/> -->
+
+  <!-- <param name="/object_manipulator/default_database_planner" value="/objects_database_node/database_grasp_planning" /> -->
+  <!-- <param name="/object_manipulator/default_robust_planner" value="/plan_robust_grasp" /> -->
+
+  <!-- tabletop segmentation and object recognition -->
+  <!-- segmentation -->
+
+  <include file="$(find kurtana_tabletop_manipulation_launch)/launch/kurtana_tabletop_segmentation.launch"/>
+
+  <!-- object recognition -->
+  <include file="$(find kurtana_tabletop_manipulation_launch)/launch/kurtana_tabletop_object_recognition.launch"/>
+
+  <!--complete node -->
+  <node pkg="tabletop_object_detector" name="tabletop_complete_node" type="tabletop_complete_node"
+        respawn="true" output="screen"/>
+
+  <!-- we want to use the database -->
+  <param name="perform_fit_merge" value="false" />
+  <param name="/tabletop_node/use_database" value="false"/>
+
+  <!-- tabletop collision map processing -->
+
+  <param name="tabletop_collision_map_processing/get_model_mesh_srv" value="/objects_database_node/get_model_mesh" />
+  <param name="tabletop_collision_map_processing/static_map_cloud_name" value="kinect_depth_fully_filtered"/>
+
+  <node pkg="tabletop_collision_map_processing" name="tabletop_collision_map_processing"
+        type="tabletop_collision_map_processing_node" respawn="true" output="screen">
+  </node>
+
+  <!-- WIEDER RAUSNEHMEN ÜBERNIMMT DIE OBJECT MANIPULATION LAUNCH -->
+
+  <node name="cluster_bounding_box_finder" pkg="object_manipulator"
+    type="cluster_bounding_box_finder_server.py" output="screen" respawn="false" >
+	<param name="z_up_frame" value="kurtana_rackplate_link" />
+  </node>
+
+
+
+
+
+</launch>

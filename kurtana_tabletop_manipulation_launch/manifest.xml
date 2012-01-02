@@ -1,0 +1,23 @@
+<package>
+  <description brief="kurtana_tabletop_manipulation_launch">
+
+     kurtana_tabletop_manipulation_launch
+
+  </description>
+  <author>hdeeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kurtana_tabletop_manipulation_launch</url>
+  <depend package="roscpp"/>
+  <depend package="actionlib"/>
+  <depend package="actionlib_msgs"/>
+  <depend package="geometry_msgs"/>
+  <depend package="tf_conversions"/>
+  <depend package="object_manipulation_msgs"/>
+  <depend package="object_manipulator"/>
+  <depend package="tabletop_object_detector"/>
+  <depend package="tabletop_collision_map_processing"/>
+  <depend package="household_objects_database"/>
+  <depend package="visualization_msgs"/>
+
+</package>
