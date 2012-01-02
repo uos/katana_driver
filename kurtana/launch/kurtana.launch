@@ -17,7 +17,7 @@
   <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
 
   <!-- load kurtana urdf -->
-  <include file="$(find kurtana_description)/launch/upload_kurtana.launch" />
+  <include file="$(find kurt_description)/launch/upload_kurtana.launch" />
 
   <!-- start kurtana_joint_state_publisher with gui to adjust the rack configuration manually -->
   <!-- node publishes on kurtana_joint_states -->
