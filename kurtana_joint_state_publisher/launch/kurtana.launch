@@ -21,14 +21,14 @@
 
   <!-- start kurtana_joint_state_publisher with gui to adjust the rack configuration manually -->
   <!-- node publishes on kurtana_joint_states -->
-  <node pkg="kurtana" type="kurtana_joint_state_publisher" name="kurtana_joint_state_publisher">
+  <node pkg="kurtana_joint_state_publisher" type="kurtana_joint_state_publisher" name="kurtana_joint_state_publisher">
 	<param name="use_kurtana_gui" value="true"/>
 	<remap from="joint_states" to="kurtana_joint_states" />
   </node>
 
   <!-- start the joint_state_publisher to merge the joint_states from the rack and the arm -->
   <rosparam param="source_list">[kurtana_joint_states, katana_joint_states]</rosparam>
-  <node pkg="kurtana" type="joint_state_publisher" name="joint_state_publisher">
+  <node pkg="kurtana_joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher">
 	<param name="use_gui" value="false"/>
   </node>
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-import roslib; roslib.load_manifest('kurtana')
+import roslib; roslib.load_manifest('kurtana_joint_state_publisher')
 import rospy
 import wx
 import xml.dom.minidom

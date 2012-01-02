@@ -1,7 +1,7 @@
 <package>
-  <description brief="kurtana">
+  <description brief="kurtana_joint_state_publisher">
 
-     kurtana
+     kurtana_joint_state_publisher
 
   </description>
   <author>hdeeken</author>

@@ -5,7 +5,7 @@
   <!-- Kurtana specific -->
 
   <!-- launch kurtana robot -->
-  <include file="$(find kurtana)/launch/kurtana.launch" />
+  <include file="$(find kurtana_joint_state_publisher)/launch/kurtana.launch" />
 
   <!-- kinect perception, planning environment -->
   <include file="$(find kurtana_arm_navigation)/perception/launch/kinect-perception.launch"/>
