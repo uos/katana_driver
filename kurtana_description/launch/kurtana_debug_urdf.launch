@@ -10,7 +10,7 @@
   <!-- joint state publisher with gui -->
   <param name="use_gui" value="true" />
  
-  <!-- <rosparam command="load" file="$(find kurtana_description)/params/dependent_joints.yaml" /> -->
+  <rosparam command="load" file="$(find katana_description)/params/dependent_joints.yaml" />
   
   <node pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/>
 
