@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- run the katana_arm_navigation.launch to set up all requisites (move_arm, planning_environment etc) -->
+  <include file="$(find katana_arm_navigation)/katana_arm_navigation.launch"/>
+
+  <!-- starting the interpolated ik planner -->
+  <include file="$(find katana_interpolated_ik_motion_planner)/launch/katana_interpolated_ik_motion_planner.launch"/>
+
+</launch>
