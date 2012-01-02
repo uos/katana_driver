@@ -12,7 +12,7 @@
 <!-- *** KURTana Rack *** -->
 <!-- ******************** -->
 
-<include filename="$(find kurtana_description)/urdf/kurtana_rack.urdf.xacro" />
+<include filename="$(find kurt_description)/parts/kurtana_rack.urdf.xacro" />
   
 <!-- ************************ -->
 <!-- *** Microsoft Kinect *** -->
