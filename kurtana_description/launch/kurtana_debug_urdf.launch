@@ -3,7 +3,7 @@
 
 <launch>
   <!-- load katana urdf -->
-  <include file="$(find kurtana_description)/launch/upload_kurtana.launch" />
+  <include file="$(find kurt_description)/launch/upload_kurtana.launch" />
   
   <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" />
 
