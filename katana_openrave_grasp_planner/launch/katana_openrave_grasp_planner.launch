@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- to switch off the ik check add: - -ignoreik -->
+  <!-- to ask a specific number (eg 10) of grasps add: - -returngrasps=10 -->
+  <!-- by default the Planner is set to returngrasps = 1, so it gives the fastes solution -->
+
+  <remap from="/GraspPlanning" to="/openrave_grasp_planner" />
+
+  <node pkg="katana_openrave_grasp_planner" type="openrave_grasp_planner.py" name="openrave_graspplanning" args="--returngrasps=1 --scene=$(find katana_description)/collada/$(env KATANA_TYPE).robot.xml" output="screen"/>
+
+</launch>
