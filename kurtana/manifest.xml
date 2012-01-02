@@ -1,0 +1,15 @@
+<package>
+  <description brief="kurtana">
+
+     kurtana
+
+  </description>
+  <author>hdeeken</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kurtana</url>
+  <depend package="rospy"/>
+  <depend package="tf"/>
+  <depend package="sensor_msgs"/>
+  <rosdep name="wxpython" />
+</package>
