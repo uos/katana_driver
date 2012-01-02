@@ -19,7 +19,7 @@
 <!-- ************************ -->
 
 
- <include filename="$(find kurtana_description)/urdf/kinect.urdf.xacro" />
+ <include filename="$(find kurt_description)/parts/kinect.urdf.xacro" />
 
   <joint name="kurtana_kinect_joint" type="fixed">
     <parent link="kurtana_pitchpole_link" />
