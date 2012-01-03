@@ -40,7 +40,7 @@ KatanaNode::KatanaNode()
     katana.reset(new SimulatedKatana());
   else
   {
-    bool has_katana_type = pn.getParam("katana_type", katana_type);
+    bool has_katana_type = n.getParam("katana_type", katana_type);
     if (!has_katana_type)
     {
       ROS_ERROR("Parameter katana_type was not set!");
