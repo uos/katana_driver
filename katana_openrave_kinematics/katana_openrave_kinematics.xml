@@ -1,5 +1,5 @@
 <library path="lib/libkatana_openrave_kinematics">
-  <class name="katana_openrave_kinematics/KatanaKinematicsPlugin" type="katana_openrave_kinematics::KatanaKinematicsPlugin" base_class_type="kinematics::KinematicsBase">
+  <class name="katana_kinematics_constraint_aware/KatanaKinematicsPlugin" type="katana_kinematics_constraint_aware::KatanaKinematicsPlugin" base_class_type="kinematics::KinematicsBase">
     <description>
       A plugin implementation of the Katana's kinematics based on the kinematics_base interface and using OpenRave IK and the urdf-based arm_kinematics FK</description>
   </class>
