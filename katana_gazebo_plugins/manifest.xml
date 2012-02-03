@@ -9,8 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana_gazebo_plugins</url>
   <depend package="gazebo"/>
-  <depend package="nav_msgs"/>
-  <depend package="geometry_msgs"/>
+  <depend package="trajectory_msgs"/>
   <depend package="sensor_msgs"/>
 
   <!-- for gazebo_ros_katana_gripper -->
@@ -26,5 +25,3 @@
     <gazebo plugin_path="${prefix}/lib" />
   </export>
 </package>
-
-
