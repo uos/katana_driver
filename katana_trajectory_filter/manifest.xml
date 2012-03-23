@@ -23,7 +23,7 @@
 
   </description>
   <author>Martin Günther</author>
-  <license>BSD</license>
+  <license>GPL</license>
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana_trajectory_filter</url>
   <depend package="roscpp"/>
