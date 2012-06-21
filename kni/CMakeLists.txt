@@ -41,6 +41,12 @@ if(_make_failed)
   message(FATAL_ERROR "Build of Base library failed")
 endif(_make_failed)
 
+execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/roboop/ make
+                RESULT_VARIABLE _make_failed)
+if(_make_failed)
+  message(FATAL_ERROR "Build of roboop library failed")
+endif(_make_failed)
+
 execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/ make
                 RESULT_VARIABLE _make_failed)
 if(_make_failed)

@@ -23,6 +23,7 @@
 
 #include "common/Timer.h"
 
+#include <unistd.h>
 
 #ifdef WIN32
 
