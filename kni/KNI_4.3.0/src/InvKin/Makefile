@@ -41,7 +41,7 @@ $(TARGET_DIR)/$(LIBNAME_A): $(SOURCES:.cpp=.o)
 
 $(TARGET_DIR)/$(LIBNAME_SO): $(SOURCES:.cpp=.o)
 	echo "Building: $@"
-	$(CXX) $(CXXFLAGS) $(SLLDFLAGS) -o $@ $(SOURCES:.cpp=.o) $(ADDITITIONAL_DEPS)
+	$(CXX) $(CXXFLAGS) $(SLLDFLAGS) -o $@ $(SOURCES:.cpp=.o) $(ADDITITIONAL_DEPS) -L../../lib/linux -lKinematics -lKNIBase
 
 alib: $(TARGET_DIR)/$(LIBNAME_A)
 
