@@ -135,7 +135,7 @@ void KatanaTeleopCyborgEvo::jointStateCallback(const sensor_msgs::JointState::Co
   }
 }
 
-void KatanaTeleopCyborgEvo::cyborgevoCallback(const joy::Joy::ConstPtr& joy)
+void KatanaTeleopCyborgEvo::cyborgevoCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
 
   ROS_DEBUG("KatanaTeleopCyborgEvo recieved a new Joy command...");

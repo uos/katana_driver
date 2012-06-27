@@ -144,7 +144,7 @@ void KatanaTeleopKey::giveInfo()
 
   for (unsigned int i = 0; i < gripper_joint_names_.size(); i++)
   {
-    ROS_INFO("Use '%d' to switch to Gripper Joint: '%s'",i + joint_names_.size(), gripper_joint_names_[i].c_str());
+    ROS_INFO("Use '%zu' to switch to Gripper Joint: '%s'",i + joint_names_.size(), gripper_joint_names_[i].c_str());
   }
 
   if (!current_pose_.name.empty())
@@ -311,12 +311,12 @@ void KatanaTeleopKey::keyboardLoop()
 
         if (combined_joints_.size() > jointIndex)
         {
-          ROS_DEBUG("You choose to adress joint no. %d: %s", selected_joint_index, combined_joints_[9].c_str());
+          ROS_DEBUG("You choose to adress joint no. %zu: %s", selected_joint_index, combined_joints_[9].c_str());
           jointIndex = selected_joint_index;
         }
         else
         {
-          ROS_WARN("Joint Index No. %d can not be adressed!", jointIndex);
+          ROS_WARN("Joint Index No. %zu can not be adressed!", jointIndex);
         }
         break;
 

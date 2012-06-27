@@ -26,7 +26,7 @@
 #define KATANA_TELEOP_PS3_H__
 
 #include <ros/ros.h>
-#include <joy/Joy.h>
+#include <sensor_msgs/Joy.h>
 #include <sensor_msgs/JointState.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <kinematics_msgs/GetPositionFK.h>
@@ -52,7 +52,7 @@ class KatanaTeleopPS3
     bool getCurrentJointPosition(sensor_msgs::JointState &joint_state, std::string &name, float &position);
 
     void jointStateCallback(const sensor_msgs::JointState::ConstPtr& js);
-    void ps3joyCallback(const joy::Joy::ConstPtr& joy);
+    void ps3joyCallback(const sensor_msgs::Joy::ConstPtr& joy);
 
     void loop();
 

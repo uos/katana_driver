@@ -116,7 +116,7 @@ void KatanaTeleopPS3::jointStateCallback(const sensor_msgs::JointState::ConstPtr
   }
 }
 
-void KatanaTeleopPS3::ps3joyCallback(const joy::Joy::ConstPtr& joy)
+void KatanaTeleopPS3::ps3joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
 {
   bool execute_action = false;
 

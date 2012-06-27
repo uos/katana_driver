@@ -19,7 +19,6 @@
   <depend package="geometry_msgs"/>
   <depend package="sensor_msgs"/>
   <depend package="rospy"/>
-  <depend package="joy"/>
   <depend package="roscpp"/>
   <depend package="katana_msgs"/>
   <depend package="actionlib"/>
