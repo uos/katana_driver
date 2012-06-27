@@ -40,7 +40,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://katana_description/meshes/katana/convex/katana_base_link_convex.stlb"/>
+        <mesh filename="package://katana_description/meshes/katana/convex/katana_base_link_convex.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -73,7 +73,7 @@
     <collision>
       <origin xyz="0 0 ${-base_height}" rpy="0 0 0" />
       <geometry>
-        <mesh filename="package://katana_description/meshes/katana/convex/katana_motor1_pan_link_convex.stlb"/>
+        <mesh filename="package://katana_description/meshes/katana/convex/katana_motor1_pan_link_convex.stl"/>
       </geometry>
     </collision>
     <inertial>
@@ -110,7 +110,7 @@
       <collision>
         <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor2_lift_link_convex.stlb"/>
+          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor2_lift_link_convex.stl"/>
         </geometry>
       </collision>
       <inertial>
@@ -148,7 +148,7 @@
       <collision>
         <origin rpy="${-M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor3_lift_link_convex.stlb"/>
+          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor3_lift_link_convex.stl"/>
         </geometry>
       </collision>
       <inertial>
@@ -185,7 +185,7 @@
       <collision>
         <origin rpy="${M_PI/2} 0 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor4_lift_link_convex.stlb"/>
+          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor4_lift_link_convex.stl"/>
         </geometry>
       </collision>
       <inertial>
@@ -223,7 +223,7 @@
       <collision>
         <origin rpy="0 ${M_PI/2} 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor5_wrist_roll_link_convex.stlb"/>
+          <mesh filename="package://katana_description/meshes/katana/convex/katana_motor5_wrist_roll_link_convex.stl"/>
         </geometry>
       </collision>
       <inertial>
@@ -254,7 +254,7 @@
       <collision>
         <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
         <geometry>
-          <mesh filename="package://katana_description/meshes/katana/convex/katana_gripper_link_convex.stlb"/>
+          <mesh filename="package://katana_description/meshes/katana/convex/katana_gripper_link_convex.stl"/>
         </geometry>
       </collision>
       <inertial>
@@ -286,7 +286,7 @@
         <collision>
           <origin rpy="0 ${M_PI} 0" xyz="0 0 0"/>
           <geometry>
-            <mesh filename="package://katana_description/meshes/katana/convex/katana_gripper_${prefix}_finger_convex.stlb"/>
+            <mesh filename="package://katana_description/meshes/katana/convex/katana_gripper_${prefix}_finger_convex.stl"/>
           </geometry>
         </collision>
         <inertial>

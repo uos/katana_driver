@@ -99,7 +99,14 @@ foreach(it ${katana_stl_files})
       ARGS ${basepath}/convex/${basename}_convex.obj ${basepath}/convex/${basename}_convex.stlb
       DEPENDS ${it} ${basepath}/convex ${basepath}/convex/${basename}_convex.obj)
 
-    set(katana_gen_files ${katana_gen_files} ${basepath}/convex/${basename}_convex.stlb)
+    # copy *.stlb files to *.stl so that Gazebo doesn't complain about "Invalid mesh filename extension"
+    add_custom_command(
+      OUTPUT ${basepath}/convex/${basename}_convex.stl
+      COMMAND ${CMAKE_COMMAND}
+      ARGS -E copy_if_different ${basepath}/convex/${basename}_convex.stlb ${basepath}/convex/${basename}_convex.stl
+      DEPENDS )
+
+    set(katana_gen_files ${katana_gen_files} ${basepath}/convex/${basename}_convex.stl)
 
     #    #convert obj files back to stla, put in directory named convex
     #    add_custom_command(
