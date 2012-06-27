@@ -235,10 +235,10 @@ bool KNIKinematics::get_position_ik(kinematics_msgs::GetPositionIK::Request &req
   kni_coordinates[1] = pose_out.pose.position.y / KNI_TO_ROS_LENGTH;
   kni_coordinates[2] = pose_out.pose.position.z / KNI_TO_ROS_LENGTH;
 
-  btScalar roll, pitch, yaw;
-  btQuaternion bt_q;
+  tfScalar roll, pitch, yaw;
+  tf::Quaternion bt_q;
   tf::quaternionMsgToTF(pose_out.pose.orientation, bt_q);
-  btMatrix3x3(bt_q).getRPY(roll, pitch,yaw);
+  tf::Matrix3x3(bt_q).getRPY(roll, pitch,yaw);
 
   EulerTransformationMatrices::zyx_to_zxz_angles(yaw, pitch, roll, kni_coordinates[3], kni_coordinates[4], kni_coordinates[5]);
 

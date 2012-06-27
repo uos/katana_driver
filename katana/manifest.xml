@@ -17,6 +17,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana</url>
   <depend package="roscpp"/>
+  <depend package="roslib"/>
   <depend package="kni"/>
   <depend package="geometry_msgs"/>
   <depend package="std_srvs"/>

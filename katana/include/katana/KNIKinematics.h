@@ -41,7 +41,7 @@
 #include <katana/KNIConverter.h>
 #include <katana/EulerTransformationMatrices.hh>
 
-#include "LinearMath/btTransform.h"
+#include "tf/LinearMath/Transform.h"
 
 namespace katana
 {
