@@ -32,7 +32,7 @@
     <quickStep>true</quickStep>
     <quickStepIters>10</quickStepIters>
     <quickStepW>0.8</quickStepW>
-    <contactMaxCorrectingVel>100.0</contactMaxCorrectingVel>
+    <contactMaxCorrectingVel>30.0</contactMaxCorrectingVel>
     <contactSurfaceLayer>0.001</contactSurfaceLayer>
     <updateRate>100000.0</updateRate>
     <maxContacts>250</maxContacts>
