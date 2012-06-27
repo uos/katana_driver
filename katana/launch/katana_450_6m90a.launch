@@ -14,10 +14,6 @@
    <param name="config_file_path" type="string" value="$(find kni)/KNI_4.3.0/configfiles450/katana6M90A_G.cfg" />
   
    <!--<param name="simulation" type="bool" value="true" /> -->
-  
-    <!-- for katana_gripper_grasp_controller -->
-    <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
-    <remap from="grasp_query_name" to="/gripper_grasp_status" />
   </node>
 
 </launch>

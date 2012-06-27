@@ -6,10 +6,6 @@
   <!-- which joints does this katana instance control? (for teleop etc.) -->
   <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
 
-  <!-- remap katana_gripper_grasp_controller topic names; this has to be stated before loading Gazebo! -->
-  <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
-  <remap from="grasp_query_name" to="/gripper_grasp_status" />
-
   <!-- load world -->
   <include file="$(find katana_arm_gazebo)/launch/grasp_world.launch" />
 

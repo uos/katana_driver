@@ -52,22 +52,22 @@ KatanaGripperGraspController::KatanaGripperGraspController(ros::NodeHandle priva
   private_nodehandle.param<double> ("gripper_object_presence_threshold", gripper_object_presence_threshold_,
                     DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD);
 
-  std::string query_service_name = root_nh.resolveName("grasp_query_name");
+  std::string query_service_name = root_nh.resolveName("gripper_grasp_status");
   query_srv_ = root_nh.advertiseService(query_service_name, &KatanaGripperGraspController::serviceCallback, this);
   ROS_INFO_STREAM("katana gripper grasp query service started on topic " << query_service_name);
 
-  std::string posture_action_name = root_nh.resolveName("posture_action_name");
+  std::string gripper_grasp_posture_controller = root_nh.resolveName("gripper_grasp_posture_controller");
   action_server_
       = new actionlib::SimpleActionServer<object_manipulation_msgs::GraspHandPostureExecutionAction>(
                                                                                                      root_nh,
-                                                                                                     posture_action_name,
+                                                                                                     gripper_grasp_posture_controller,
                                                                                                      boost::bind(
                                                                                                                  &KatanaGripperGraspController::executeCB,
                                                                                                                  this,
                                                                                                                  _1),
                                                                                                      false);
   action_server_->start();
-  ROS_INFO_STREAM("katana gripper grasp hand posture action server started on topic " << posture_action_name);
+  ROS_INFO_STREAM("katana gripper grasp hand posture action server started on topic " << gripper_grasp_posture_controller);
 }
 
 KatanaGripperGraspController::~KatanaGripperGraspController()

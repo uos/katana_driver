@@ -6,4 +6,5 @@
 
   <node name="gazebo" pkg="gazebo" type="gazebo" args="$(find katana_arm_gazebo)/worlds/grasp.world" respawn="false" output="screen" />
 
+
 </launch>

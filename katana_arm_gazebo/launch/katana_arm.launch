@@ -6,13 +6,8 @@
   <!-- which joints does this katana instance control? (for teleop etc.) -->
   <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
 
-  <!-- remap katana_gripper_grasp_controller topic names; this has to be stated before loading Gazebo! -->
-  <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
-  <remap from="grasp_query_name" to="/gripper_grasp_status" />
-
   <!-- load world -->
   <include file="$(find katana_arm_gazebo)/launch/grasp_world.launch" />
-
   <!-- push robot_description to factory and spawn robot in gazebo -->
   <!-- <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -unpause -urdf -param robot_description -model katana" respawn="false" output="screen"/> -->
   <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -urdf -param robot_description -model katana" respawn="false" output="screen"/>
