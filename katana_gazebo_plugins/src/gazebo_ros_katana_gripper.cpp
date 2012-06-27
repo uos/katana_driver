@@ -25,56 +25,24 @@
 #include <katana_gazebo_plugins/gazebo_ros_katana_gripper.h>
 #include <sensor_msgs/JointState.h>
 
-#include <gazebo/Joint.hh>
-//#include <gazebo/Body.hh>
-//#include <gazebo/Geom.hh>
-#include <gazebo/Simulator.hh>
-//#include <gazebo/Entity.hh>
-#include <gazebo/GazeboError.hh>
-#include <gazebo/ControllerFactory.hh>
-//#include <gazebo/XMLConfig.hh>
-
 #include <ros/time.h>
 
 using namespace gazebo;
 
-GZ_REGISTER_DYNAMIC_CONTROLLER("gazebo_ros_katana_gripper", GazeboRosKatanaGripper)
-
-GazeboRosKatanaGripper::GazeboRosKatanaGripper(Entity *parent) :
-    Controller(parent), publish_counter_(0)
+GazeboRosKatanaGripper::GazeboRosKatanaGripper() :
+    publish_counter_(0)
 {
-  ros::MultiThreadedSpinner s(1);
-  boost::thread spinner_thread(boost::bind(&ros::spin, s));
-
-  my_parent_ = dynamic_cast<Model*>(parent);
-
-  if (!my_parent_)
-    gzthrow("Gazebo_ROS_Katana_Gripper controller requires a Model as its parent");
-
-  Param::Begin(&this->parameters);
-  node_namespaceP_ = new ParamT<std::string>("node_namespace", "katana", 0);
-  joint_nameP_.push_back(new ParamT<std::string>("r_finger_joint", "katana_r_finger_joint", 1));
-  joint_nameP_.push_back(new ParamT<std::string>("l_finger_joint", "katana_l_finger_joint", 1));
-  torqueP_ = new ParamT<float>("max_torque", 0.5, 1);
-  Param::End();
+  this->spinner_thread_ = new boost::thread(boost::bind(&GazeboRosKatanaGripper::spin, this));
 
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
-    joints_[i] = NULL;
+    joints_[i].reset();
   }
 
 }
 
 GazeboRosKatanaGripper::~GazeboRosKatanaGripper()
 {
-  delete torqueP_;
-  delete node_namespaceP_;
-  for (size_t i = 0; i < NUM_JOINTS; ++i)
-  {
-    delete joint_nameP_[i];
-  }
-  delete rosnode_;
-
   // delete all gripper actions
   for (std::size_t i = 0; i != gripper_action_list_.size(); i++)
   {
@@ -82,19 +50,39 @@ GazeboRosKatanaGripper::~GazeboRosKatanaGripper()
     delete gripper_action_list_[i];
   }
 
+  rosnode_->shutdown();
+  this->spinner_thread_->join();
+  delete this->spinner_thread_;
+  delete rosnode_;
 }
 
-void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
+void GazeboRosKatanaGripper::Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf)
 {
-  node_namespaceP_->Load(node);
-  torqueP_->Load(node);
-  for (size_t i = 0; i < NUM_JOINTS; ++i)
+  this->my_world_ = _parent->GetWorld();
+
+  this->my_parent_ = _parent;
+  if (!this->my_parent_)
   {
-    joint_nameP_[i]->Load(node);
-    joints_[i] = my_parent_->GetJoint(**joint_nameP_[i]);
-    if (!joints_[i])
-      gzthrow("The controller couldn't get a joint");
+    ROS_FATAL("Gazebo_ROS_Create controller requires a Model as its parent");
+    return;
   }
+
+  this->node_namespace_ = "katana/";
+  if (_sdf->HasElement("robotNamespace"))
+    this->node_namespace_ = _sdf->GetElement("node_namespace")->GetValueString() + "/";
+
+  torque_ = 0.5;
+  if (_sdf->HasElement("max_torque"))
+    torque_ = _sdf->GetElement("max_torque")->GetValueDouble();
+
+  joint_names_.resize(NUM_JOINTS);
+  joint_names_[0] = "katana_r_finger_joint";
+  if (_sdf->HasElement("r_finger_joint"))
+    joint_names_[0] = _sdf->GetElement("r_finger_joint")->GetValueString();
+
+  joint_names_[1] = "katana_r_finger_joint";
+  if (_sdf->HasElement("l_finger_joint"))
+    joint_names_[1] = _sdf->GetElement("l_finger_joint")->GetValueString();
 
   if (!ros::isInitialized())
   {
@@ -104,18 +92,16 @@ void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
               ros::init_options::NoSigintHandler | ros::init_options::AnonymousName);
   }
 
-  rosnode_ = new ros::NodeHandle(**node_namespaceP_);
+  rosnode_ = new ros::NodeHandle(node_namespace_);
 
-  //  joint_state_pub_ = rosnode_->advertise<sensor_msgs::JointState> ("/joint_states", 1);
   controller_state_pub_ = rosnode_->advertise<katana_msgs::GripperControllerState>("gripper_controller_state", 1);
 
-  //  for (size_t i = 0; i < NUM_JOINTS; ++i)
-  //  {
-  //    js_.name.push_back(**joint_nameP_[i]);
-  //    js_.position.push_back(0);
-  //    js_.velocity.push_back(0);
-  //    js_.effort.push_back(0);
-  //  }
+  for (size_t i = 0; i < NUM_JOINTS; ++i)
+  {
+    joints_[i] = my_parent_->GetJoint(joint_names_[i]);
+    if (!joints_[i])
+      gzthrow("The controller couldn't get joint " << joint_names_[i]);
+  }
 
   // construct pid controller
   if (!pid_controller_.init(ros::NodeHandle(*rosnode_, "gripper_pid")))
@@ -125,9 +111,9 @@ void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
 
   // create gripper actions
   katana_gazebo_plugins::IGazeboRosKatanaGripperAction* gripper_grasp_controller_ =
-      new katana_gazebo_plugins::KatanaGripperGraspController(ros::NodeHandle(**node_namespaceP_));
+      new katana_gazebo_plugins::KatanaGripperGraspController(ros::NodeHandle(node_namespace_));
   katana_gazebo_plugins::IGazeboRosKatanaGripperAction* gripper_jt_controller_ =
-      new katana_gazebo_plugins::KatanaGripperJointTrajectoryController(ros::NodeHandle(**node_namespaceP_));
+      new katana_gazebo_plugins::KatanaGripperJointTrajectoryController(ros::NodeHandle(node_namespace_));
 
   // "register" gripper actions
   gripper_action_list_.push_back(gripper_grasp_controller_);
@@ -135,13 +121,23 @@ void GazeboRosKatanaGripper::LoadChild(XMLConfigNode *node)
 
   // set default action
   active_gripper_action_ = gripper_grasp_controller_;
-  //active_gripper_action_ = gripper_jt_controller_;
+
+  // Get the name of the parent model
+  std::string modelName = _sdf->GetParent()->GetValueString("name");
+
+  // Listen to the update event. This event is broadcast every
+  // simulation iteration.
+  this->updateConnection = event::Events::ConnectWorldUpdateStart(
+      boost::bind(&GazeboRosKatanaGripper::UpdateChild, this));
+  gzdbg << "plugin model name: " << modelName << "\n";
+
+  ROS_INFO("gazebo_ros_katana_gripper plugin initialized");
 }
 
 void GazeboRosKatanaGripper::InitChild()
 {
   pid_controller_.reset();
-  prev_update_time_ = Simulator::Instance()->GetSimTime();
+  prev_update_time_ = this->my_world_->GetSimTime();
 }
 
 void GazeboRosKatanaGripper::FiniChild()
@@ -152,8 +148,9 @@ void GazeboRosKatanaGripper::FiniChild()
 void GazeboRosKatanaGripper::UpdateChild()
 {
   // --------------- command joints  ---------------
-  Time step_time = Simulator::Instance()->GetSimTime() - prev_update_time_;
-  prev_update_time_ = Simulator::Instance()->GetSimTime();
+  common::Time time_now = this->my_world_->GetSimTime();
+  common::Time step_time = time_now - prev_update_time_;
+  prev_update_time_ = time_now;
   ros::Duration dt = ros::Duration(step_time.Double());
 
   double desired_pos[NUM_JOINTS];
@@ -175,7 +172,7 @@ void GazeboRosKatanaGripper::UpdateChild()
 
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
-    // desired_pos = 0.3 * sin(0.25 * Simulator::Instance()->GetSimTime());
+    // desired_pos = 0.3 * sin(0.25 * this->my_world_->GetSimTime());
     //if ((prev_update_time_.sec / 6) % 2 == 0)
     //  desired_pos[i] = 0.3;
     //else
@@ -189,7 +186,7 @@ void GazeboRosKatanaGripper::UpdateChild()
     joints_[i]->SetForce(0, commanded_effort[i]);
 
     // I set this every time just in case some other entity changed it
-    joints_[i]->SetMaxForce(0, **(torqueP_));
+    joints_[i]->SetMaxForce(0, torque_);
 
     // TODO: ensure that both joints are always having (approximately)
     // the same joint position, even if one is blocked by an object
@@ -274,3 +271,10 @@ void GazeboRosKatanaGripper::updateActiveGripperAction()
 
 }
 
+void GazeboRosKatanaGripper::spin()
+{
+  while (ros::ok())
+    ros::spinOnce();
+}
+
+GZ_REGISTER_MODEL_PLUGIN(GazeboRosKatanaGripper);

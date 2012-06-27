@@ -30,25 +30,26 @@
 #include <katana_gazebo_plugins/katana_gripper_grasp_controller.h>
 #include <katana_gazebo_plugins/katana_gripper_joint_trajectory_controller.h>
 
-#include <gazebo/Controller.hh>
-#include <gazebo/Model.hh>
+#include <common/Plugin.hh>
+#include <common/Time.hh>
+#include <common/Events.hh>
+#include <physics/physics.h>
 
-// #include <sensor_msgs/JointState.h>
 #include <katana_msgs/GripperControllerState.h>
 #include <control_toolbox/pid.h>
 #include <ros/ros.h>
 
-
+#include <boost/thread.hpp>
 
 namespace gazebo
 {
-class GazeboRosKatanaGripper : public Controller
+class GazeboRosKatanaGripper : public ModelPlugin
 {
 public:
-  GazeboRosKatanaGripper(gazebo::Entity *parent);
+  GazeboRosKatanaGripper();
   virtual ~GazeboRosKatanaGripper();
 
-  virtual void LoadChild(XMLConfigNode *node);
+  virtual void Load(physics::ModelPtr _parent, sdf::ElementPtr _sdf);
   virtual void InitChild();
   virtual void FiniChild();
   virtual void UpdateChild();
@@ -64,27 +65,34 @@ private:
   //  ros::Publisher joint_state_pub_;
   ros::Publisher controller_state_pub_;
 
-  ParamT<std::string> *node_namespaceP_;
-  std::vector<ParamT<std::string> *> joint_nameP_;
+  std::string node_namespace_;
+  std::vector<std::string> joint_names_;
 
   ///Torque applied to the joints
-  ParamT<float> *torqueP_;
+  float torque_;
 
-  Model *my_parent_;
+  physics::WorldPtr my_world_;
+  physics::ModelPtr my_parent_;
 
   control_toolbox::Pid pid_controller_;
 
-  Joint *joints_[NUM_JOINTS];
+  physics::JointPtr joints_[NUM_JOINTS];
 
   // sensor_msgs::JointState js_;
 
   // Simulation time of the last update
-  Time prev_update_time_;
+  common::Time prev_update_time_;
+
+  // Pointer to the update event connection
+  event::ConnectionPtr updateConnection;
 
   katana_gazebo_plugins::IGazeboRosKatanaGripperAction* active_gripper_action_;
   std::vector<katana_gazebo_plugins::IGazeboRosKatanaGripperAction*> gripper_action_list_;
 
   short publish_counter_;
+
+  void spin();
+  boost::thread *spinner_thread_;
 };
 }
 #endif

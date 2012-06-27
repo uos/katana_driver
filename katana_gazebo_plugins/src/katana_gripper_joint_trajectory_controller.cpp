@@ -65,7 +65,7 @@ KatanaGripperJointTrajectoryController::KatanaGripperJointTrajectoryController(r
 
   action_server_->start();
   ROS_INFO(
-      "katana gripper joint trajctory action server started on topic katana_arm_controller/gripper_joint_trajectory_action");
+      "katana gripper joint trajectory action server started on topic katana_arm_controller/gripper_joint_trajectory_action");
 
 }
 
