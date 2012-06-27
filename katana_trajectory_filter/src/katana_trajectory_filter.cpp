@@ -53,7 +53,7 @@ template<typename T>
 template<typename T>
   bool KatanaTrajectoryFilter<T>::smooth(const T& trajectory_in, T& trajectory_out) const
   {
-    size_t num_points = trajectory_in.trajectory.points.size();
+    size_t num_points = trajectory_in.request.trajectory.points.size();
     trajectory_out = trajectory_in;
 
     if (!spline_smoother::checkTrajectoryConsistency(trajectory_out))
@@ -75,14 +75,14 @@ template<typename T>
         break;
 
       remove_smallest_segments(trajectory_mid, trajectory_out, num_points_delete);
-      num_points = trajectory_out.trajectory.points.size();
+      num_points = trajectory_out.request.trajectory.points.size();
     }
 
     // delete all velocities and accelerations so they will be re-computed by Katana
-    for (size_t i = 0; i < trajectory_out.trajectory.points.size(); ++i)
+    for (size_t i = 0; i < trajectory_out.request.trajectory.points.size(); ++i)
     {
-      trajectory_out.trajectory.points[i].velocities.resize(0);
-      trajectory_out.trajectory.points[i].accelerations.resize(0);
+      trajectory_out.request.trajectory.points[i].velocities.resize(0);
+      trajectory_out.request.trajectory.points[i].accelerations.resize(0);
     }
 
     return true;
@@ -92,14 +92,14 @@ template<typename T>
   void KatanaTrajectoryFilter<T>::remove_smallest_segments(const T& trajectory_in, T& trajectory_out,
                                                            const size_t num_points_delete) const
   {
-    size_t num_points = trajectory_in.trajectory.points.size();
+    size_t num_points = trajectory_in.request.trajectory.points.size();
     std::vector<std::pair<size_t, double> > segment_durations(num_points - 1);
 
     // calculate segment_durations
     for (size_t i = 0; i < num_points - 1; ++i)
     {
-      double duration = (trajectory_in.trajectory.points[i + 1].time_from_start
-          - trajectory_in.trajectory.points[i].time_from_start).toSec();
+      double duration = (trajectory_in.request.trajectory.points[i + 1].time_from_start
+          - trajectory_in.request.trajectory.points[i].time_from_start).toSec();
 
       segment_durations[i] = std::pair<size_t, double>(i, duration);
     }
@@ -145,13 +145,13 @@ template<typename T>
     for (std::set<size_t>::iterator it = delete_set.begin(); it != delete_set.end(); it++)
       ROS_DEBUG("delete set entry: %zu", *it);
 
-    trajectory_out.trajectory.points.resize(0);
+    trajectory_out.request.trajectory.points.resize(0);
     for (size_t i = 0; i < num_points; i++)
     {
       if (delete_set.find(i) == delete_set.end())
       {
         // segment i is not in the delete set --> copy
-        trajectory_out.trajectory.points.push_back(trajectory_in.trajectory.points[i]);
+        trajectory_out.request.trajectory.points.push_back(trajectory_in.request.trajectory.points[i]);
       }
     }
   }
@@ -159,6 +159,5 @@ template<typename T>
 } // namespace katana_trajectory_filter
 
 //  PLUGINLIB_DECLARE_CLASS(package, class_name, class_type, filters::FilterBase<T>)
-PLUGINLIB_DECLARE_CLASS(katana_trajectory_filter, KatanaTrajectoryFilterFilterJointTrajectory, katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::FilterJointTrajectory::Request>, filters::FilterBase<arm_navigation_msgs::FilterJointTrajectory::Request>)
-PLUGINLIB_DECLARE_CLASS(katana_trajectory_filter, KatanaTrajectoryFilterJointTrajectoryWithLimits, katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::JointTrajectoryWithLimits>, filters::FilterBase<arm_navigation_msgs::JointTrajectoryWithLimits>)
-PLUGINLIB_DECLARE_CLASS(katana_trajectory_filter, KatanaTrajectoryFilterFilterJointTrajectoryWithConstraints, katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::FilterJointTrajectoryWithConstraints::Request>, filters::FilterBase<arm_navigation_msgs::FilterJointTrajectoryWithConstraints::Request>)
+PLUGINLIB_DECLARE_CLASS(katana_trajectory_filter, KatanaTrajectoryFilterFilterJointTrajectory, katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::FilterJointTrajectory>, filters::FilterBase<arm_navigation_msgs::FilterJointTrajectory>)
+PLUGINLIB_DECLARE_CLASS(katana_trajectory_filter, KatanaTrajectoryFilterFilterJointTrajectoryWithConstraints, katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::FilterJointTrajectoryWithConstraints>, filters::FilterBase<arm_navigation_msgs::FilterJointTrajectoryWithConstraints>)

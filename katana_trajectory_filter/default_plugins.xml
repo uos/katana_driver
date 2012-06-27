@@ -1,23 +1,16 @@
 <class_libraries>
   <library path="lib/libkatana_trajectory_filter">
-    <class name="katana_trajectory_filter/KatanaTrajectoryFilterFilterJointTrajectory" type="katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::FilterJointTrajectory::Request>"
-	    base_class_type="filters::FilterBase<arm_navigation_msgs::FilterJointTrajectory::Request>">
+    <class name="katana_trajectory_filter/KatanaTrajectoryFilterFilterJointTrajectory" type="katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::FilterJointTrajectory>"
+	    base_class_type="filters::FilterBase<arm_navigation_msgs::FilterJointTrajectory>">
       <description>
-          TODO
+          Reduces the number of segments in a trajectory to at most 16 (the maximum supported by the Katana arm).
       </description>
     </class>
 
-    <class name="katana_trajectory_filter/KatanaTrajectoryFilterJointTrajectoryWithLimits" type="katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::JointTrajectoryWithLimits>"
-	    base_class_type="filters::FilterBase<arm_navigation_msgs::JointTrajectoryWithLimits>">
+    <class name="katana_trajectory_filter/KatanaTrajectoryFilterFilterJointTrajectoryWithConstraints" type="katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::FilterJointTrajectoryWithConstraints>"
+	    base_class_type="filters::FilterBase<arm_navigation_msgs::FilterJointTrajectoryWithConstraints>">
       <description>
-          TODO
-      </description>
-    </class>
-
-    <class name="katana_trajectory_filter/KatanaTrajectoryFilterFilterJointTrajectoryWithConstraints" type="katana_trajectory_filter::KatanaTrajectoryFilter<arm_navigation_msgs::FilterJointTrajectoryWithConstraints::Request>"
-	    base_class_type="filters::FilterBase<arm_navigation_msgs::FilterJointTrajectoryWithConstraints::Request>">
-      <description>
-          TODO
+          Reduces the number of segments in a trajectory to at most 16 (the maximum supported by the Katana arm).
       </description>
     </class>
   </library>
