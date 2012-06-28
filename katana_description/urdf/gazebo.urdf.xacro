@@ -30,43 +30,43 @@
 
   <!-- *************** links *************** -->
   <gazebo reference="katana_base_link">
-    <material value="PR2/Grey1" />
+    <material value="Gazebo/Grey" />
   </gazebo>
 
   <gazebo reference="katana_motor1_pan_link">
-    <material value="PR2/Grey1" />
+    <material value="Gazebo/Grey" />
     <turnGravityOff>true</turnGravityOff>
   </gazebo>
 
   <gazebo reference="katana_motor2_lift_link">
-    <material value="PR2/Grey1" />
+    <material value="Gazebo/Grey" />
     <turnGravityOff>true</turnGravityOff>
   </gazebo>
 
   <gazebo reference="katana_motor3_lift_link">
-    <material value="PR2/Grey1" />
+    <material value="Gazebo/Grey" />
     <turnGravityOff>true</turnGravityOff>
   </gazebo>
 
   <gazebo reference="katana_motor4_lift_link">
-    <material value="PR2/Grey1" />
+    <material value="Gazebo/Grey" />
     <turnGravityOff>true</turnGravityOff>
   </gazebo>
 
   <gazebo reference="katana_motor5_wrist_roll_link">
-    <material value="PR2/Grey1" />
+    <material value="Gazebo/Grey" />
     <turnGravityOff>true</turnGravityOff>
   </gazebo>
 
   <gazebo reference="katana_gripper_link">
-    <material value="PR2/Grey1" />
+    <material value="Gazebo/Grey" />
     <turnGravityOff>true</turnGravityOff>
   </gazebo>
 
   <xacro:macro name="gazebo_finger_link" params="prefix">
     <!-- TODO: set friction parameters (mu1, mu2, kp, kd) for fingers (see PR2 gripper.gazebo.xacro) -->
     <gazebo reference="katana_${prefix}_finger_link">
-      <material value="PR2/Grey1" />
+      <material value="Gazebo/Grey" />
       <turnGravityOff>true</turnGravityOff>
     </gazebo>
   </xacro:macro>

@@ -38,6 +38,6 @@
   </joint>
   
   <gazebo reference="katana_internal_controlbox_link">
-    <material value="PR2/Grey1" />
+    <material value="Gazebo/Grey" />
   </gazebo>
 </robot>
