@@ -183,14 +183,18 @@ void GazeboRosKatanaGripper::UpdateChild()
 
     commanded_effort[i] = pid_controller_.updatePid(actual_pos[i] - desired_pos[i], joints_[i]->GetVelocity(0), dt);
 
-    joints_[i]->SetForce(0, commanded_effort[i]);
+    if (commanded_effort[i] > torque_)
+      commanded_effort[i] = torque_;
+    else if (commanded_effort[i] < -torque_)
+      commanded_effort[i] = -torque_;
 
-    // I set this every time just in case some other entity changed it
-    joints_[i]->SetMaxForce(0, torque_);
+    joints_[i]->SetForce(0, commanded_effort[i]);
 
     // TODO: ensure that both joints are always having (approximately)
     // the same joint position, even if one is blocked by an object
   }
+  if (fabs(commanded_effort[0]) > 0.001)
+    ROS_DEBUG("efforts: r %f, l %f (max: %f)", commanded_effort[0], commanded_effort[1], torque_);
 
   // --------------- update gripper_grasp_controller  ---------------
   for (size_t i = 0; i < NUM_JOINTS; ++i)
