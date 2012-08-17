@@ -104,7 +104,7 @@ foreach(it ${katana_stl_files})
       OUTPUT ${basepath}/convex/${basename}_convex.stl
       COMMAND ${CMAKE_COMMAND}
       ARGS -E copy_if_different ${basepath}/convex/${basename}_convex.stlb ${basepath}/convex/${basename}_convex.stl
-      DEPENDS )
+      DEPENDS ${basepath}/convex/${basename}_convex.stlb)
 
     set(katana_gen_files ${katana_gen_files} ${basepath}/convex/${basename}_convex.stl)
 
