@@ -1,9 +1,8 @@
 <?xml version="1.0"?>
 <launch>
-  <!-- send coke_can.urdf to param server -->
-  <param name="object_description" textfile="$(find katana_arm_gazebo)/urdf/coke_can.urdf" />
-
   <!-- push object_description to factory and spawn in gazebo -->
-  <node name="spawn_object" pkg="gazebo" type="spawn_model" args="-urdf -param object_description -x -0.40 -y 0.005 -z 0.30 -model object_1" respawn="false" output="screen" /> 
+  <node name="spawn_cokecan1" pkg="gazebo" type="spawn_model" args="-urdf -file
+    $(find katana_arm_gazebo)/urdf/coke_can.urdf -model cokecan_1 -wait
+    'table_1' -x 0.35 -z 0.35 -y -0.20" respawn="false" output="screen" />
 </launch>
 

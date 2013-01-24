@@ -1,40 +1,28 @@
-<?xml version="1.0"?>
 <robot name="coke_can_model">
-  <!-- 
-  <link name="world"/>
-  <joint name="coke_can" type="floating" >
-    <axis xyz="0 0 1" />
-    <parent link="world" />
-    <child link="coke_can" />
-    <origin xyz="0 0 0" rpy="0 0 0" />
-  </joint>
-  -->
   <link name="coke_can">
     <inertial>
       <mass value="0.1" />
       <!-- center of mass (com) is defined w.r.t. link local coordinate system -->
       <origin xyz="0 0 0.06" /> 
-      <inertia  ixx="0.0001" ixy="0.0"  ixz="0.0"  iyy="0.0001"  iyz="0.0"  izz="0.0001" />
+      <inertia  ixx="0.000155983" ixy="0.0"  ixz="0.0"  iyy="0.000155983"  iyz="0.0"  izz="0.0000561125" />
     </inertial>
     <visual>
       <!-- visual origin is defined w.r.t. link local coordinate system -->
-      <origin xyz="0 0 -0.18" rpy="0 0 0" />
+      <origin xyz="0 0 -0.1825" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://katana_arm_gazebo/meshes/coke_can.dae" scale="0.001 0.001 0.001" />
       </geometry>
     </visual>
     <collision>
       <!-- collision origin is defined w.r.t. link local coordinate system -->
-      <origin xyz="0 0 -0.18" rpy="0 0 0" />
+      <origin xyz="0 0 -0.1825" rpy="0 0 0" />
       <geometry>
         <mesh filename="package://katana_arm_gazebo/meshes/coke_can.dae" scale="0.001 0.001 0.001" />
       </geometry>
     </collision>
   </link>
   <gazebo reference="coke_can">
-    <turnGravityOff>true</turnGravityOff>
-    <genTexCoord>true</genTexCoord>
-    <kp>100000000.0</kp>
-    <kd>10000000.0</kd>
+    <material>Gazebo/Red</material>
+    <turnGravityOff>false</turnGravityOff>
   </gazebo>
 </robot>
