@@ -22,9 +22,17 @@
       <updateRate>1000.0</updateRate>
       <max_torque>0.5</max_torque>
     </controller:gazebo_ros_katana_gripper>
+
+    <!-- a formal implementation of grasp hack in gazebo with fixed joint -->
+    <gripper name="katana_gripper_grasp_hack">
+      <grasp_check attach_steps="20" detach_steps="40" min_contact_count="2" />
+      <gripper_link>katana_r_finger_link</gripper_link>
+      <gripper_link>katana_l_finger_link</gripper_link>
+      <palm_link>katana_gripper_link</palm_link>
+    </gripper>
   </gazebo>
 
-  
+
   <!-- NOTE: all gazebo extensions are listed here: simulator_gazebo/gazebo/src/urdf2gazebo.cpp -->
   <!-- all materials are listed here: simulator_gazebo/gazebo/gazebo/share/gazebo/Media/materials/ -->
 
