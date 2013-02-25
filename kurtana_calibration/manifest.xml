@@ -9,6 +9,11 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/kurtana_calibration</url>
 
+  <depend package="rospy"/>
+  <depend package="sensor_msgs"/>
+  <depend package="actionlib"/>
+  <depend package="katana_msgs"/>
+
 </package>
 
 
