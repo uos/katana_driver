@@ -1,0 +1,14 @@
+<package>
+  <description brief="kurtana_calibration">
+
+     kurtana_calibration
+
+  </description>
+  <author>mgoerner</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/kurtana_calibration</url>
+
+</package>
+
+
