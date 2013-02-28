@@ -11,7 +11,7 @@ import actionlib
 import katana_msgs.msg
 import sensor_msgs.msg
 
-def dance(amplitude):
+def dance(amplitude, dwell):
 	client = actionlib.SimpleActionClient('katana_arm_controller/joint_movement_action', katana_msgs.msg.JointMovementAction)
 	rospy.loginfo('Waiting for server');
 	client.wait_for_server()
@@ -24,7 +24,8 @@ def dance(amplitude):
 
 		client.send_goal(goal)
 		client.wait_for_result()
-		sleep(1)
+		rospy.loginfo('dwelling for %d seconds' % dwell)
+		sleep(dwell)
 		i+= 1
 
 	return client.get_result()
@@ -33,14 +34,15 @@ def dance(amplitude):
 if __name__ == '__main__':
 	rospy.init_node('dance')
 	try:
-		if len(argv) > 1:
+		g= 1.0
+		d= 1.0
+		if len(argv) > 1 and float(argv[1]) <= 1.5:
 			g= float(argv[1])
-		else:
-			g= 1.0
-			rospy.loginfo("no amplitude specified, using 1.0")
+		if len(argv) > 2:
+			d= float(argv[2])
 		if g > 1.5:
 			g= 1.0
 			rospy.loginfo("invalid amplitude specified, reset to %f" % g)
-		dance(g)
+		dance(g, d)
 	except rospy.ROSInterruptException:
 		print("program interrupted")
