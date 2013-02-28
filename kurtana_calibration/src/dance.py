@@ -33,9 +33,12 @@ def dance(amplitude):
 if __name__ == '__main__':
 	rospy.init_node('dance')
 	try:
-		g= float(argv[1])
-		rospy.loginfo("%f" % g)
-		if g < .1 or g > 1.5:
+		if len(argv) > 1:
+			g= float(argv[1])
+		else:
+			g= 1.0
+			rospy.loginfo("no amplitude specified, using 1.0")
+		if g > 1.5:
 			g= 1.0
 			rospy.loginfo("invalid amplitude specified, reset to %f" % g)
 		dance(g)
