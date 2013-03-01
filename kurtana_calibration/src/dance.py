@@ -24,7 +24,6 @@ def dance(amplitude, dwell):
 
 		client.send_goal(goal)
 		client.wait_for_result()
-		rospy.loginfo('dwelling for %d seconds' % dwell)
 		sleep(dwell)
 		i+= 1
 
