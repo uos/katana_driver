@@ -16,12 +16,20 @@ import ar_pose.msg
 SAMPLES_REQUIRED= 300
 TIMEOUT=20
 
+JOINTS=['katana_motor1_pan_joint', 'katana_motor2_lift_joint', 'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint']
+
 class Dance:
 	def __init__(self):
 		self.poses= [
-			JointState(name=['katana_motor1_pan_joint'], position=[+1.0]),
-			JointState(name=['katana_motor1_pan_joint'], position=[ 0.0]),
-			JointState(name=['katana_motor1_pan_joint'], position=[-1.0])
+[-0.01794416637206675, 0.46678736756758066, 0.2247587731583578, 0.015108006337576363, -2.93629830032396, 0.288538653240145, 0.288538653240145],
+[1.0813678254582992, 0.48696479679906823, 0.029335409388473455, 0.001977130793274995, -2.9740955869374623, 0.288538653240145, 0.288538653240145],
+[1.1280008414100227, 0.8737098829868617, 0.06969026785144905, 0.06125014843717658, -2.974218305400493, 0.288538653240145, 0.288538653240145],
+[0.12858167848676993, 0.5102515347973753, 0.0707487559422808, 0.1001519012179557, -2.974218305400493, 0.288538653240145, 0.288538653240145],
+[-0.6489625032767043, 0.3529998978031257, 0.07961359370300025, 0.002099849256305575, -2.974218305400493, 0.288538653240145, 0.288538653240145],
+[-1.3311544392652064, 0.6062431735347151, 0.32557976381011855, 0.288647460433344, -2.974218305400493, 0.288538653240145, 0.288538653240145],
+[-0.8296040808581173, 0.8704021077030113, 0.1582063344472866, 0.07057675162752108, -2.9740955869374623, 0.288538653240145, 0.288538653240145],
+[-0.0875255349105597, 1.8144411737139265, -0.8603238309559407, 0.3827725215780067, -2.968573256101074, 0.288538653240145, 0.288538653240145],
+#[-2.9633099975755286, 2.1502465205304233, -2.1675566231336343, -1.9598002192179138, -2.9318804356548496, 0.288538653240145, 0.288538653240145]
 		]
 		self.i= 0
 		self.hopping= False
@@ -29,15 +37,27 @@ class Dance:
 		self.client.wait_for_server()
 		# rospy.loginfo('dancer connected')
 
-	def hop(self):
-		self.i= (self.i+1) % len(self.poses)
+	def hop(self, pose=0, noreset= False):
+		if pose == 0:
+			self.i= (self.i+1) % len(self.poses)
+			goal= JointMovementGoal( jointGoal= JointState(name=JOINTS, position=self.poses[self.i]) )
+		else:
+			goal= JointMovementGoal( jointGoal= JointState(name=JOINTS, position=pose) )
+
 		self.hopping= True
-		self.client.send_goal(JointMovementGoal(jointGoal= self.poses[self.i]))
+		self.client.send_goal(goal)
 		self.client.wait_for_result()
 		self.hopping= False
-		transform.reset()
+		if not noreset:
+			transform.reset()
 		return self.client.get_result()
-
+	def setup(self):
+		self.hop([-2.9633099975755286, 2.1502465205304233, -2.1675566231336343, -1.9598002192179138, -2.9318804356548496, 0.288538653240145, 0.288538653240145],
+			noreset= True)
+		self.hop([0.07495371014228791, 2.0798570624900856, -2.2076468595739014, -1.9262980788104915, -2.9904171425205655, 0.288538653240145, 0.288538653240145],
+			noreset= True)
+		self.hop([0.00684496316016503, 1.1636033088635143, -0.1504752550416364, -0.2234566857943987, -2.9902944240575344, 0.288538653240145, 0.288538653240145],
+			noreset= True)
 
 class TransformBuffer:
 	def __init__(self):
@@ -84,6 +104,7 @@ if __name__ == '__main__':
 	broadcaster= tf.TransformBroadcaster()
 
 	r= rospy.Rate(10)
+	dance.setup()
 	while not rospy.is_shutdown():
 		try:
 			t= transform.getTransform()
