@@ -113,11 +113,14 @@ if __name__ == '__main__':
 			# ignore failing getTransforms
 			1
 
-		if transform.samples > SAMPLES_REQUIRED:
+		if transform.samples >= SAMPLES_REQUIRED:
 			rospy.loginfo(t)
-			rospy.loginfo('position should be stable, moving on...')
+			rospy.loginfo('averaged over %d samples, moving on' % SAMPLES_REQUIRED)
 			dance.hop()
 		elif rospy.get_time() - transform.last_reset > TIMEOUT:
-			rospy.logwarn('could not fixate marker, ignoring position')
+			if transform.samples > 0:
+				rospy.logwarn('found only %d samples, but %d are required. Ignoring position!' % (transform.samples, SAMPLES_REQUIRED) )
+			else:
+				rospy.logwarn('could not detect marker! Ignoring position!')
 			dance.hop()
 		r.sleep()
