@@ -31,14 +31,14 @@ class Dance:
 [-0.09, 1.81,-0.86, 0.38, -2.97, 0.29, 0.29],
 #[-2.9633099975755286, 2.1502465205304233, -2.1675566231336343, -1.9598002192179138, -2.9318804356548496, 0.288538653240145, 0.288538653240145]
 		]
-		self.i= 0
+		self.i= -1
 		self.hopping= False
 		self.client= SimpleActionClient('katana_arm_controller/joint_movement_action', JointMovementAction)
 		self.client.wait_for_server()
 		# rospy.loginfo('dancer connected')
 
-	def hop(self, pose=0, noreset= False):
-		if pose == 0:
+	def hop(self, pose= None, noreset= False):
+		if pose == None:
 			self.i= (self.i+1) % len(self.poses)
 			goal= JointMovementGoal( jointGoal= JointState(name=JOINTS, position=self.poses[self.i]) )
 		else:
@@ -55,13 +55,13 @@ class Dance:
 			transform.reset()
 		return self.client.get_result()
 	def setup(self):
-
 		self.hop(JointState(
 			name= ['katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint'],
 			position= [-2.18, -2.02, -2.96, 0.28, 0.28]
 		), noreset= True)
 		self.hop( JointState(name= ['katana_motor2_lift_joint'], position= [2.16]), noreset= True )
-		self.hop( JointState(name= ['katana_motor1_pan_joint'], position= [0.00]), noreset=True )
+		self.hop( JointState(name= ['katana_motor1_pan_joint'], position= [0.00]), noreset= True )
+		self.hop(noreset= True)
 
 class TransformBuffer:
 	def __init__(self):
