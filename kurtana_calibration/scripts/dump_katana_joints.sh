@@ -1,6 +1,7 @@
 #!/bin/bash
 
 joints(){
+# rostopic echo -n1 /katana_joint_states does the same
 tmp=$(mktemp)
 rostopic echo /joint_states -n1 | egrep '(name|position)' | cut -d':' -f2 > $tmp
 
