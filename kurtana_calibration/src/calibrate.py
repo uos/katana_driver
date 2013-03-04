@@ -6,6 +6,7 @@ import rospy
 import tf
 from tf.transformations import quaternion_slerp
 
+from geometry_msgs.msg import Point, Quaternion, Pose, PoseStamped
 from sensor_msgs.msg import JointState
 from katana_msgs.msg import JointMovementAction, JointMovementGoal
 
@@ -63,6 +64,7 @@ class Dance:
 		self.hop( JointState(name= ['katana_motor1_pan_joint'], position= [0.00]), noreset= True )
 		self.hop(noreset= True)
 
+
 class TransformBuffer:
 	def __init__(self):
 		self.reset()
@@ -93,8 +95,15 @@ class TransformBuffer:
 			try:
 				self.listener.waitForTransform('/katana_pattern_seen', '/kinect_link', msg.header.stamp, rospy.Duration(2.0))
 				transform= self.listener.lookupTransform('/katana_pattern_seen', '/kinect_link', msg.header.stamp)
-				self.addTransform(transform)
-				# rospy.loginfo('new transform added')
+
+				# it's not beautiful, but transformPose expects a PoseStamped object
+				pose= PoseStamped( msg.header, Pose(Point(*(transform[0])), Quaternion(*(transform[1]))) )
+				pose.header.frame_id= '/katana_pattern'
+				base_transform= self.listener.transformPose('/base_link', pose)
+
+				p= base_transform.pose.position
+				r= base_transform.pose.orientation
+				self.addTransform(((p.x,p.y,p.z),(r.x, r.y, r.z, r.w)))
 			except tf.Exception, e:
 				rospy.loginfo('no transform /katana_pattern_seen -> /kinect_link available')
 
@@ -112,7 +121,7 @@ if __name__ == '__main__':
 	while not rospy.is_shutdown():
 		try:
 			t= transform.getTransform()
-			broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/katana_pattern')
+			broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/base_link')
 		except Exception, e:
 			# ignore failing getTransforms
 			1
