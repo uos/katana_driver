@@ -71,6 +71,8 @@ class Dance:
 	def setup(self):
 		"""Get as safe as possible to the first stance"""
 
+		self.old_pose= rospy.wait_for_message('/katana_joint_states', JointState, 2.0)
+
 		self.hop(JointState(
 			name= ['katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint'],
 			position= [-2.18, -2.02, -2.96, 0.28, 0.28]
@@ -79,6 +81,22 @@ class Dance:
 		self.hop( JointState(name= ['katana_motor1_pan_joint'], position= [0.00]), noreset= True )
 		self.hop(noreset= True)
 
+	def restoreOldPose(self):
+		"""This restores the pose of the arm before setup() was called"""
+		self.hop( JointState(name= JOINTS, position= [0.00, 2.16, -2.18, -2.02, -2.96, 0.28, 0.28]), noreset= True )
+		self.hop( JointState(name= ['katana_motor1_pan_joint'], position= [self.old_pose.position[self.old_pose.name.index('katana_motor1_pan_joint')]]), noreset= True)
+		self.hop( JointState(name= ['katana_motor2_lift_joint'], position= [self.old_pose.position[self.old_pose.name.index('katana_motor2_lift_joint')]]), noreset= True)
+		self.hop( JointState(name=[
+			'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint'
+			],
+			position= [
+				self.old_pose.position[self.old_pose.name.index('katana_motor3_lift_joint')],
+				self.old_pose.position[self.old_pose.name.index('katana_motor4_lift_joint')],
+				self.old_pose.position[self.old_pose.name.index('katana_motor5_wrist_roll_joint')],
+				self.old_pose.position[self.old_pose.name.index('katana_r_finger_joint')],
+				self.old_pose.position[self.old_pose.name.index('katana_l_finger_joint')]
+			]
+		) )
 
 class TransformBuffer:
 	"""Accumulate poses of the camera as average"""
@@ -157,3 +175,4 @@ if __name__ == '__main__':
 				rospy.logwarn('could not detect marker! Ignoring position!')
 			dance.hop()
 		r.sleep()
+	dance.restoreOldPose()
