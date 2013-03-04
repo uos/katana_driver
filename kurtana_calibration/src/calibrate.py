@@ -28,6 +28,8 @@ class LastHopReachedException(CalibrateException):
 
 
 class Dance:
+	"""Move Katana arm around in a given fashion"""
+
 	def __init__(self):
 		self.poses= [
 [-0.02, 0.47, 0.22, 0.02, -2.94, 0.29, 0.29],
@@ -38,15 +40,18 @@ class Dance:
 [-1.33, 0.61, 0.33, 0.29, -2.97, 0.29, 0.29],
 [-0.83, 0.87, 0.16, 0.07, -2.97, 0.29, 0.29],
 [-0.09, 1.81,-0.86, 0.38, -2.97, 0.29, 0.29],
-#[-2.9633099975755286, 2.1502465205304233, -2.1675566231336343, -1.9598002192179138, -2.9318804356548496, 0.288538653240145, 0.288538653240145]
 		]
 		self.i= -1
 		self.hopping= False
 		self.client= SimpleActionClient('katana_arm_controller/joint_movement_action', JointMovementAction)
 		self.client.wait_for_server()
-		# rospy.loginfo('dancer connected')
 
 	def hop(self, pose= None, noreset= False):
+		"""Hop to next stance of the dance
+
+		pose - JointState, optional. If given, this pose will be taken instead of the next one
+		noreset - Boolean, optional. If True, don't reset the PoseBuffer during movement
+		"""
 		if pose == None:
 			if self.i+1 >= len(self.poses):
 				raise LastHopReachedException()
@@ -61,12 +66,13 @@ class Dance:
 		self.client.send_goal(goal)
 		self.client.wait_for_result()
 		self.hopping= False
-		rospy.loginfo('finished hopping, reset transformbuffer')
 		if not noreset:
 			transform.reset()
 		return self.client.get_result()
 
 	def setup(self):
+		"""Get as safe as possible to the first stance"""
+
 		self.hop(JointState(
 			name= ['katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint'],
 			position= [-2.18, -2.02, -2.96, 0.28, 0.28]
@@ -77,12 +83,15 @@ class Dance:
 
 
 class TransformBuffer:
+	"""Accumulate poses of the camera as average"""
+
 	def __init__(self):
 		self.reset()
 		self.listener= tf.TransformListener()
 		rospy.Subscriber('/ar_pose_markers', ar_pose.msg.ARMarkers, self.update_cb)
 
 	def addTransform(self, transform):
+		"""add new transform to current average"""
 		self.samples+= 1
 		factor= float(self.samples-1)/(self.samples)
 		self.translation= tuple(map(lambda x,y: factor*x + (1-factor)*y, self.translation, transform[0]))
@@ -133,7 +142,7 @@ if __name__ == '__main__':
 		try:
 			t= transform.getTransform()
 			broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/base_link')
-		except NoTransformCachedException, e:
+		except NoTransformCachedException:
 			pass
 
 		if transform.samples >= SAMPLES_REQUIRED:
