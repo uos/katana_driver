@@ -83,16 +83,16 @@ class TransformBuffer:
 		self.last_reset= rospy.get_time()
 
 	def update_cb(self, msg):
-		if dance.hopping:
-			self.reset()
-		try:
-			transform= self.listener.lookupTransform('/katana_pattern_seen', '/kinect_link', rospy.Time(0))
-			self.addTransform(transform)
-			# rospy.loginfo('new transform added')
-		except tf.Exception, e:
-			1
-			# rospy.loginfo('no transform /katana_pattern_seen -> /kinect_link available')
-
+		if len(msg.markers) > 0:
+			if dance.hopping:
+				self.reset()
+			try:
+				self.listener.waitForTransform('/katana_pattern_seen', '/kinect_link', msg.header.stamp, rospy.Duration(2.0))
+				transform= self.listener.lookupTransform('/katana_pattern_seen', '/kinect_link', msg.header.stamp)
+				self.addTransform(transform)
+				# rospy.loginfo('new transform added')
+			except tf.Exception, e:
+				rospy.loginfo('no transform /katana_pattern_seen -> /kinect_link available')
 
 
 if __name__ == '__main__':
