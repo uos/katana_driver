@@ -19,6 +19,14 @@ TIMEOUT=20
 
 JOINTS=['katana_motor1_pan_joint', 'katana_motor2_lift_joint', 'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint']
 
+class CalibrateException(Exception):
+	pass
+class NoTransformCachedException(CalibrateException):
+	pass
+class LastHopReachedException(CalibrateException):
+	pass
+
+
 class Dance:
 	def __init__(self):
 		self.poses= [
@@ -40,6 +48,8 @@ class Dance:
 
 	def hop(self, pose= None, noreset= False):
 		if pose == None:
+			if self.i+1 >= len(self.poses):
+				raise LastHopReachedException()
 			self.i= (self.i+1) % len(self.poses)
 			goal= JointMovementGoal( jointGoal= JointState(name=JOINTS, position=self.poses[self.i]) )
 		else:
@@ -55,6 +65,7 @@ class Dance:
 		if not noreset:
 			transform.reset()
 		return self.client.get_result()
+
 	def setup(self):
 		self.hop(JointState(
 			name= ['katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint'],
@@ -79,7 +90,7 @@ class TransformBuffer:
 
 	def getTransform(self):
 		if self.samples == 0:
-			raise Exception("no transform available")
+			raise NoTransformCachedException()
 		return (self.translation, self.rotation)
 
 	def reset(self):
@@ -122,14 +133,16 @@ if __name__ == '__main__':
 		try:
 			t= transform.getTransform()
 			broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/base_link')
-		except Exception, e:
-			# ignore failing getTransforms
-			1
+		except NoTransformCachedException, e:
+			pass
 
 		if transform.samples >= SAMPLES_REQUIRED:
 			rospy.loginfo(t)
 			rospy.loginfo('averaged over %d samples, moving on' % SAMPLES_REQUIRED)
-			dance.hop()
+			try:
+				dance.hop()
+			except LastHopReachedException:
+				break
 		elif rospy.get_time() - transform.last_reset > TIMEOUT:
 			if transform.samples > 0:
 				rospy.logwarn('found only %d samples, but %d are required. Ignoring position!' % (transform.samples, SAMPLES_REQUIRED) )
