@@ -9,7 +9,7 @@ tmp2=$(mktemp)
 head -n1 $tmp | sed -e "s: \['::; s:'\]::; s:', ':\n:g" > $tmp2
 
 tmp3=$(mktemp)
-tail -n1 $tmp | sed -e "s: \[::; s:\]::; s:, :\n:g" | paste -d' ' $tmp2 - | grep katana | sort > $tmp3
+tail -n1 $tmp | sed -e "s: \[::; s:\]::; s:, :\n:g" | awk '{ print int($1*100)/100 }' | paste -d' ' $tmp2 - | grep katana | sort > $tmp3
 
 echo -n $(cut -d' ' -f2 $tmp3) | sed -e "s/^\([^ ]*\) \(.*\)$/\2 \1/; s/^\(.*\)$/[\1],/; s/ /, /g"
 
