@@ -14,9 +14,6 @@ from actionlib import SimpleActionClient
 
 import ar_pose.msg
 
-SAMPLES_REQUIRED= 300
-TIMEOUT=20
-
 JOINTS=['katana_motor1_pan_joint', 'katana_motor2_lift_joint', 'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint']
 
 class CalibrateException(Exception):
@@ -147,6 +144,9 @@ class TransformBuffer:
 if __name__ == '__main__':
 	rospy.init_node('kinect_transform')
 
+	samples_required= rospy.get_param('~samples_required')
+	timeout= rospy.get_param('~timeout')
+
 	dance= Dance()
 	transform= TransformBuffer()
 
@@ -161,16 +161,16 @@ if __name__ == '__main__':
 		except NoTransformCachedException:
 			pass
 
-		if transform.samples >= SAMPLES_REQUIRED:
+		if transform.samples >= samples_required:
 			rospy.loginfo(t)
-			rospy.loginfo('averaged over %d samples, moving on' % SAMPLES_REQUIRED)
+			rospy.loginfo('averaged over %d samples, moving on' % samples_required)
 			try:
 				dance.hop()
 			except LastHopReachedException:
 				break
-		elif rospy.get_time() - transform.last_reset > TIMEOUT:
+		elif rospy.get_time() - transform.last_reset > timeout:
 			if transform.samples > 0:
-				rospy.logwarn('found only %d samples, but %d are required. Ignoring position!' % (transform.samples, SAMPLES_REQUIRED) )
+				rospy.logwarn('found only %d samples, but %d are required. Ignoring position!' % (transform.samples, samples_required) )
 			else:
 				rospy.logwarn('could not detect marker! Ignoring position!')
 			dance.hop()
