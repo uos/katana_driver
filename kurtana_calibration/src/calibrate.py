@@ -14,9 +14,12 @@ from actionlib import SimpleActionClient
 
 import ar_pose.msg
 
+# order of katana joints in the whole calibrate module
 JOINTS=['katana_motor1_pan_joint', 'katana_motor2_lift_joint', 'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint']
 
 class CalibrateException(Exception):
+	pass
+class NoJointStatesFoundException(CalibrateException):
 	pass
 class NoTransformCachedException(CalibrateException):
 	pass
@@ -35,6 +38,7 @@ class Dance:
 [-0.07, 0.92, 0.1, 0.16, -2.96, 0.27, 0.27],
 [1.13, 0.93, 0.02, 0.16, -2.96, 0.27, 0.27],
 [1.64, 0.05, 0.26, -0.19, -2.96, 0.27, 0.27],
+# ... what a nice dance ;)
 		]
 		self.i= -1
 		self.hopping= False
@@ -68,7 +72,13 @@ class Dance:
 	def setup(self):
 		"""Get as safe as possible to the first stance"""
 
-		self.old_pose= rospy.wait_for_message('/katana_joint_states', JointState, 2.0)
+		try:
+			jointmsg= rospy.wait_for_message('/katana_joint_states', JointState, 2.0)
+			self.old_pose= []
+			for n in JOINTS:
+				self.old_pose.append(jointmsg.position[jointmsg.name.index(n)])
+		except Exception, e:
+			raise NoJointStatesFoundException(e)
 
 		self.hop(JointState(
 			name= ['katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint'],
@@ -80,20 +90,12 @@ class Dance:
 
 	def restoreOldPose(self):
 		"""This restores the pose of the arm before setup() was called"""
+
 		self.hop( JointState(name= JOINTS, position= [0.00, 2.16, -2.18, -2.02, -2.96, 0.28, 0.28]), noreset= True )
-		self.hop( JointState(name= ['katana_motor1_pan_joint'], position= [self.old_pose.position[self.old_pose.name.index('katana_motor1_pan_joint')]]), noreset= True)
-		self.hop( JointState(name= ['katana_motor2_lift_joint'], position= [self.old_pose.position[self.old_pose.name.index('katana_motor2_lift_joint')]]), noreset= True)
-		self.hop( JointState(name=[
-			'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint'
-			],
-			position= [
-				self.old_pose.position[self.old_pose.name.index('katana_motor3_lift_joint')],
-				self.old_pose.position[self.old_pose.name.index('katana_motor4_lift_joint')],
-				self.old_pose.position[self.old_pose.name.index('katana_motor5_wrist_roll_joint')],
-				self.old_pose.position[self.old_pose.name.index('katana_r_finger_joint')],
-				self.old_pose.position[self.old_pose.name.index('katana_l_finger_joint')]
-			]
-		) )
+		self.hop( JointState(name= [JOINTS[0]], position= [self.old_pose[0]]), noreset= True)
+		self.hop( JointState(name= [JOINTS[1]], position= [self.old_pose[1]]), noreset= True)
+		self.hop( JointState(name= JOINTS[2:], position= self.old_pose[2:]), noreset= True )
+
 
 class TransformBuffer:
 	"""Accumulate poses of the camera as average"""
