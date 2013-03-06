@@ -75,12 +75,12 @@ void Katana300::freezeRobot()
 /**
  * Override to store desired_angles_.
  */
-bool Katana300::moveJoint(int jointIndex, double turningAngle)
+bool Katana300::moveJoint(int jointIndex, double turningAngle, double maxTurningSpeed)
 {
 
   desired_angles_[jointIndex] = turningAngle;
 
-  return Katana::moveJoint(jointIndex, turningAngle);
+  return Katana::moveJoint(jointIndex, turningAngle, maxTurningSpeed);
 }
 
 /**

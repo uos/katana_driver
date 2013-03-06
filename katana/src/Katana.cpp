@@ -450,7 +450,7 @@ void Katana::freezeRobot()
   kni->freezeRobot();
 }
 
-bool Katana::moveJoint(int motorIndex, double desiredAngle)
+bool Katana::moveJoint(int motorIndex, double desiredAngle, double maxVelocity)
 {
   if (desiredAngle < motor_limits_[motorIndex].min_position || motor_limits_[motorIndex].max_position < desiredAngle)
   {
@@ -461,6 +461,10 @@ bool Katana::moveJoint(int motorIndex, double desiredAngle)
   try
   {
     boost::recursive_mutex::scoped_lock lock(kni_mutex);
+    // FIXME: This overwrites the old limit, which _should_ not be important though
+    const int vel_enc= converter->vel_rad2enc(motorIndex, maxVelocity);
+    kni->setMotorVelocityLimit(motorIndex, vel_enc);
+    ROS_DEBUG("motor %d velocity: enc %d ; rad/s %f )", motorIndex, vel_enc, maxVelocity);
     kni->moveMotorToEnc(motorIndex, converter->angle_rad2enc(motorIndex, desiredAngle), false, 100);
     return true;
   }

@@ -40,7 +40,7 @@ public:
   virtual void refreshEncoders();
   virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
   virtual void moveGripper(double openingAngle);
-  virtual bool moveJoint(int jointIndex, double turningAngle);
+  virtual bool moveJoint(int jointIndex, double turningAngle, double maxTurningSpeed);
 
   virtual bool someMotorCrashed();
   virtual bool allJointsReady();
