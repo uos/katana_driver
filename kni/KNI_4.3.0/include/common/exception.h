@@ -97,7 +97,7 @@ class DLLDIR Exception : public std::exception {
 	    return _message.c_str();
 	}
 
-	const int error_number() const throw() {
+	int error_number() const throw() {
 	    return _error_number;
 	}
 };

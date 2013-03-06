@@ -58,10 +58,10 @@ public:
 		Exception("FirmwareException : '" + error + "'", error_number),
 		_axis_number(axis),
 		_command_char(command) {}
-	const int axis_number() const throw() {
+	int axis_number() const throw() {
 	    return _axis_number;
 	}
-	const char command_char() const throw() {
+	char command_char() const throw() {
 	    return _command_char;
 	}
 };

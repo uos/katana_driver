@@ -45,7 +45,7 @@ struct  TKatMOT {
 
 /*!	\brief	command flags
  */
-typedef enum TMotCmdFlg {
+enum TMotCmdFlg {
 	MCF_OFF			= 0,		//!< set the motor off
 	MCF_CALIB		= 4,		//!< calibrate
 	MCF_FREEZE		= 8,		//!< freeze the motor
@@ -55,7 +55,7 @@ typedef enum TMotCmdFlg {
 
 /*!	\brief	status flags
  */
-typedef enum TMotStsFlg	{
+enum TMotStsFlg	{
 	MSF_MECHSTOP	= 1,		//!< mechanical stopper reached, new: unused (default value)
 	MSF_MAXPOS	= 2,		//!< max. position was reached, new: unused
 	MSF_MINPOS	= 4,		//!< min. position was reached, new: calibrating
@@ -248,15 +248,15 @@ public:
 	const TMotCLB* GetCLB() { return &_calibrationParameters; }
 
 	const TMotInit* GetInitialParameters() { return &_initialParameters; }
-	const int GetEncoderTolerance() { return _encoderLimits.enc_tolerance; }
-	const int GetEncoderMinPos() { return _encoderLimits.enc_minpos; }	//!<Returns the min Position of the Encoder
-	const int GetEncoderMaxPos() { return _encoderLimits.enc_maxpos; }	//!<Returns the max Position of the Encoder
-	const int GetEncoderRange() { return _encoderLimits.enc_range; }	//!<Returns Encoder Range of the Encoder
+	int GetEncoderTolerance() { return _encoderLimits.enc_tolerance; }
+	int GetEncoderMinPos() { return _encoderLimits.enc_minpos; }	//!<Returns the min Position of the Encoder
+	int GetEncoderMaxPos() { return _encoderLimits.enc_maxpos; }	//!<Returns the max Position of the Encoder
+	int GetEncoderRange() { return _encoderLimits.enc_range; }	//!<Returns Encoder Range of the Encoder
 
 	/*! \brief Get the value of the freedom property
-	*/const bool GetFreedom() { return freedom; }
+	*/bool GetFreedom() { return freedom; }
 	/*! \brief Get the value of the blocked property
-	*/const bool GetBlocked() { return blocked; }
+	*/bool GetBlocked() { return blocked; }
 
 protected:
 	CCplBase* protocol;	//!< protocol interface
