@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
+import os
+
 import roslib; roslib.load_manifest('kurtana_calibration')
 import rospy
 
 import tf
-from tf.transformations import quaternion_slerp
+from tf.transformations import quaternion_slerp, euler_from_quaternion
 
 from geometry_msgs.msg import Point, Quaternion, Pose, PoseStamped
 from sensor_msgs.msg import JointState
@@ -198,3 +200,12 @@ if __name__ == '__main__':
 	print('Mean: %s' % str(mean))
 	for x in poses:
 		print('Dist: %f (%f, %f, %f) / Angle: %f' % (sqrt(sum( map(lambda x,y: (x-y)*(x-y), x[0], mean[0]) )), x[0][0]-mean[0][0], x[0][1]-mean[0][1], x[0][2]-mean[0][2], acos(sum( map(lambda x,y: x*y, mean[1], x[1])))) )
+
+	xyz= mean[0]
+	rpy= euler_from_quaternion(mean[1])
+	config= open( os.getenv('HOME') + '/.ros/kinect_pose.urdf.xacro', 'w')
+	config.write('<?xml version="1.0"?>\n<robot xmlns:xacro="http://ros.org/wiki/xacro">\n')
+	config.write('<property name="kinect_xyz" value="%.3f %.3f %.3f"/>\n' % (xyz[0], xyz[1], xyz[2]))
+	config.write('<property name="kinect_rpy" value="%.3f %.3f %.3f"/>\n' % (rpy[0], rpy[1], rpy[2]))
+	config.write('</robot>')
+	config.close()
