@@ -5,63 +5,6 @@
   <!-- How long to wait for the required samples -->
   <arg name="timeout"          default="20"/>
 
-  <param name="katana_type" type="string" value="katana_450_6m90a" />
-
-  <!-- load kurtana urdf -->
-  <include file="$(find kurt_description)/launch/upload_kurtana.launch" />
-
-  <!-- which joints does this katana instance control? -->
-  <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
-
-  <!-- katana node -->
-  <node pkg="katana" type="katana" name="katana" output="screen">
-    <param name="config_file_path" type="string" value="$(find kni)/KNI_4.3.0/configfiles450/katana6M90A_G.cfg" />
-    <param name="ip" value="192.168.23.11" />
-    <!-- <param name="simulation" type="bool" value="true" /> -->
-
-    <!-- let the katana node publish on katana_joint_states -->
-    <remap from="joint_states" to="katana_joint_states" />
-    <!-- for katana_gripper_grasp_controller -->
-    <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
-    <remap from="grasp_query_name" to="/gripper_grasp_status" />
-  </node>
-
-  <!-- joint_commander: use dynamic_reconfigure to adjust the rack configuration manually -->
-  <!-- node publishes on kurtana_joint_states -->
-  <!-- This is not used at the moment due to an ill-defined connection between pole and camera
-  <node name="joint_commander" pkg="kurtana_pole_joint_commander" type="joint_commander">
-    <param name="kurtana_stretch_joint" type="double" value="0.4635" />
-    <param name="kurtana_roll_joint" type="double" value="0.02" />
-    <param name="kurtana_pitch_joint" type="double" value="1.14" />
-
-    <param name="publish_joint_states" type="bool" value="True" />
-
-    <remap from="joint_states" to="kurtana_joint_states" />
-  </node>
-  -->
-
-  <!-- publish fake wheel joint states (to run on real robot, replace by kurt_base) -->
-  <node pkg="kurt_base" type="fake_wheel_publisher.py" name="fake_wheel_publisher">
-    <remap from="joint_states" to="wheel_joint_states" />
-  </node>
-
-  <!-- start the joint_state_muxer to merge the joint_states from the rack and the arm -->
-  <rosparam param="source_list">[kurtana_joint_states, katana_joint_states, wheel_joint_states]</rosparam>
-  <node pkg="joint_state_muxer" type="joint_state_muxer" name="joint_state_muxer" output="screen" />
-
-  <!-- start the robot state publisher -->
-  <node pkg="robot_state_publisher" type="state_publisher" name="robot_state_publisher" />
-
-  <!-- Kinect driver -->
-  <include file="$(find openni_launch)/launch/openni.launch">
-    <arg name="camera" value="kinect" />
-
-    <arg name="publish_tf" value="true" />
-    <arg name="depth_registration" value="true" />
-  </include>
-
-  <node pkg="rviz" type="rviz" name="my_rviz" args="-d /home/student/m/mgoerner/ros/katana_calibration/kurtana_calibration/rviz/setup.vcg" />
-
   <node name="ar_kinect" pkg="ar_kinect" type="ar_kinect" respawn="true" output="screen">
     <param name="marker_pattern_list" type="string" value="$(find kurtana_calibration)/data/objects_kinect"/>
     <param name="marker_data_directory" type="string" value="$(find kurtana_calibration)/data"/>
