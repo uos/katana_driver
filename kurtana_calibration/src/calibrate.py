@@ -146,8 +146,8 @@ class TransformBuffer:
 if __name__ == '__main__':
 	rospy.init_node('kinect_transform')
 
-	samples_required= rospy.get_param('~samples_required')
-	timeout= rospy.get_param('~timeout')
+	samples_required= max(1, rospy.get_param('~samples_required'))
+	timeout=          max(1, rospy.get_param('~timeout'))
 
 	dance= Dance()
 	transform= TransformBuffer()
