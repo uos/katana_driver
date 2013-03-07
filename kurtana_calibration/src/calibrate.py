@@ -12,6 +12,8 @@ from katana_msgs.msg import JointMovementAction, JointMovementGoal
 
 from actionlib import SimpleActionClient
 
+from math import sqrt, acos
+
 import ar_pose.msg
 
 # order of katana joints in the whole calibrate module
@@ -164,6 +166,7 @@ if __name__ == '__main__':
 
 	r= rospy.Rate(10)
 	dance.setup()
+	poses= []
 	while not rospy.is_shutdown():
 		try:
 			if rospy.get_param('~publish_tf', True):
@@ -174,6 +177,7 @@ if __name__ == '__main__':
 
 		if transform.samples >= samples_required:
 			rospy.loginfo('averaged over %d samples, moving on' % samples_required)
+			poses.append(transform.getTransform())
 			try:
 				dance.hop()
 			except LastHopReachedException:
@@ -186,3 +190,11 @@ if __name__ == '__main__':
 			dance.hop()
 		r.sleep()
 	dance.restoreOldPose()
+
+	mean= ((0,0,0), (1,0,0,0))
+	for i in xrange(len(poses)):
+		mean= averagePoses(mean, poses[i], i)
+
+	print('Mean: %s' % str(mean))
+	for x in poses:
+		print('Dist: %f (%f, %f, %f) / Angle: %f' % (sqrt(sum( map(lambda x,y: (x-y)*(x-y), x[0], mean[0]) )), x[0][0]-mean[0][0], x[0][1]-mean[0][1], x[0][2]-mean[0][2], acos(sum( map(lambda x,y: x*y, mean[1], x[1])))) )
