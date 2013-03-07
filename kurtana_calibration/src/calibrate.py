@@ -54,6 +54,7 @@ class Dance:
 		if pose == None:
 			if self.i+1 >= len(self.poses):
 				raise LastHopReachedException()
+
 			self.i= (self.i+1) % len(self.poses)
 			goal= JointMovementGoal( jointGoal= JointState(name=JOINTS, position=self.poses[self.i]) )
 		else:
@@ -97,6 +98,14 @@ class Dance:
 		self.hop( JointState(name= JOINTS[2:], position= self.old_pose[2:]), noreset= True )
 
 
+def averagePoses(pose1, pose2, t):
+		"""Average two poses where the first one weights for t poses"""
+
+		factor= float(t)/(t+1)
+		translation= tuple(map(lambda x,y: factor*x + (1-factor)*y, pose1[0], pose2[0]))
+		rotation= quaternion_slerp(pose1[1], pose2[1], 1.0/(t+1))
+		return (translation, rotation)
+
 class TransformBuffer:
 	"""Accumulate poses of the camera as average"""
 
@@ -107,10 +116,9 @@ class TransformBuffer:
 
 	def addTransform(self, transform):
 		"""add new transform to current average"""
+
+		(self.translation, self.rotation)= averagePoses( (self.translation, self.rotation), transform, self.samples)
 		self.samples+= 1
-		factor= float(self.samples-1)/(self.samples)
-		self.translation= tuple(map(lambda x,y: factor*x + (1-factor)*y, self.translation, transform[0]))
-		self.rotation= quaternion_slerp(self.rotation, transform[1], 1.0/self.samples)
 
 	def getTransform(self):
 		if self.samples == 0:
