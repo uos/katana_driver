@@ -166,14 +166,13 @@ if __name__ == '__main__':
 	dance.setup()
 	while not rospy.is_shutdown():
 		try:
-			t= transform.getTransform()
 			if rospy.get_param('~publish_tf', True):
+				t= transform.getTransform()
 				broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/base_link')
 		except NoTransformCachedException:
 			pass
 
 		if transform.samples >= samples_required:
-			rospy.loginfo(t)
 			rospy.loginfo('averaged over %d samples, moving on' % samples_required)
 			try:
 				dance.hop()
