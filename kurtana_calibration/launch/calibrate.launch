@@ -4,6 +4,8 @@
   <arg name="samples_required" default="300"/>
   <!-- How long to wait for the required samples -->
   <arg name="timeout"          default="20"/>
+  <!-- Publish transforms(/kinect_link -> /base_link) used for calibration -->
+  <arg name="publish_tf"       default="true"/>
 
   <node name="ar_kinect" pkg="ar_kinect" type="ar_kinect" respawn="true" output="screen">
     <param name="marker_pattern_list" type="string" value="$(find kurtana_calibration)/data/objects_kinect"/>
@@ -15,6 +17,7 @@
   <node pkg="kurtana_calibration" type="calibrate.py" name="kurtana_calibration" required="true" output="screen">
     <param name="samples_required" type="int" value="$(arg samples_required)"/>
     <param name="timeout" type="int" value="$(arg timeout)"/>
+    <param name="publish_tf" type="bool" value="$(arg publish_tf)"/>
   </node>
 
 </launch>

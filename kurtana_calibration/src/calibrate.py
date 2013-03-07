@@ -159,7 +159,8 @@ if __name__ == '__main__':
 	while not rospy.is_shutdown():
 		try:
 			t= transform.getTransform()
-			broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/base_link')
+			if rospy.get_param('~publish_tf', True):
+				broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/base_link')
 		except NoTransformCachedException:
 			pass
 
