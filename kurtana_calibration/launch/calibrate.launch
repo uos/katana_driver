@@ -6,6 +6,9 @@
   <arg name="timeout"          default="20"/>
   <!-- Publish transforms(/kinect_link -> /base_link) used for calibration -->
   <arg name="publish_tf"       default="true"/>
+  <!-- Number of runs to run -->
+  <arg name="runs"             default="1"/>
+  <arg name="config_file"      default="$(env HOME)/.ros/kinect_pose.urdf.xacro"/>
 
   <node name="ar_kinect" pkg="ar_kinect" type="ar_kinect" respawn="true" output="screen">
     <param name="marker_pattern_list" type="string" value="$(find kurtana_calibration)/data/objects_kinect"/>
@@ -18,6 +21,8 @@
     <param name="samples_required" type="int" value="$(arg samples_required)"/>
     <param name="timeout" type="int" value="$(arg timeout)"/>
     <param name="publish_tf" type="bool" value="$(arg publish_tf)"/>
+    <param name="runs" type="int" value="$(arg runs)"/>
+    <param name="config_file" type="string" value="$(arg config_file"/>
   </node>
 
 </launch>
