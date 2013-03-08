@@ -18,9 +18,6 @@ from math import sqrt, acos
 
 import ar_pose.msg
 
-# order of katana joints in the whole calibrate module
-JOINTS=['katana_motor1_pan_joint', 'katana_motor2_lift_joint', 'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint']
-
 class CalibrateException(Exception):
 	pass
 class NoJointStatesFoundException(CalibrateException):
@@ -29,6 +26,20 @@ class NoTransformCachedException(CalibrateException):
 	pass
 class LastHopReachedException(CalibrateException):
 	pass
+
+# order of katana joints in the whole calibrate module
+JOINTS=['katana_motor1_pan_joint', 'katana_motor2_lift_joint', 'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint']
+
+def averagePoses(pose1, pose2, t):
+		"""Average two poses with weighting t to 1
+
+		This computes the average of the kartesian positions using
+		linear interpolation and of the rotation using SLERP"""
+
+		factor= float(t)/(t+1)
+		translation= tuple(map(lambda x,y: factor*x + (1-factor)*y, pose1[0], pose2[0]))
+		rotation= quaternion_slerp(pose1[1], pose2[1], 1.0/(t+1))
+		return (translation, rotation)
 
 
 class Dance:
@@ -102,14 +113,6 @@ class Dance:
 		self.hop( JointState(name= [JOINTS[1]], position= [self.old_pose[1]]), noreset= True)
 		self.hop( JointState(name= JOINTS[2:], position= self.old_pose[2:]), noreset= True )
 
-
-def averagePoses(pose1, pose2, t):
-		"""Average two poses where the first one weights for t poses"""
-
-		factor= float(t)/(t+1)
-		translation= tuple(map(lambda x,y: factor*x + (1-factor)*y, pose1[0], pose2[0]))
-		rotation= quaternion_slerp(pose1[1], pose2[1], 1.0/(t+1))
-		return (translation, rotation)
 
 class TransformBuffer:
 	"""Accumulate poses of the camera as average"""
