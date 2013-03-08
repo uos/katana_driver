@@ -10,6 +10,7 @@
   <arg name="runs"             default="1"/>
   <!-- Location of the config file that will be written -->
   <arg name="config_file"      default="$(env HOME)/.ros/kinect_pose.urdf.xacro"/>
+  <!-- Actually (over?)write the config file -->
   <arg name="write_config"     default="true"/>
 
   <node name="ar_kinect" pkg="ar_kinect" type="ar_kinect" respawn="true" output="screen">
