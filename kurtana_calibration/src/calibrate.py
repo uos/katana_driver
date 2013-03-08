@@ -57,6 +57,7 @@ class Dance:
 		"""
 		if pose == None:
 			if self.i+1 >= len(self.poses):
+				self.i= -1
 				raise LastHopReachedException()
 
 			self.i= (self.i+1) % len(self.poses)
@@ -158,8 +159,11 @@ class TransformBuffer:
 if __name__ == '__main__':
 	rospy.init_node('kinect_transform')
 
-	samples_required= max(1, rospy.get_param('~samples_required'))
-	timeout=          max(1, rospy.get_param('~timeout'))
+	# all parameters
+	config_file=      rospy.get_param('~config_file', os.getenv('HOME') + '/.ros/kinect_pose.urdf.xacro')
+	timeout=          max(1, rospy.get_param('~timeout', 20))
+	samples_required= max(1, rospy.get_param('~samples_required', 300))
+	runs=             max(1, rospy.get_param('~runs', 1))
 
 	dance= Dance()
 	transform= TransformBuffer()
@@ -169,41 +173,55 @@ if __name__ == '__main__':
 	r= rospy.Rate(10)
 	dance.setup()
 	poses= []
+	current_run= 0
 	while not rospy.is_shutdown():
-		try:
-			if rospy.get_param('~publish_tf', True):
+		if rospy.get_param('~publish_tf', True):
+			try:
 				t= transform.getTransform()
 				broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/base_link')
-		except NoTransformCachedException:
-			pass
+			except NoTransformCachedException:
+				pass
 
 		if transform.samples >= samples_required:
-			rospy.loginfo('averaged over %d samples, moving on' % samples_required)
+			rospy.loginfo('finished pose with %d samples.' % samples_required)
 			poses.append(transform.getTransform())
 			try:
 				dance.hop()
 			except LastHopReachedException:
-				break
-		elif rospy.get_time() - transform.last_reset > timeout:
+				current_run+= 1
+				if current_run >= runs:
+					break
+				else:
+					dance.hop()
+		elif rospy.get_time() - transform.last_reset > max(1, rospy.get_param('~timeout', 20)):
 			if transform.samples > 0:
 				rospy.logwarn('found only %d samples, but %d are required. Ignoring position!' % (transform.samples, samples_required) )
 			else:
 				rospy.logwarn('could not detect marker! Ignoring position!')
 			dance.hop()
 		r.sleep()
+
 	dance.restoreOldPose()
 
 	mean= ((0,0,0), (1,0,0,0))
+	avgdev= [0,0,0,0]
 	for i in xrange(len(poses)):
 		mean= averagePoses(mean, poses[i], i)
+	for p in poses:
+		# cartesian diffs
+		avgdev[0]+= abs(p[0][0]-mean[0][0])/len(poses)
+		avgdev[1]+= abs(p[0][1]-mean[0][1])/len(poses)
+		avgdev[2]+= abs(p[0][2]-mean[0][2])/len(poses)
+		# angle diffs: acos( dotprod( mean_angle, pose_angle ) )
+		avgdev[3]+= acos(sum( map(lambda x,y: x*y, mean[1], p[1]) )) / len(poses)
 
-	print('Mean: %s' % str(mean))
-	for x in poses:
-		print('Dist: %f (%f, %f, %f) / Angle: %f' % (sqrt(sum( map(lambda x,y: (x-y)*(x-y), x[0], mean[0]) )), x[0][0]-mean[0][0], x[0][1]-mean[0][1], x[0][2]-mean[0][2], acos(sum( map(lambda x,y: x*y, mean[1], x[1])))) )
+		print('Dist: %f (%f, %f, %f) / Angle: %f' % (sqrt(sum( map(lambda x,y: (x-y)*(x-y), p[0], mean[0]) )), p[0][0]-mean[0][0], p[0][1]-mean[0][1], p[0][2]-mean[0][2], acos(sum( map(lambda x,y: x*y, mean[1], p[1])))) )
+
+	rospy.loginfo('Mean: %s\nAvg. Dev.: (x: %.4f, y: %.4f, z: %.4f), rotation: %.4f' % (str(mean), avgdev[0], avgdev[1], avgdev[2], avgdev[3]))
 
 	xyz= mean[0]
 	rpy= euler_from_quaternion(mean[1])
-	config= open( os.getenv('HOME') + '/.ros/kinect_pose.urdf.xacro', 'w')
+	config= open( config_file, 'w' )
 	config.write('<?xml version="1.0"?>\n<robot xmlns:xacro="http://ros.org/wiki/xacro">\n')
 	config.write('<property name="kinect_xyz" value="%.3f %.3f %.3f"/>\n' % (xyz[0], xyz[1], xyz[2]))
 	config.write('<property name="kinect_rpy" value="%.3f %.3f %.3f"/>\n' % (rpy[0], rpy[1], rpy[2]))
