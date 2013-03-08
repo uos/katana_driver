@@ -21,7 +21,7 @@
 
 import os
 
-import roslib; roslib.load_manifest('kurtana_calibration')
+import roslib; roslib.load_manifest('katana_kinect_calibration')
 import rospy
 
 import tf
