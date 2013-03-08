@@ -8,7 +8,9 @@
   <arg name="publish_tf"       default="true"/>
   <!-- Number of runs to run -->
   <arg name="runs"             default="1"/>
+  <!-- Location of the config file that will be written -->
   <arg name="config_file"      default="$(env HOME)/.ros/kinect_pose.urdf.xacro"/>
+  <arg name="write_config"     default="true"/>
 
   <node name="ar_kinect" pkg="ar_kinect" type="ar_kinect" respawn="true" output="screen">
     <param name="marker_pattern_list" type="string" value="$(find kurtana_calibration)/data/objects_kinect"/>
@@ -23,6 +25,7 @@
     <param name="publish_tf" type="bool" value="$(arg publish_tf)"/>
     <param name="runs" type="int" value="$(arg runs)"/>
     <param name="config_file" type="string" value="$(arg config_file"/>
+    <param name="write_config" type="bool" value="$(arg write_config)"/>
   </node>
 
 </launch>

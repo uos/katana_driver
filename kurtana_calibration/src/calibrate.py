@@ -164,6 +164,7 @@ if __name__ == '__main__':
 	timeout=          max(1, rospy.get_param('~timeout', 20))
 	samples_required= max(1, rospy.get_param('~samples_required', 300))
 	runs=             max(1, rospy.get_param('~runs', 1))
+	write_config=     rospy.get_param('~write_config', True)
 
 	dance= Dance()
 	transform= TransformBuffer()
@@ -221,9 +222,10 @@ if __name__ == '__main__':
 
 	xyz= mean[0]
 	rpy= euler_from_quaternion(mean[1])
-	config= open( config_file, 'w' )
-	config.write('<?xml version="1.0"?>\n<robot xmlns:xacro="http://ros.org/wiki/xacro">\n')
-	config.write('<property name="kinect_xyz" value="%.3f %.3f %.3f"/>\n' % (xyz[0], xyz[1], xyz[2]))
-	config.write('<property name="kinect_rpy" value="%.3f %.3f %.3f"/>\n' % (rpy[0], rpy[1], rpy[2]))
-	config.write('</robot>')
-	config.close()
+	if write_config:
+		config= open( config_file, 'w' )
+		config.write('<?xml version="1.0"?>\n<robot xmlns:xacro="http://ros.org/wiki/xacro">\n')
+		config.write('<property name="kinect_xyz" value="%.3f %.3f %.3f"/>\n' % (xyz[0], xyz[1], xyz[2]))
+		config.write('<property name="kinect_rpy" value="%.3f %.3f %.3f"/>\n' % (rpy[0], rpy[1], rpy[2]))
+		config.write('</robot>')
+		config.close()
