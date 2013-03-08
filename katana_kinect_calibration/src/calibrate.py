@@ -11,12 +11,12 @@ from tf.transformations import quaternion_slerp, euler_from_quaternion
 from geometry_msgs.msg import Point, Quaternion, Pose, PoseStamped
 from sensor_msgs.msg import JointState
 from katana_msgs.msg import JointMovementAction, JointMovementGoal
+from ar_pose.msg import ARMarkers
 
 from actionlib import SimpleActionClient
 
 from math import sqrt, acos
 
-import ar_pose.msg
 
 class CalibrateException(Exception):
 	pass
@@ -29,6 +29,7 @@ class LastHopReachedException(CalibrateException):
 
 # order of katana joints in the whole calibrate module
 JOINTS=['katana_motor1_pan_joint', 'katana_motor2_lift_joint', 'katana_motor3_lift_joint', 'katana_motor4_lift_joint', 'katana_motor5_wrist_roll_joint', 'katana_r_finger_joint', 'katana_l_finger_joint']
+
 
 def averagePoses(pose1, pose2, t):
 		"""Average two poses with weighting t to 1
@@ -120,7 +121,7 @@ class TransformBuffer:
 	def __init__(self):
 		self.reset()
 		self.listener= tf.TransformListener()
-		rospy.Subscriber('/ar_pose_markers', ar_pose.msg.ARMarkers, self.update_cb)
+		rospy.Subscriber('/ar_pose_markers', ARMarkers, self.update_cb)
 
 	def addTransform(self, transform):
 		"""add new transform to current average"""
@@ -162,12 +163,13 @@ class TransformBuffer:
 if __name__ == '__main__':
 	rospy.init_node('kinect_transform')
 
-	# all parameters
+	# fetch all parameters
 	config_file=      rospy.get_param('~config_file', os.getenv('HOME') + '/.ros/kinect_pose.urdf.xacro')
 	timeout=          max(1, rospy.get_param('~timeout', 20))
 	samples_required= max(1, rospy.get_param('~samples_required', 300))
 	runs=             max(1, rospy.get_param('~runs', 1))
 	write_config=     rospy.get_param('~write_config', True)
+	publish_tf=       rospy.get_param('publish_tf', False)
 
 	dance= Dance()
 	transform= TransformBuffer()
@@ -179,7 +181,7 @@ if __name__ == '__main__':
 	poses= []
 	current_run= 0
 	while not rospy.is_shutdown():
-		if rospy.get_param('~publish_tf', True):
+		if publish_tf:
 			try:
 				t= transform.getTransform()
 				broadcaster.sendTransform(t[0], t[1], rospy.Time.now(), '/kinect_link', '/base_link')
@@ -196,17 +198,24 @@ if __name__ == '__main__':
 				if current_run >= runs:
 					break
 				else:
+					# dance resets its index before this exception
+					# so there's nothing we want to catch here
 					dance.hop()
-		elif rospy.get_time() - transform.last_reset > max(1, rospy.get_param('~timeout', 20)):
+		elif rospy.get_time() - transform.last_reset > timeout:
 			if transform.samples > 0:
-				rospy.logwarn('found only %d samples, but %d are required. Ignoring position!' % (transform.samples, samples_required) )
+				rospy.logwarn('found only %d samples, but %d are required. Ignoring pose!' % (transform.samples, samples_required) )
 			else:
-				rospy.logwarn('could not detect marker! Ignoring position!')
+				rospy.logwarn('could not detect marker! Ignoring pose!')
 			dance.hop()
 		r.sleep()
 
 	dance.restoreOldPose()
 
+	if len(poses) == 0:
+		rospy.logfatal('Could not use any pose at all! There were not enough (any?) recognized samples before timeout.')
+		exit(1)
+
+	# averaging
 	mean= ((0,0,0), (1,0,0,0))
 	avgdev= [0,0,0,0]
 	for i in xrange(len(poses)):
@@ -219,9 +228,9 @@ if __name__ == '__main__':
 		# angle diffs: acos( dotprod( mean_angle, pose_angle ) )
 		avgdev[3]+= acos(sum( map(lambda x,y: x*y, mean[1], p[1]) )) / len(poses)
 
-		print('Dist: %f (%f, %f, %f) / Angle: %f' % (sqrt(sum( map(lambda x,y: (x-y)*(x-y), p[0], mean[0]) )), p[0][0]-mean[0][0], p[0][1]-mean[0][1], p[0][2]-mean[0][2], acos(sum( map(lambda x,y: x*y, mean[1], p[1])))) )
+		rospy.logdebug('Dist: %f (%f, %f, %f) / Angle: %f' % (sqrt(sum( map(lambda x,y: (x-y)*(x-y), p[0], mean[0]) )), p[0][0]-mean[0][0], p[0][1]-mean[0][1], p[0][2]-mean[0][2], acos(sum( map(lambda x,y: x*y, mean[1], p[1])))) )
 
-	rospy.loginfo('Mean: %s\nAvg. Dev.: (x: %.4f, y: %.4f, z: %.4f), rotation: %.4f' % (str(mean), avgdev[0], avgdev[1], avgdev[2], avgdev[3]))
+	rospy.loginfo('Averaged over %d poses\nMean: %s\nAvg. Dev.: (x: %.4f, y: %.4f, z: %.4f), rotation: %.4f' % (len(poses), str(mean), avgdev[0], avgdev[1], avgdev[2], avgdev[3]))
 
 	xyz= mean[0]
 	rpy= euler_from_quaternion(mean[1])
