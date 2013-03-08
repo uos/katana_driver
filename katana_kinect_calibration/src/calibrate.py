@@ -188,7 +188,7 @@ if __name__ == '__main__':
 	samples_required= max(1, rospy.get_param('~samples_required', 300))
 	runs=             max(1, rospy.get_param('~runs', 1))
 	write_config=     rospy.get_param('~write_config', True)
-	publish_tf=       rospy.get_param('publish_tf', False)
+	publish_tf=       rospy.get_param('~publish_tf', False)
 
 	dance= Dance()
 	transform= TransformBuffer()
