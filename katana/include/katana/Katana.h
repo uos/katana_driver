@@ -54,7 +54,7 @@ public:
   void refreshEncoders();
   bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj);
   virtual void freezeRobot();
-  virtual bool moveJoint(int jointIndex, double turningAngle, double maxTurningSpeed);
+  virtual bool moveJoint(int jointIndex, double turningAngle);
 
   virtual void refreshMotorStatus();
   virtual bool someMotorCrashed();

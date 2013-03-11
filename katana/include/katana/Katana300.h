@@ -50,7 +50,7 @@ public:
   virtual void setLimits();
 
   virtual void freezeRobot();
-  virtual bool moveJoint(int jointIndex, double turningAngle, double maxTurningSpeed);
+  virtual bool moveJoint(int jointIndex, double turningAngle);
 
   virtual void refreshMotorStatus();
   virtual bool allJointsReady();
