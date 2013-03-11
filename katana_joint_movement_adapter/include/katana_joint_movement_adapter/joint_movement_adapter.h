@@ -42,7 +42,7 @@
 
 #include <angles/angles.h>
 #include <urdf/model.h>
-#include <urdf/joint.h>
+#include <urdf_interface/joint.h>
 
 #include <joint_trajectory_generator/trajectory_generation.h>
 
