@@ -6,10 +6,15 @@
   <!-- which joints does this katana instance control? (for teleop etc.) -->
   <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
 
+  <!-- remap katana_gripper_grasp_controller topic names; this has to be stated before loading Gazebo! -->
+  <remap from="posture_action_name" to="/gripper_grasp_posture_controller" />
+  <remap from="grasp_query_name" to="/gripper_grasp_status" />
+
   <!-- load world -->
-  <include file="$(find katana_arm_gazebo)/launch/grasp_world.launch" />
+  <!-- start up empty world -->
+  <include file="$(find gazebo_worlds)/launch/empty_world_throttled.launch"/>
+
   <!-- push robot_description to factory and spawn robot in gazebo -->
-  <!-- <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -unpause -urdf -param robot_description -model katana" respawn="false" output="screen"/> -->
   <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -urdf -param robot_description -model katana" respawn="false" output="screen"/>
 
   <!-- Default Controllers -->
@@ -35,10 +40,11 @@
   <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
     args="pub /calibrated std_msgs/Bool true" />
 
-  <!--
-  <include file="$(find katana_arm_gazebo)/launch/cylinder_object.launch"/>
-  -->
-  <include file="$(find katana_arm_gazebo)/launch/coke_can.launch"/>
+  <!-- Spawn objects -->
+  <include file="$(find katana_arm_gazebo)/launch/coke_can.launch">
+    <arg name="wait_for_table" value="false" />
+    <arg name="z" value="0.01" />
+  </include>
 
   <group ns="katana_arm_controller">
     <node pkg="katana_joint_movement_adapter" type="joint_movement_adapter" name="joint_movement_adapter" output="screen">
