@@ -26,7 +26,7 @@ statically connected to the rest of your robot.
     <param name="marker_pattern_list" type="string" value="$(find katana_kinect_calibration)/data/objects_kinect"/>
     <param name="marker_data_directory" type="string" value="$(find katana_kinect_calibration)/data"/>
     <param name="threshold" type="int" value="100"/>
-    <remap from="/camera/rgb/points" to="/kinect/depth_registered/points"/>
+    <remap from="points" to="/kinect/depth_registered/points"/>
   </node>
 
   <node pkg="katana_kinect_calibration" type="calibrate.py" name="katana_kinect_calibration" required="true" output="screen">
