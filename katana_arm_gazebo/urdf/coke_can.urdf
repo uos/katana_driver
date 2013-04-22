@@ -1,7 +1,10 @@
 <robot name="coke_can_model">
   <link name="coke_can">
     <inertial>
-      <mass value="0.1" />
+      <!-- EVIL HACK: reduce mass to 0.001 kg so the arm can lift it; the inertia is still for 0.1 kg, though. -->
+      <!--<mass value="0.1" />-->
+      <mass value="0.001" />
+
       <!-- center of mass (com) is defined w.r.t. link local coordinate system -->
       <origin xyz="0 0 0.06" /> 
       <inertia  ixx="0.000155983" ixy="0.0"  ixz="0.0"  iyy="0.000155983"  iyz="0.0"  izz="0.0000561125" />
