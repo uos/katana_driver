@@ -33,7 +33,7 @@
 #include <common/Plugin.hh>
 #include <common/Time.hh>
 #include <common/Events.hh>
-#include <physics/physics.h>
+#include <physics/physics.hh>
 
 #include <katana_msgs/GripperControllerState.h>
 #include <control_toolbox/pid.h>
