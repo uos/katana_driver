@@ -179,7 +179,7 @@ void GazeboRosKatanaGripper::UpdateChild()
     //  desired_pos[i] = -0.44;
 
     desired_pos[i] = active_gripper_action_->getNextDesiredPoint(ros::Time::now()).position;
-    actual_pos[i] = joints_[i]->GetAngle(0).GetAsRadian();
+    actual_pos[i] = joints_[i]->GetAngle(0).Radian();
 
     commanded_effort[i] = pid_controller_.updatePid(actual_pos[i] - desired_pos[i], joints_[i]->GetVelocity(0), dt);
 
@@ -203,7 +203,7 @@ void GazeboRosKatanaGripper::UpdateChild()
     // update all actions
     for (std::size_t i = 0; i != gripper_action_list_.size(); i++)
     {
-      gripper_action_list_[i]->setCurrentPoint(joints_[i]->GetAngle(0).GetAsRadian(), joints_[i]->GetVelocity(0));
+      gripper_action_list_[i]->setCurrentPoint(joints_[i]->GetAngle(0).Radian(), joints_[i]->GetVelocity(0));
     }
 
   }
@@ -234,7 +234,7 @@ void GazeboRosKatanaGripper::UpdateChild()
     //
     //    for (size_t i = 0; i < NUM_JOINTS; ++i)
     //    {
-    //      js_.position[i] = joints_[i]->GetAngle(0).GetAsRadian();
+    //      js_.position[i] = joints_[i]->GetAngle(0).adian();
     //      js_.velocity[i] = joints_[i]->GetVelocity(0);
     //      js_.effort[i] = commanded_effort[i];
     //
