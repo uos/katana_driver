@@ -207,25 +207,25 @@ if __name__ == '__main__':
 			except NoTransformCachedException:
 				pass
 
-		if transform.samples >= samples_required:
-			rospy.loginfo('finished pose with %d samples.' % samples_required)
-			poses.append(transform.getTransform())
-			try:
+		try:
+			if transform.samples >= samples_required:
+				rospy.loginfo('finished pose with %d samples.' % samples_required)
+				poses.append(transform.getTransform())
 				dance.hop()
-			except LastHopReachedException:
-				current_run+= 1
-				if current_run >= runs:
-					break
+			elif rospy.get_time() - transform.last_reset > timeout:
+				if transform.samples > 0:
+					rospy.logwarn('found only %d samples, but %d are required. Ignoring pose!' % (transform.samples, samples_required) )
 				else:
-					# dance resets its index before this exception
-					# so there's nothing we want to catch here
-					dance.hop()
-		elif rospy.get_time() - transform.last_reset > timeout:
-			if transform.samples > 0:
-				rospy.logwarn('found only %d samples, but %d are required. Ignoring pose!' % (transform.samples, samples_required) )
+					rospy.logwarn('could not detect marker! Ignoring pose!')
+				dance.hop()
+		except LastHopReachedException:
+			current_run+= 1
+			if current_run >= runs:
+				break
 			else:
-				rospy.logwarn('could not detect marker! Ignoring pose!')
-			dance.hop()
+				# dance resets its index before this exception
+				# so there's nothing we want to catch here
+				dance.hop()
 		r.sleep()
 
 	dance.restoreOldPose()
