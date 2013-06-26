@@ -4,8 +4,8 @@
 		<contributor>
 			<authoring_tool>URDF Collada Writer</authoring_tool>
 		</contributor>
-		<created>2011-11-18T13:43:49.000000</created>
-		<modified>2011-11-18T13:43:49.000000</modified>
+		<created>2013-06-26T11:58:04.000000</created>
+		<modified>2013-06-26T11:58:04.000000</modified>
 		<unit/>
 		<up_axis>Z_UP</up_axis>
 	</asset>
@@ -1261,16 +1261,138 @@
 	</library_kinematics_scenes>
 	<library_physics_scenes id="pscenes">
 		<physics_scene id="pscene" name="URDF Physics Scene">
+			<instance_physics_model url="#pmodel0" sid="pmodel0_inst" parent="#visual0">
+				<instance_rigid_body body="rigid0" target="#vkmodel0_node0"/>
+				<instance_rigid_body body="rigid1" target="#vkmodel0_node1"/>
+				<instance_rigid_body body="rigid2" target="#vkmodel0_node2"/>
+				<instance_rigid_body body="rigid3" target="#vkmodel0_node3"/>
+				<instance_rigid_body body="rigid4" target="#vkmodel0_node4"/>
+				<instance_rigid_body body="rigid5" target="#vkmodel0_node5"/>
+				<instance_rigid_body body="rigid6" target="#vkmodel0_node6"/>
+				<instance_rigid_body body="rigid7" target="#vkmodel0_node7"/>
+				<instance_rigid_body body="rigid8" target="#vkmodel0_node8"/>
+				<instance_rigid_body body="rigid9" target="#vkmodel0_node9"/>
+				<instance_rigid_body body="rigid10" target="#vkmodel0_node10"/>
+			</instance_physics_model>
 			<technique_common>
 				<gravity>0 0 0</gravity>
 			</technique_common>
 		</physics_scene>
 	</library_physics_scenes>
+	<library_physics_models id="pmodels">
+		<physics_model id="pmodel0" name="katana_450_6m90a">
+			<rigid_body sid="rigid0" name="katana_base_frame">
+				<technique_common/>
+			</rigid_body>
+			<rigid_body sid="rigid1" name="katana_base_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>1.4048</mass>
+					<mass_frame>
+						<translate>-0.000327 0.000908 0.058457</translate>
+						<rotate>-0.689191 -0.202636 -0.695669 1.96501</rotate>
+					</mass_frame>
+					<inertia>0.0030008 0.00297566 0.0014338</inertia>
+				</technique_common>
+			</rigid_body>
+			<rigid_body sid="rigid2" name="katana_gripper_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>0.0552136</mass>
+					<mass_frame>
+						<translate>0.476294 8.40753e-14 0.219421</translate>
+						<rotate>-0.569648 -0.569648 -0.592454 118.71</rotate>
+					</mass_frame>
+					<inertia>1.14683e-05 1.12897e-05 1.383e-05</inertia>
+				</technique_common>
+			</rigid_body>
+			<rigid_body sid="rigid3" name="katana_gripper_tool_frame">
+				<technique_common/>
+			</rigid_body>
+			<rigid_body sid="rigid4" name="katana_l_finger_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>0.0251722</mass>
+					<mass_frame>
+						<translate>0.474697 -0.025167 0.269584</translate>
+						<rotate>0.592826 -0.445158 0.671112 164.6</rotate>
+					</mass_frame>
+					<inertia>1.81842e-06 2.34804e-05 2.40362e-05</inertia>
+				</technique_common>
+			</rigid_body>
+			<rigid_body sid="rigid5" name="katana_motor1_pan_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>0.747933</mass>
+					<mass_frame>
+						<translate>-0.00041 -0.001285 0.184726</translate>
+						<rotate>-0.999999 0.000586381 -0.00116793 87.3725</rotate>
+					</mass_frame>
+					<inertia>0.00173724 0.00134991 0.000998042</inertia>
+				</technique_common>
+			</rigid_body>
+			<rigid_body sid="rigid6" name="katana_motor2_lift_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>0.801749</mass>
+					<mass_frame>
+						<translate>0.09242 -0.000172 0.206783</translate>
+						<rotate>0.999888 -0.0110471 0.0100808 90.0829</rotate>
+					</mass_frame>
+					<inertia>0.000476532 0.00431635 0.00462545</inertia>
+				</technique_common>
+			</rigid_body>
+			<rigid_body sid="rigid7" name="katana_motor3_lift_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>0.792417</mass>
+					<mass_frame>
+						<translate>0.248036 0.000187 0.210463</translate>
+						<rotate>0.997652 -0.0472995 0.0495274 90.1082</rotate>
+					</mass_frame>
+					<inertia>0.0011451 0.00231662 0.00312866</inertia>
+				</technique_common>
+			</rigid_body>
+			<rigid_body sid="rigid8" name="katana_motor4_lift_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>0.691493</mass>
+					<mass_frame>
+						<translate>0.379401 -2.72324e-14 0.195693</translate>
+						<rotate>-0.99907 0.0310293 0.0299536 90.0405</rotate>
+					</mass_frame>
+					<inertia>0.000763233 0.00150688 0.00188728</inertia>
+				</technique_common>
+			</rigid_body>
+			<rigid_body sid="rigid9" name="katana_motor5_wrist_roll_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>0.256226</mass>
+					<mass_frame>
+						<translate>0.47462 1.392e-05 0.198359</translate>
+						<rotate>0.58494 -0.584042 0.562796 121.502</rotate>
+					</mass_frame>
+					<inertia>0.000120525 9.34777e-05 0.00013213</inertia>
+				</technique_common>
+			</rigid_body>
+			<rigid_body sid="rigid10" name="katana_r_finger_link">
+				<technique_common>
+					<dynamic>true</dynamic>
+					<mass>0.0251722</mass>
+					<mass_frame>
+						<translate>0.477903 0.025167 0.269584</translate>
+						<rotate>-0.59072 -0.786675 -0.17942 96.626</rotate>
+					</mass_frame>
+					<inertia>1.81842e-06 2.34804e-05 2.40362e-05</inertia>
+				</technique_common>
+			</rigid_body>
+		</physics_model>
+	</library_physics_models>
 	<scene>
 		<instance_physics_scene url="#pscene"/>
 		<instance_visual_scene url="#vscene"/>
 		<instance_kinematics_scene url="#kscene">
-			<bind_kinematics_model node="visual0/node0">
+			<bind_kinematics_model node="visual0/node1">
 				<param>kscene_kmodel0_inst</param>
 			</bind_kinematics_model>
 			<bind_joint_axis target="node0/node_katana_base_frame_joint_axis0">
