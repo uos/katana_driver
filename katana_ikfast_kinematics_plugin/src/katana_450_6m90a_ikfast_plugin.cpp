@@ -476,32 +476,38 @@ namespace katana_450_6m90a_kinematics
                                              const std::vector<double> &joint_angles,
                                              std::vector<geometry_msgs::Pose> &poses)
   {
-    KDL::Frame p_out;
-    if(link_names.size() == 0) {
-      ROS_WARN_STREAM("Link names with nothing");
-      return false;
-    }
+    // This method assumes that ComputeFk returns a 3x3 rotation matrix in eerot
+    // (which it does for Transform6D), but for TranslationDirection 5D, a
+    // 3D direction vector (of the z axis) is returned.
+    ROS_ERROR("Cannot compute FK when using TranslationDirection5D!");
+    return false;
 
-    if(link_names.size()!=1 || link_names[0]!=tip_name_){
-      ROS_ERROR("Can compute FK for %s only",tip_name_.c_str());
-      return false;
-    }
-
-    bool valid = true;
-
-    IkReal eerot[9],eetrans[3];
-    IkReal angles[joint_angles.size()];
-    for (unsigned char i=0; i < joint_angles.size(); i++) angles[i] = joint_angles[i];
-
-    // IKFast56/61
-    ComputeFk(angles,eetrans,eerot);
-
-    for(int i=0; i<3;++i) p_out.p.data[i] = eetrans[i];
-    for(int i=0; i<9;++i) p_out.M.data[i] = eerot[i];
-    poses.resize(1);
-    tf::PoseKDLToMsg(p_out,poses[0]);
-
-    return valid;
+    //  KDL::Frame p_out;
+    //  if(link_names.size() == 0) {
+    //    ROS_WARN_STREAM("Link names with nothing");
+    //    return false;
+    //  }
+    //
+    //  if(link_names.size()!=1 || link_names[0]!=tip_name_){
+    //    ROS_ERROR("Can compute FK for %s only",tip_name_.c_str());
+    //    return false;
+    //  }
+    //
+    //  bool valid = true;
+    //
+    //  IkReal eerot[9],eetrans[3];
+    //  IkReal angles[joint_angles.size()];
+    //  for (unsigned char i=0; i < joint_angles.size(); i++) angles[i] = joint_angles[i];
+    //
+    //  // IKFast56/61
+    //  ComputeFk(angles,eetrans,eerot);
+    //
+    //  for(int i=0; i<3;++i) p_out.p.data[i] = eetrans[i];
+    //  for(int i=0; i<9;++i) p_out.M.data[i] = eerot[i];
+    //  poses.resize(1);
+    //  tf::PoseKDLToMsg(p_out,poses[0]);
+    //
+    //  return valid;
   }
 
   bool IKFastKinematicsPlugin::getPositionIK(const geometry_msgs::Pose &ik_pose,
