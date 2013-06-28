@@ -525,6 +525,13 @@ namespace katana_450_6m90a_kinematics
     KDL::Frame frame;
     tf::PoseMsgToKDL(ik_pose,frame);
 
+    // print IK input on debug
+    tf::Quaternion q;
+    double roll, pitch, yaw;
+    tf::quaternionMsgToTF(ik_pose.orientation, q);
+    tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+    ROS_DEBUG("IK input - x:% 1.4f y:% 1.4f z:% 1.4f roll:% 1.4f pitch:% 1.4f yaw:% 1.4f (as quaternion: x:% 1.4f y:% 1.4f z:% 1.4f w:% 1.4f) ", ik_pose.position.x, ik_pose.position.y, ik_pose.position.z, roll, pitch, yaw, q.getX(), q.getY(), q.getZ(), q.getW());
+
     int numsol = solve(frame,vfree);
 
     if(numsol){
