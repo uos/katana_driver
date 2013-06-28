@@ -5,6 +5,6 @@
     <joints>katana_l_finger_joint katana_r_finger_joint</joints>
     <closingdirection>-1 -1</closingdirection>
     <direction>1 0 0</direction>
-    <translation>0 0 -0.03</translation>
+    <translation>0 0 0</translation>
   </manipulator>
 </robot>
