@@ -53,7 +53,7 @@
 // Need a floating point tolerance when checking joint limits, in case the joint starts at limit
 const double LIMIT_TOLERANCE = .0000001;
 
-namespace ikfast_kinematics_plugin
+namespace katana_450_6m90a_kinematics
 {
 
 #define IKFAST_NO_MAIN // Don't include main() from IKFast
@@ -825,4 +825,4 @@ bool IKFastKinematicsPlugin::getPositionIK(const geometry_msgs::Pose &ik_pose,
 
 //register IKFastKinematicsPlugin as a KinematicsBase implementation
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(ikfast_kinematics_plugin::IKFastKinematicsPlugin, kinematics::KinematicsBase);
+PLUGINLIB_EXPORT_CLASS(katana_450_6m90a_kinematics::IKFastKinematicsPlugin, kinematics::KinematicsBase);
