@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(katana_ikfast_moveit_plugin)
+project(katana_moveit_ikfast_plugin)
 
 find_package(Eigen REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
@@ -25,11 +25,11 @@ catkin_package(
 
 include_directories(include)
 
-set(MOVEIT_LIB_NAME kurtana_moveit_ikfast_kinematics_plugin)
+set(MOVEIT_LIB_NAME katana_moveit_ikfast_kinematics_plugin)
 
 find_package(LAPACK REQUIRED)
 
-add_library(${MOVEIT_LIB_NAME} src/kurtana_arm_ikfast_moveit_plugin.cpp)
+add_library(${MOVEIT_LIB_NAME} src/katana_450_6m90a_ikfast_plugin.cpp)
 target_link_libraries(${MOVEIT_LIB_NAME} ${catkin_LIBRARIES} ${Boost_LIBRARIES} ${LAPACK_LIBRARIES})
 
 install(TARGETS ${MOVEIT_LIB_NAME} LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
@@ -37,22 +37,7 @@ install(DIRECTORY include/ DESTINATION include)
 
 install(
   FILES
-  kurtana_moveit_ikfast_plugin_description.xml
+  katana_moveit_ikfast_plugin_description.xml
   DESTINATION
   ${CATKIN_PACKAGE_SHARE_DESTINATION}
   )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
