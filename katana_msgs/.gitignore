@@ -1,8 +1,1 @@
-msg/JointMovementActionFeedback.msg
-msg/JointMovementActionGoal.msg
-msg/JointMovementAction.msg
-msg/JointMovementActionResult.msg
-msg/JointMovementFeedback.msg
-msg/JointMovementGoal.msg
-msg/JointMovementResult.msg
-src/katana_msgs/
+src/katana_msgs/__init__.py
