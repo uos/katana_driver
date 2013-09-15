@@ -11,6 +11,7 @@
   <depend package="urdf"/>
   <depend package="convex_decomposition"/>
   <depend package="ivcon"/>
+  <depend package="pr2_gazebo_plugins"/>
 
 </package>
 
