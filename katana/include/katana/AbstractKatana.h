@@ -26,8 +26,8 @@
 #define ABSTRACTKATANA_H_
 
 #include <ros/ros.h>
-#include <urdf_interface/joint.h>
 #include <urdf/model.h>
+#include <urdf_model/joint.h>
 
 #include <katana/SpecifiedTrajectory.h>
 #include <katana/katana_constants.h>
