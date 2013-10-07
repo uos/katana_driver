@@ -16,6 +16,15 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+include(FindPkgConfig)
+if(PKG_CONFIG_FOUND)
+   pkg_check_modules(GAZEBO gazebo)
+endif()
+
+include_directories(${GAZEBO_INCLUDE_DIRS})
+link_directories(${GAZEBO_LIBRARY_DIRS})
+
+
 #uncomment if you have defined messages
 #rosbuild_genmsg()
 #uncomment if you have defined services
@@ -32,4 +41,4 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 rosbuild_add_boost_directories()
 
 rosbuild_add_executable(min_max_trajectory src/min_max_trajectory.cpp)
-
+target_link_libraries(min_max_trajectory ${GAZEBO_LIBRARIES})
