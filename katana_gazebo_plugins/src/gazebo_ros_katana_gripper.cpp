@@ -127,7 +127,7 @@ void GazeboRosKatanaGripper::Load(physics::ModelPtr _parent, sdf::ElementPtr _sd
 
   // Listen to the update event. This event is broadcast every
   // simulation iteration.
-  this->updateConnection = event::Events::ConnectWorldUpdateStart(
+  this->updateConnection = event::Events::ConnectWorldUpdateBegin(
       boost::bind(&GazeboRosKatanaGripper::UpdateChild, this));
   gzdbg << "plugin model name: " << modelName << "\n";
 
