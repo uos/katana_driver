@@ -12,10 +12,10 @@
 
   <!-- load world -->
   <!-- start up empty world -->
-  <include file="$(find gazebo_worlds)/launch/empty_world_throttled.launch"/>
+  <include file="$(find gazebo_ros)/launch/empty_world.launch"/>
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
-  <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -urdf -param robot_description -model katana" respawn="false" output="screen"/>
+  <node name="spawn_katana_model" pkg="gazebo_ros" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -urdf -param robot_description -model katana" respawn="false" output="screen"/>
 
   <!-- Default Controllers -->
   <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_arm_controller.yaml" />

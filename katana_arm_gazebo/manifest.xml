@@ -9,7 +9,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana_arm_gazebo</url>
   <depend package="roscpp"/>
-  <depend package="gazebo"/>
+  <depend package="gazebo_ros"/>
   <depend package="urdf"/>
   <depend package="xacro"/>
   <depend package="robot_state_publisher"/>

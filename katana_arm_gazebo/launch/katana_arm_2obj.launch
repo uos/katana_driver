@@ -10,8 +10,8 @@
   <include file="$(find katana_arm_gazebo)/launch/grasp_world.launch" />
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
-  <!-- <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -unpause -urdf -param robot_description -model katana" respawn="false" output="screen"/> -->
-  <node name="spawn_katana_model" pkg="gazebo" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -urdf -param robot_description -model katana" respawn="false" output="screen"/>
+  <!-- <node name="spawn_katana_model" pkg="gazebo_ros" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -unpause -urdf -param robot_description -model katana" respawn="false" output="screen"/> -->
+  <node name="spawn_katana_model" pkg="gazebo_ros" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -urdf -param robot_description -model katana" respawn="false" output="screen"/>
 
   <!-- Default Controllers -->
   <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_arm_controller.yaml" />
