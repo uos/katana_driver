@@ -16,6 +16,14 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 #set the default path for built libraries to the "lib" directory
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
+find_package(PkgConfig)
+
+if(PKG_CONFIG_FOUND)
+pkg_check_modules(KDL orocos-kdl)
+endif()
+
+include_directories(${KDL_INCLUDE_DIRECTORIES})
+
 #uncomment if you have defined messages
 #rosbuild_genmsg()
 #uncomment if you have defined services
@@ -30,3 +38,4 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_executable(joint_movement_adapter src/joint_movement_adapter.cpp)
+target_link_libraries(joint_movement_adapter ${KDL_LIBRARIES})
