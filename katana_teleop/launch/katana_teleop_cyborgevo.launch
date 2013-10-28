@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<launch>
-  <node pkg="joy" type="joy_node" name="joy_node">
-  	<param name="autorepeat_rate" value="10"/>
-  </node>
-
-  <!-- start cyborgevo teleop node here -->
-  <node pkg="katana_teleop" type="katana_teleop_cyborgevo" name="katana_teleop_cyborgevo" output="screen"/>
-</launch>
