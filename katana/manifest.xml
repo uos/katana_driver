@@ -44,6 +44,6 @@
   <depend package="katana_msgs"/>
 
   <!-- for JointMovementActionController -->
-  <depend package="arm_navigation_msgs"/>
+  <depend package="moveit_msgs"/>
 
 </package>

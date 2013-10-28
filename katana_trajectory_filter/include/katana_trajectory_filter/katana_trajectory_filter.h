@@ -29,7 +29,7 @@
 
 #include <trajectory_msgs/JointTrajectory.h>
 #include <arm_navigation_msgs/JointTrajectoryWithLimits.h>
-#include <arm_navigation_msgs/JointLimits.h>
+#include <moveit_msgs/JointLimits.h>
 #include <arm_navigation_msgs/FilterJointTrajectory.h>
 #include <arm_navigation_msgs/FilterJointTrajectoryWithConstraints.h>
 

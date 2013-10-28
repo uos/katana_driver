@@ -59,7 +59,7 @@ private:
   ros::ServiceServer get_ik_server_;
 
   std::vector<std::string> joint_names_;
-  std::vector<arm_navigation_msgs::JointLimits> joint_limits_;
+  std::vector<moveit_msgs::JointLimits> joint_limits_;
 
   CikBase ikBase_;
   KNIConverter* converter_;

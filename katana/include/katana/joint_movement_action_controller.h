@@ -36,7 +36,7 @@
 #include <sensor_msgs/JointState.h>
 #include <katana_msgs/JointMovementAction.h>
 
-#include <arm_navigation_msgs/JointLimits.h>
+#include <moveit_msgs/JointLimits.h>
 
 namespace katana
 {

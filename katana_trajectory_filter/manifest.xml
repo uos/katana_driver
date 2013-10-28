@@ -31,6 +31,7 @@
   <depend package="spline_smoother"/>
   <depend package="trajectory_msgs"/>
   <depend package="arm_navigation_msgs"/>
+  <depend package="moveit_msgs"/>
 
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib -lkatana_trajectory_filter"/>

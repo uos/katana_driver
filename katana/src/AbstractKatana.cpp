@@ -192,7 +192,7 @@ std::vector<double> AbstractKatana::getMotorVelocities()
   return motor_velocities_;
 }
 
-std::vector<arm_navigation_msgs::JointLimits> AbstractKatana::getMotorLimits()
+std::vector<moveit_msgs::JointLimits> AbstractKatana::getMotorLimits()
 {
   return motor_limits_;
 }
