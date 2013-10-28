@@ -29,9 +29,9 @@
 #include <ros/package.h>
 #include <tf/transform_listener.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <kinematics_msgs/GetKinematicSolverInfo.h>
-#include <kinematics_msgs/GetPositionFK.h>
-#include <kinematics_msgs/GetPositionIK.h>
+#include <moveit_msgs/GetKinematicSolverInfo.h>
+#include <moveit_msgs/GetPositionFK.h>
+#include <moveit_msgs/GetPositionIK.h>
 #include <urdf/model.h>
 
 #include <KNI_InvKin/ikBase.h>
@@ -65,11 +65,11 @@ private:
   KNIConverter* converter_;
   tf::TransformListener tf_listener_;
 
-  bool get_kinematic_solver_info(kinematics_msgs::GetKinematicSolverInfo::Request &req,
-                                 kinematics_msgs::GetKinematicSolverInfo::Response &res);
+  bool get_kinematic_solver_info(moveit_msgs::GetKinematicSolverInfo::Request &req,
+                                 moveit_msgs::GetKinematicSolverInfo::Response &res);
 
-  bool get_position_fk(kinematics_msgs::GetPositionFK::Request &req, kinematics_msgs::GetPositionFK::Response &res);
-  bool get_position_ik(kinematics_msgs::GetPositionIK::Request &req, kinematics_msgs::GetPositionIK::Response &res);
+  bool get_position_fk(moveit_msgs::GetPositionFK::Request &req, moveit_msgs::GetPositionFK::Response &res);
+  bool get_position_ik(moveit_msgs::GetPositionIK::Request &req, moveit_msgs::GetPositionIK::Response &res);
 
   std::vector<double> getCoordinates();
   std::vector<double> getCoordinates(std::vector<double> jointAngles);

@@ -115,8 +115,8 @@ KNIKinematics::~KNIKinematics()
   delete converter_;
 }
 
-bool KNIKinematics::get_kinematic_solver_info(kinematics_msgs::GetKinematicSolverInfo::Request &req,
-                                              kinematics_msgs::GetKinematicSolverInfo::Response &res)
+bool KNIKinematics::get_kinematic_solver_info(moveit_msgs::GetKinematicSolverInfo::Request &req,
+                                              moveit_msgs::GetKinematicSolverInfo::Response &res)
 {
   res.kinematic_solver_info.joint_names = joint_names_;
   res.kinematic_solver_info.limits = joint_limits_;
@@ -124,8 +124,8 @@ bool KNIKinematics::get_kinematic_solver_info(kinematics_msgs::GetKinematicSolve
   return true;
 }
 
-bool KNIKinematics::get_position_fk(kinematics_msgs::GetPositionFK::Request &req,
-                                    kinematics_msgs::GetPositionFK::Response &res)
+bool KNIKinematics::get_position_fk(moveit_msgs::GetPositionFK::Request &req,
+                                    moveit_msgs::GetPositionFK::Response &res)
 {
   std::vector<double> jointAngles, coordinates;
 
@@ -187,8 +187,8 @@ bool KNIKinematics::get_position_fk(kinematics_msgs::GetPositionFK::Request &req
   return true;
 }
 
-bool KNIKinematics::get_position_ik(kinematics_msgs::GetPositionIK::Request &req,
-                                    kinematics_msgs::GetPositionIK::Response &res)
+bool KNIKinematics::get_position_ik(moveit_msgs::GetPositionIK::Request &req,
+                                    moveit_msgs::GetPositionIK::Response &res)
 {
   std::vector<double> kni_coordinates(6, 0.0);
   std::vector<int> solution(NUM_JOINTS + 1);
@@ -201,13 +201,13 @@ bool KNIKinematics::get_position_ik(kinematics_msgs::GetPositionIK::Request &req
   }
 
   // ------- convert req.ik_request.ik_seed_state into seed_encoders
-  std::vector<int> lookup = makeJointsLookup(req.ik_request.ik_seed_state.joint_state.name);
+  std::vector<int> lookup = makeJointsLookup(req.ik_request.robot_state.joint_state.name);
   if (lookup.size() == 0)
     return false;
 
   for (size_t i = 0; i < joint_names_.size(); i++)
   {
-    seed_encoders[i] = converter_->angle_rad2enc(i, req.ik_request.ik_seed_state.joint_state.position[lookup[i]]);
+    seed_encoders[i] = converter_->angle_rad2enc(i, req.ik_request.robot_state.joint_state.position[lookup[i]]);
   }
 
   // ------- convert req.ik_request.pose_stamped into kni_coordinates

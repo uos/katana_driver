@@ -33,7 +33,6 @@
   <depend package="urdf"/>
 
   <!-- for KNIKinematics -->
-  <depend package="kinematics_msgs"/>
   <depend package="tf"/>
   <rosdep name="armadillo"/>
 
