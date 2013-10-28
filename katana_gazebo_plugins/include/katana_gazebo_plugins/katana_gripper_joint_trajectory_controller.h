@@ -30,7 +30,6 @@
 
 #include <ros/ros.h>
 #include <actionlib/server/action_server.h>
-#include <spline_smoother/splines.h>
 
 #include <trajectory_msgs/JointTrajectory.h>
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
@@ -118,6 +117,75 @@ public:
 
 };
 
+} // namespace katana_gazebo_plugins
+
+
+// copied here from package spline_smoother, which was removed in hydro
+namespace spline_smoother
+{
+
+static inline void generatePowers(int n, double x, double* powers)
+{
+  powers[0] = 1.0;
+  for (int i=1; i<=n; i++)
+  {
+    powers[i] = powers[i-1]*x;
+  }
 }
+
+/**
+ * \brief Calculates cubic spline coefficients given the start and end way-points
+ *
+ * The input to this function is the start and end way-point, with position, velocity
+ * and the duration of the spline segment. (assumes that the spline runs from 0 to time)
+ *
+ * Returns 4 coefficients of the quintic polynomial in the "coefficients" vector. The spline can then
+ * be sampled as:
+ * x = coefficients[0]*t^0 + coefficients[1]*t^1 ... coefficients[3]*t^3
+ */
+void getCubicSplineCoefficients(double start_pos, double start_vel,
+    double end_pos, double end_vel, double time, std::vector<double>& coefficients);
+
+/**
+ * \brief Samples a cubic spline segment at a particular time
+ */
+void sampleCubicSpline(const std::vector<double>& coefficients, double time,
+    double& position, double& velocity, double& acceleration);
+
+
+inline void getCubicSplineCoefficients(double start_pos, double start_vel,
+    double end_pos, double end_vel, double time, std::vector<double>& coefficients)
+{
+  coefficients.resize(4);
+
+  double T[4];
+  generatePowers(3, time, T);
+
+  coefficients[0] = start_pos;
+  coefficients[1] = start_vel;
+  coefficients[2] = (-3.0*start_pos + 3.0*end_pos - 2.0*start_vel*T[1] - end_vel*T[1]) / T[2];
+  coefficients[3] = (2.0*start_pos - 2.0*end_pos + start_vel*T[1] + end_vel*T[1]) / T[3];
+}
+
+inline void sampleCubicSpline(const std::vector<double>& coefficients, double time,
+    double& position, double& velocity, double& acceleration)
+{
+  double t[4];
+  generatePowers(3, time, t);
+
+  position = t[0]*coefficients[0] +
+    t[1]*coefficients[1] +
+    t[2]*coefficients[2] +
+    t[3]*coefficients[3];
+
+  velocity = t[0]*coefficients[1] +
+    2.0*t[1]*coefficients[2] +
+    3.0*t[2]*coefficients[3];
+
+  acceleration = 2.0*t[0]*coefficients[2] +
+    6.0*t[1]*coefficients[3];
+}
+
+} // namespace spline_smoother
 
 #endif /* KATANA_GRIPPER_JOINT_TRAJECTORY_CONTROLLER_H_ */

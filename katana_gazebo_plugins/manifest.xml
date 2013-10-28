@@ -18,7 +18,6 @@
   <depend package="actionlib"/>
   <depend package="katana_msgs"/>
   <depend package="pr2_controllers_msgs"/>
-  <depend package="spline_smoother"/>
 
   <export>
     <cpp cflags="-I${prefix}/include" lflags="-Wl,-rpath,${prefix}/lib -L${prefix}/lib" />
