@@ -335,9 +335,21 @@ bool Katana300::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj,
       lock.unlock();
       ros::spinOnce();
       ros::Time::sleepUntil(ros::Time(seg.start_time));
+
+      while (seg.start_time > ros::Time::now().toSec())
+      {
+        if (isPreemptRequested())
+        {
+          ROS_INFO("Preempt requested. Aborting the trajectory!");
+          lock.lock();
+          kni->freezeRobot();
+          return true;
+        }
+        ros::spinOnce();
+        ros::Duration(0.001).sleep();
+      }
       lock.lock();
       kni->startSplineMovement(false);
-
     }
 
     //kni->moveRobotToEnc(encoders, true);	// to ensure that the goal position is reached
