@@ -396,12 +396,12 @@ bool KatanaTeleopKey::send_gripper_action(int goal_type)
   switch (goal_type)
   {
     case GRASP:
-      goal.command.position = 2.0; // angle is ignored
+      goal.command.position = 0.009; // angle is ignored
       // leave velocity and effort empty
       break;
 
     case RELEASE:
-      goal.command.position = 3.0; // angle is ignored
+      goal.command.position = 0.11; // angle is ignored
       // leave velocity and effort empty
       break;
 

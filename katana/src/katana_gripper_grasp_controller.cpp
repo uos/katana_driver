@@ -57,40 +57,24 @@ KatanaGripperGraspController::~KatanaGripperGraspController()
 
 void KatanaGripperGraspController::executeCB(const control_msgs::GripperCommandGoalConstPtr &goal)
 {
-  if (goal->command.position == 2.0)
+  if (goal->command.position < 0.01)
   {
-
-  
-    // well, we don't really use the command.position value here (at least not as per its intended usage), we just instruct
-    // the gripper to close all the way...
-    // that might change in the future and we might do something more interesting
+    
     katana_->moveJoint(GRIPPER_INDEX, GRIPPER_CLOSED_ANGLE);
 
     last_command_was_close_ = true;
-    /*
-    case 1.0:
-      // well, we don't really use the command.position value here, we just instruct
-      // the gripper to open  all the way...
-      // that might change in the future and we might do something more interesting
-      for (unsigned int i = 0; i < goal->grasp.pre_grasp_posture.position.size(); i++)
-      {
-        katana_->moveJoint(katana_->getJointIndex(goal->grasp.pre_grasp_posture.name[i]),
-                           goal->grasp.pre_grasp_posture.position[i]);
-      }
-
-      last_command_was_close_ = false;
-      break;
-    */
   }
-  else if (goal->command.position == 3.0)
+  else if (goal->command.position > 0.10)
   {
     katana_->moveJoint(GRIPPER_INDEX, GRIPPER_OPEN_ANGLE);
     last_command_was_close_ = false;
   }
   else
   {
-    ROS_ERROR("katana gripper grasp execution: unknown goal code (%f)", goal->command.position);
-    action_server_->setAborted();
+    katana_->moveJoint(GRIPPER_INDEX, acos((2*(GRIPPER_LENGTH * GRIPPER_LENGTH) - goal->command.position * 
+                                                    goal->command.position))/(4*GRIPPER_LENGTH));
+    // ROS_ERROR("katana gripper grasp execution: unknown goal code (%f)", goal->command.position);
+    // action_server_->setAborted();
   }
 
   // wait for gripper to open/close
@@ -108,18 +92,9 @@ void KatanaGripperGraspController::executeCB(const control_msgs::GripperCommandG
   }
   else
   {
-    if (goal->command.position == 2)
-    {
-      // this is probably correct behavior, since there is an object in the gripper
-      // we can not expect the gripper to fully close
-      action_server_->setSucceeded();
-    }
-    else
-    {
       ROS_WARN("Gripper goal not achieved for pre-grasp or release");
       // this might become a failure later, for now we're still investigating
       action_server_->setSucceeded();
-    }
   }
 }
 
