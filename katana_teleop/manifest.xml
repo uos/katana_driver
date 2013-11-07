@@ -16,14 +16,10 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana_teleop</url>
 
-  <depend package="geometry_msgs"/>
   <depend package="sensor_msgs"/>
-  <depend package="rospy"/>
   <depend package="roscpp"/>
   <depend package="katana_msgs"/>
   <depend package="actionlib"/>
-  <depend package="kinematics_msgs"/>
-  <depend package="object_manipulation_msgs"/>
 </package>
 
 

@@ -37,9 +37,6 @@
   <depend package="tf"/>
   <rosdep name="armadillo"/>
 
-  <!-- for katana_gripper_grasp_controller -->
-  <depend package="object_manipulation_msgs"/>
-
   <!-- for JointMovementActionController -->
   <depend package="katana_msgs"/>
 
