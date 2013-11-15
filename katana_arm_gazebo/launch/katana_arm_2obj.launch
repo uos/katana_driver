@@ -7,7 +7,9 @@
   <rosparam command="load" file="$(find katana)/config/katana_arm_controllers.yaml" />
 
   <!-- load world -->
-  <include file="$(find katana_arm_gazebo)/launch/grasp_world.launch" />
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find katana_arm_gazebo)/worlds/grasp.world"/>
+  </include>
 
   <!-- push robot_description to factory and spawn robot in gazebo -->
   <!-- <node name="spawn_katana_model" pkg="gazebo_ros" type="spawn_model" args="$(optenv ROBOT_INITIAL_POSE) -z 0.01 -unpause -urdf -param robot_description -model katana" respawn="false" output="screen"/> -->
@@ -36,6 +38,7 @@
   <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
     args="pub /calibrated std_msgs/Bool true" />
 
+  <!-- Spawn objects -->
   <!--
   <include file="$(find katana_arm_gazebo)/launch/cylinder_object.launch"/>
   -->
