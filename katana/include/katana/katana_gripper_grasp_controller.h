@@ -31,8 +31,8 @@
 
 #include <actionlib/server/simple_action_server.h>
 
-#include <object_manipulation_msgs/GraspHandPostureExecutionAction.h>
-#include <object_manipulation_msgs/GraspStatus.h>
+#include <control_msgs/GripperCommandAction.h>
+#include <control_msgs/QueryTrajectoryState.h>
 
 #include <katana/AbstractKatana.h>
 
@@ -48,22 +48,23 @@ public:
 
 private:
   //! Action server for the grasp posture action
-  actionlib::SimpleActionServer<object_manipulation_msgs::GraspHandPostureExecutionAction> *action_server_;
+  actionlib::SimpleActionServer<control_msgs::GripperCommandAction> *action_server_;
 
   //! Server for the posture query service
   ros::ServiceServer query_srv_;
 
   boost::shared_ptr<AbstractKatana> katana_;
 
-  bool last_command_was_close_;
-
   //! A joint angle below this value indicates there is nothing inside the gripper
   double gripper_object_presence_threshold_;
 
-  void executeCB(const object_manipulation_msgs::GraspHandPostureExecutionGoalConstPtr &goal);
+  //! A difference in desired goal angle and actual goal angle above this value indicates that the goal was not reached
+  double goal_threshold_;
 
-  bool serviceCallback(object_manipulation_msgs::GraspStatus::Request &request,
-                       object_manipulation_msgs::GraspStatus::Response &response);
+  void executeCB(const control_msgs::GripperCommandGoalConstPtr &goal);
+
+  bool serviceCallback(control_msgs::QueryTrajectoryState::Request &request,
+                       control_msgs::QueryTrajectoryState::Response &response);
 
 };
 

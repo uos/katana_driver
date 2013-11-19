@@ -34,13 +34,13 @@
 #include <ros/ros.h>
 #include <sensor_msgs/JointState.h>
 #include <katana_msgs/JointMovementAction.h>
-#include <object_manipulation_msgs/GraspHandPostureExecutionAction.h>
+#include <control_msgs/GripperCommandAction.h>
 
 #include <actionlib/server/simple_action_server.h>
 #include <actionlib/client/simple_action_client.h>
 
 typedef actionlib::SimpleActionClient<katana_msgs::JointMovementAction> JMAC;
-typedef object_manipulation_msgs::GraspHandPostureExecutionGoal GHPEG;
+typedef control_msgs::GripperCommandGoal GCG;
 
 #define KEYCODE_A 0x61
 #define KEYCODE_D 0x64
@@ -69,6 +69,9 @@ typedef object_manipulation_msgs::GraspHandPostureExecutionGoal GHPEG;
 #define KEYCODE_7 0x37
 #define KEYCODE_8 0x38
 #define KEYCODE_9 0x39
+
+#define GRASP 1
+#define RELEASE 2
 
 struct termios cooked, raw;
 int kfd = 0;
@@ -107,7 +110,7 @@ class KatanaTeleopKey
     sensor_msgs::JointState initial_pose_;
 
     JMAC action_client;
-    actionlib::SimpleActionClient<object_manipulation_msgs::GraspHandPostureExecutionAction> gripper_;
+    actionlib::SimpleActionClient<control_msgs::GripperCommandAction> gripper_;
     ros::Subscriber js_sub_;
 };
 }

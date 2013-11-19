@@ -51,6 +51,7 @@ static const double DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD = -0.43;
 /// The maximum time it takes to open or close the gripper
 static const double GRIPPER_OPENING_CLOSING_DURATION = 3.0;
 
+static const double GRIPPER_LENGTH = 0.094;
 
 /// constants for converting between the KNI gripper angle and the URDF gripper angle
 static const double KNI_GRIPPER_CLOSED_ANGLE = 0.21652991032554647;
