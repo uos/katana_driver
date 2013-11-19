@@ -55,10 +55,11 @@ private:
 
   boost::shared_ptr<AbstractKatana> katana_;
 
-  bool last_command_was_close_;
-
   //! A joint angle below this value indicates there is nothing inside the gripper
   double gripper_object_presence_threshold_;
+
+  //! A difference in desired goal angle and actual goal angle above this value indicates that the goal was not reached
+  double goal_threshold_;
 
   void executeCB(const control_msgs::GripperCommandGoalConstPtr &goal);
 

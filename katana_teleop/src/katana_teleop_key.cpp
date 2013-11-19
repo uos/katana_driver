@@ -351,6 +351,7 @@ void KatanaTeleopKey::keyboardLoop()
       case KEYCODE_O:
         send_gripper_action(RELEASE);
         break;
+
     } // end switch case
 
     if (dirty)
@@ -396,18 +397,19 @@ bool KatanaTeleopKey::send_gripper_action(int goal_type)
   switch (goal_type)
   {
     case GRASP:
-      goal.command.position = 0.009; // angle is ignored
+      goal.command.position = -0.44; 
       // leave velocity and effort empty
       break;
 
     case RELEASE:
-      goal.command.position = 0.11; // angle is ignored
+      goal.command.position = 0.3; // angle is ignored
       // leave velocity and effort empty
       break;
 
     default:
       ROS_ERROR("unknown goal code (%d)", goal_type);
       return false;
+
   }
 
 
@@ -425,7 +427,9 @@ bool KatanaTeleopKey::send_gripper_action(int goal_type)
     actionlib::SimpleClientGoalState state = gripper_.getState();
     bool success = (state == actionlib::SimpleClientGoalState::SUCCEEDED);
     if (success)
+    {
       ROS_INFO("Action finished: %s",state.toString().c_str());
+    }
     else
       ROS_WARN("Action failed: %s",state.toString().c_str());
 

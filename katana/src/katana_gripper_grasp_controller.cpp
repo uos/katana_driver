@@ -31,13 +31,14 @@ namespace katana
 {
 
 KatanaGripperGraspController::KatanaGripperGraspController(boost::shared_ptr<AbstractKatana> katana) :
-  katana_(katana), last_command_was_close_(false)
+  katana_(katana)
 {
   ros::NodeHandle root_nh("");
   ros::NodeHandle pn("~");
 
   pn.param<double> ("gripper_object_presence_threshold", gripper_object_presence_threshold_,
                     DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD);
+  pn.param<double> ("goal_threshold", goal_threshold_, 0.01);
 
   std::string query_service_name = root_nh.resolveName("gripper_grasp_status");
   query_srv_ = root_nh.advertiseService(query_service_name, &KatanaGripperGraspController::serviceCallback, this);
@@ -48,6 +49,7 @@ KatanaGripperGraspController::KatanaGripperGraspController(boost::shared_ptr<Abs
       gripper_grasp_posture_controller, boost::bind(&KatanaGripperGraspController::executeCB, this, _1), false);
   action_server_->start();
   ROS_INFO_STREAM("katana gripper grasp hand posture action server started on topic " << gripper_grasp_posture_controller);
+
 }
 
 KatanaGripperGraspController::~KatanaGripperGraspController()
@@ -57,68 +59,43 @@ KatanaGripperGraspController::~KatanaGripperGraspController()
 
 void KatanaGripperGraspController::executeCB(const control_msgs::GripperCommandGoalConstPtr &goal)
 {
-  if (goal->command.position < 0.01)
-  {
-    
-    katana_->moveJoint(GRIPPER_INDEX, GRIPPER_CLOSED_ANGLE);
-
-    last_command_was_close_ = true;
-  }
-  else if (goal->command.position > 0.10)
-  {
-    katana_->moveJoint(GRIPPER_INDEX, GRIPPER_OPEN_ANGLE);
-    last_command_was_close_ = false;
-  }
-  else
-  {
-    katana_->moveJoint(GRIPPER_INDEX, acos((2*(GRIPPER_LENGTH * GRIPPER_LENGTH) - goal->command.position * 
-                                                    goal->command.position))/(4*GRIPPER_LENGTH));
-    // ROS_ERROR("katana gripper grasp execution: unknown goal code (%f)", goal->command.position);
-    // action_server_->setAborted();
-  }
-
+  ROS_INFO("Moving gripper to position: %f", goal->command.position);
+  bool moveJointSuccess = katana_->moveJoint(GRIPPER_INDEX, goal->command.position);
   // wait for gripper to open/close
   ros::Duration(GRIPPER_OPENING_CLOSING_DURATION).sleep();
-
-  // If we ever do anything else than setSucceeded() in the future, we will have to really
-  // check if the desired opening angle was reached by the gripper here.
-  //static const bool move_gripper_success = true;
-  static bool move_gripper_success = true;
-  // process the result
-  if (move_gripper_success)
+  
+  control_msgs::GripperCommandResult result;
+  result.position = katana_->getMotorAngles()[GRIPPER_INDEX];
+  result.reached_goal = false;
+  result.stalled = false;
+  
+  if (moveJointSuccess && fabs(result.position - goal->command.position) < goal_threshold_)
+  {  
+    ROS_INFO("Gripper goal reached");
+    result.reached_goal = true;
+    action_server_->setSucceeded(result); 
+  }
+  else if (moveJointSuccess && goal->command.position == GRIPPER_CLOSED_ANGLE && fabs(result.position - goal->command.position) > goal_threshold_)
   {
-    ROS_INFO("Gripper goal achieved");
-    action_server_->setSucceeded();
+    ROS_INFO("We may have grabbed an object");
+    result.stalled = true;
+    action_server_->setSucceeded(result);
   }
   else
   {
-      ROS_WARN("Gripper goal not achieved for pre-grasp or release");
-      // this might become a failure later, for now we're still investigating
-      action_server_->setSucceeded();
+    ROS_WARN("Goal position (%f) outside gripper range. Or some other stuff happened.", goal->command.position);
+    action_server_->setAborted(result);
   }
+
+
 }
 
-bool KatanaGripperGraspController::serviceCallback(control_msgs::QueryTrajectoryState::Request &request,
+bool KatanaGripperGraspController::serviceCallback(control_msgs::QueryTrajectoryState::Request &request, 
                                                    control_msgs::QueryTrajectoryState::Response &response)
 {
-  if (!last_command_was_close_)
-  {
-    ROS_INFO("Gripper grasp query false: the last gripper command was not 'close' (= not holding any object)");
-    
-    return true;
-  }
-
-  double gripperAngle = katana_->getMotorAngles()[GRIPPER_INDEX];
-  if (gripperAngle < gripper_object_presence_threshold_)
-  {
-    ROS_INFO("Gripper grasp query false: gripper angle %f below threshold %f (= not holding any object)",
-        gripperAngle, gripper_object_presence_threshold_);
-  }
-  else
-  {
-    ROS_INFO("Gripper grasp query true: gripper angle %f above threshold %f (= holding an object)",
-        gripperAngle, gripper_object_presence_threshold_);
-  }
+  response.position.resize(1);
+  response.position[0] = katana_->getMotorAngles()[GRIPPER_INDEX];
+  //std::cout << response.position << std::endl;
   return true;
 }
 
