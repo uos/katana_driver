@@ -345,12 +345,13 @@ void KatanaTeleopKey::keyboardLoop()
         break;
 
       case KEYCODE_C:
-        send_gripper_action(GHPEG::GRASP);
+        send_gripper_action(GRASP);
         break;
 
       case KEYCODE_O:
-        send_gripper_action(GHPEG::RELEASE);
+        send_gripper_action(RELEASE);
         break;
+
     } // end switch case
 
     if (dirty)
@@ -389,33 +390,28 @@ void KatanaTeleopKey::keyboardLoop()
   }
 }
 
-bool KatanaTeleopKey::send_gripper_action(int32_t goal_type)
+bool KatanaTeleopKey::send_gripper_action(int goal_type)
 {
-  GHPEG goal;
+  GCG goal;
 
   switch (goal_type)
   {
-    case GHPEG::GRASP:
-      goal.grasp.grasp_posture.name.push_back("dummy_name");
-      goal.grasp.grasp_posture.position.push_back(0.0); // angle is ignored
+    case GRASP:
+      goal.command.position = -0.44; 
       // leave velocity and effort empty
       break;
 
-    case GHPEG::PRE_GRASP:
-      goal.grasp.pre_grasp_posture.name.push_back("dummy_name");
-      goal.grasp.pre_grasp_posture.position.push_back(0.0);
+    case RELEASE:
+      goal.command.position = 0.3; 
       // leave velocity and effort empty
-      break;
-
-    case GHPEG::RELEASE:
       break;
 
     default:
       ROS_ERROR("unknown goal code (%d)", goal_type);
       return false;
+
   }
 
-  goal.goal = goal_type;
 
   bool finished_within_time = false;
   gripper_.sendGoal(goal);

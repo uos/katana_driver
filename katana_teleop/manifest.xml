@@ -20,7 +20,6 @@
   <depend package="roscpp"/>
   <depend package="katana_msgs"/>
   <depend package="actionlib"/>
-  <depend package="object_manipulation_msgs"/>
 </package>
 
 
