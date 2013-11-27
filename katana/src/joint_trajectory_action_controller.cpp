@@ -721,11 +721,6 @@ bool JointTrajectoryActionController::validTrajectory(const SpecifiedTrajectory 
         ROS_ERROR("Velocity discontinuity at end of segment %zu (joint %zu)", seg, j);
         return false;
       }
-      if (std::abs(2.0 * traj[seg + 1].splines[j].coef[2] - acc_t) > EPSILON)
-      {
-        ROS_WARN("Acceleration discontinuity (old segment: %f, new segment: %f, diff: %f) at end of segment %zu (joint %zu)", 2.0 * traj[seg + 1].splines[j].coef[2], acc_t, std::abs(2.0 * traj[seg + 1].splines[j].coef[2] - acc_t), seg, j);
-        // return false;
-      }
     }
   }
 
