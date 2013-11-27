@@ -327,8 +327,9 @@ bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
     ros::Time start_time = ros::Time(traj->at(0).start_time);
     double time_until_start = (start_time - ros::Time::now()).toSec();
 
-    if (time_until_start < -0.01)
+    if (fabs(traj->at(0).start_time) > 0.01 && time_until_start < -0.01)
     {
+      // only print warning if traj->at(0).start_time != 0 (MoveIt usually doesn't set start time)
       ROS_WARN("Trajectory started %f s too late! Scheduled: %f, started: %f", -time_until_start, start_time.toSec(), ros::Time::now().toSec());
     }
     else if (time_until_start > 0.0)
