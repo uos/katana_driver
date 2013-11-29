@@ -1,16 +1,12 @@
 <?xml version="1.0"?>
 
-<robot xmlns:controller="http://playerstage.sourceforge.net/gazebo/xmlschema/#controller" 
-  xmlns:interface="http://playerstage.sourceforge.net/gazebo/xmlschema/#interface" 
-  xmlns:sensor="http://playerstage.sourceforge.net/gazebo/xmlschema/#sensor"
-  xmlns:xacro="http://ros.org/wiki/xacro">
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
 
   <gazebo>
     <!-- controller for the 5 arm joints -->
     <plugin name="gazebo_ros_controller_manager" filename="libgazebo_ros_controller_manager.so">
       <alwaysOn>true</alwaysOn>
       <updateRate>1000.0</updateRate>
-      <interface:audio name="gazebo_ros_controller_manager_dummy_iface" />
     </plugin>
 
     <!-- gripper controller -->
