@@ -17,7 +17,7 @@
   <depend package="pr2_controller_manager"/>
   <depend package="robot_mechanism_controllers"/>
   <depend package="katana_gazebo_plugins"/>
-  <depend package="katana_joint_movement_adapter"/>
+  <depend package="joint_trajectory_controller"/>
 
   <!-- needed for test programs (moving the joints and gripper): -->  
   <depend package="actionlib"/>

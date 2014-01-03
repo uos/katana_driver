@@ -3,10 +3,8 @@
 <robot xmlns:xacro="http://ros.org/wiki/xacro">
 
   <gazebo>
-    <!-- controller for the 5 arm joints -->
-    <plugin name="gazebo_ros_controller_manager" filename="libgazebo_ros_controller_manager.so">
-      <alwaysOn>true</alwaysOn>
-      <updateRate>1000.0</updateRate>
+    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+      <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
     </plugin>
 
     <!-- gripper controller -->
