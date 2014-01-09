@@ -23,10 +23,5 @@
 
   <!-- JointState message -->
   <depend package="sensor_msgs"/>
-
-  <!-- trajectory filtering-->
-  <depend package="trajectory_filter_server"/>
-  <depend package="katana_trajectory_filter"/>
-  <depend package="arm_navigation_msgs"/>
 </package>
 

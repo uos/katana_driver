@@ -12,7 +12,6 @@
 #include <pr2_controllers_msgs/JointTrajectoryAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <sensor_msgs/JointState.h>
-#include <arm_navigation_msgs/FilterJointTrajectory.h>
 #include <trajectory_msgs/JointTrajectory.h>
 
 namespace katana_tutorials
@@ -40,7 +39,6 @@ private:
   ros::AsyncSpinner spinner_;
 
   void jointStateCB(const sensor_msgs::JointState::ConstPtr &msg);
-  trajectory_msgs::JointTrajectory filterJointTrajectory(const trajectory_msgs::JointTrajectory &input);
 };
 
 } /* namespace katana_tutorials */

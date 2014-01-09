@@ -106,22 +106,22 @@ pr2_controllers_msgs::JointTrajectoryGoal Pr2JointTrajectoryClient::makeArmUpTra
 
   // trajectory point:
   int ind = 0;
-  trajectory.points[ind].time_from_start = ros::Duration(ind);
+  trajectory.points[ind].time_from_start = ros::Duration(5 * ind);
   trajectory.points[ind].positions = current_joint_state_;
 
   // trajectory point:
   ind++;
-  trajectory.points[ind].time_from_start = ros::Duration(ind);
+  trajectory.points[ind].time_from_start = ros::Duration(5 * ind);
   trajectory.points[ind].positions = calibration_positions;
 
   // trajectory point:
   ind++;
-  trajectory.points[ind].time_from_start = ros::Duration(ind);
+  trajectory.points[ind].time_from_start = ros::Duration(5 * ind);
   trajectory.points[ind].positions = straight_up_positions;
 
   // trajectory point:
   ind++;
-  trajectory.points[ind].time_from_start = ros::Duration(ind);
+  trajectory.points[ind].time_from_start = ros::Duration(5 * ind);
   trajectory.points[ind].positions.resize(NUM_JOINTS);
   trajectory.points[ind].positions = calibration_positions;
 
@@ -136,7 +136,7 @@ pr2_controllers_msgs::JointTrajectoryGoal Pr2JointTrajectoryClient::makeArmUpTra
   //  }
 
   pr2_controllers_msgs::JointTrajectoryGoal goal;
-  goal.trajectory = filterJointTrajectory(trajectory);
+  goal.trajectory = trajectory;
   return goal;
 }
 
@@ -144,33 +144,6 @@ pr2_controllers_msgs::JointTrajectoryGoal Pr2JointTrajectoryClient::makeArmUpTra
 actionlib::SimpleClientGoalState Pr2JointTrajectoryClient::getState()
 {
   return traj_client_.getState();
-}
-
-trajectory_msgs::JointTrajectory Pr2JointTrajectoryClient::filterJointTrajectory(
-    const trajectory_msgs::JointTrajectory &input)
-{
-  ros::service::waitForService("trajectory_filter/filter_trajectory");
-  arm_navigation_msgs::FilterJointTrajectory::Request req;
-  arm_navigation_msgs::FilterJointTrajectory::Response res;
-  ros::ServiceClient filter_trajectory_client_ = nh_.serviceClient<arm_navigation_msgs::FilterJointTrajectory>(
-      "trajectory_filter/filter_trajectory");
-
-  req.trajectory = input;
-  req.allowed_time = ros::Duration(1.0);
-
-  if (filter_trajectory_client_.call(req, res))
-  {
-    if (res.error_code.val == res.error_code.SUCCESS)
-      ROS_INFO("Requested trajectory was filtered");
-    else
-      ROS_WARN("Requested trajectory was not filtered. Error code: %d", res.error_code.val);
-  }
-  else
-  {
-    ROS_ERROR("Service call to filter trajectory failed %s", filter_trajectory_client_.getService().c_str());
-  }
-
-  return res.trajectory;
 }
 
 } /* namespace katana_tutorials */
