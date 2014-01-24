@@ -283,7 +283,7 @@ void Katana::refreshMotorStatus()
  *
  * @param traj
  */
-bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj)
+bool Katana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj, boost::function<bool ()> isPreemptRequested)
 {
   assert(traj->size() > 0);
 

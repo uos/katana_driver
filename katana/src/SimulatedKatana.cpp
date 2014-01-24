@@ -73,7 +73,7 @@ void SimulatedKatana::refreshEncoders()
   }
 }
 
-bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj_ptr)
+bool SimulatedKatana::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj_ptr, boost::function<bool ()> isPreemptRequested)
 {
   // ------- wait until start time
   ros::Time::sleepUntil(ros::Time(traj_ptr->at(0).start_time));
