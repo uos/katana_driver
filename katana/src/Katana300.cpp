@@ -127,8 +127,7 @@ bool Katana300::allMotorsReady()
   {
     if (motor_status_[i] == MSF_MOTCRASHED)
       return false;
-    if (fabs(desired_angles_[i] - motor_angles[i]) > JOINTS_STOPPED_POS_TOLERANCE)
-      return false;
+
     if (fabs(motor_velocities_[i]) > JOINTS_STOPPED_VEL_TOLERANCE)
       return false;
   }
