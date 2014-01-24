@@ -531,7 +531,7 @@ int JointTrajectoryActionController::executeCommon(const trajectory_msgs::JointT
   }
 
   ROS_INFO("Sending trajectory to Katana arm...");
-  bool success = katana_->executeTrajectory(new_traj);
+  bool success = katana_->executeTrajectory(new_traj, isPreemptRequested);
   if (!success)
   {
     ROS_ERROR("Problem while transferring trajectory to Katana arm, aborting");

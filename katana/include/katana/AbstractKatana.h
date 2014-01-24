@@ -44,7 +44,8 @@ public:
   virtual ~AbstractKatana();
 
   virtual void refreshEncoders() = 0;
-  virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj) = 0;
+  virtual bool executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj,
+                                 boost::function<bool()> isPreemptRequested) = 0;
   virtual void freezeRobot();
 
   /**
