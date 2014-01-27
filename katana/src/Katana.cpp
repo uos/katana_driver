@@ -208,6 +208,13 @@ void Katana::refreshEncoders()
   {
     ROS_ERROR("ParameterReadingException: Could not receive PVP (Position Velocity PWM) parameters from a motor (exception in refreshEncoders(): %s)", e.message().c_str());
   }
+  catch (const FirmwareException &e)
+  {
+    // This can happen when the arm collides with something (red LED).
+    // The message returned by the Katana in this case is:
+    // FirmwareException : 'move buffer error (axis 1)'
+    ROS_ERROR("FirmwareException: Did the arm collide with something (red LED)? (exception in refreshEncoders(): %s)", e.message().c_str());
+  }
   catch (const Exception &e)
   {
     ROS_ERROR("Unhandled exception in refreshEncoders(): %s", e.message().c_str());
