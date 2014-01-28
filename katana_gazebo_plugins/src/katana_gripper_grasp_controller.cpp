@@ -42,7 +42,7 @@ static const double GRIPPER_CLOSED_ANGLE = -0.44;
 static const double DEFAULT_GRIPPER_OBJECT_PRESENCE_THRESHOLD = -0.43;
 
 /// The maximum time it takes to open or close the gripper
-static const double GRIPPER_OPENING_CLOSING_DURATION = 6.0;
+static const double GRIPPER_OPENING_CLOSING_DURATION = 3.0;
 
 KatanaGripperGraspController::KatanaGripperGraspController(ros::NodeHandle private_nodehandle) :
   desired_angle_(0.0), current_angle_(0.0), has_new_desired_angle_(false)
