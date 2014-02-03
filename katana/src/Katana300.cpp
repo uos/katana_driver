@@ -47,18 +47,20 @@ void Katana300::setLimits()
 
   // TODO: setting the limits this low shouldn't be necessary; the limits should
   //       be set to 2 (acc.) and 180 (vel.) and tested on real Katana 300
+  //fast: acc. 2 and vel. 150 (tested on real Katana 300)
+  //slow: acc. 1 and vel. 30
 
 
-  kni->setMotorAccelerationLimit(0, 1);
-  kni->setMotorVelocityLimit(0, 30);
+  kni->setMotorAccelerationLimit(0, 2);
+  kni->setMotorVelocityLimit(0, 90);	// set to 90 to protect our old Katana
 
   for (size_t i = 1; i < NUM_MOTORS; i++)
   {
     // These two settings probably only influence KNI functions like moveRobotToEnc(),
     // openGripper() and so on, and not the spline trajectories. We still set them
     // just to be sure.
-    kni->setMotorAccelerationLimit(i, 1);
-    kni->setMotorVelocityLimit(i, 25);
+    kni->setMotorAccelerationLimit(i, 2);
+    kni->setMotorVelocityLimit(i, 90);
   }
 
 }
