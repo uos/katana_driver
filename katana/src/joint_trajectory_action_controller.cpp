@@ -594,7 +594,12 @@ bool JointTrajectoryActionController::goalReached()
   {
     double error = current_trajectory_->back().splines[i].target_position - katana_->getMotorAngles()[i];
     if (goal_constraints_[i] > 0 && fabs(error) > goal_constraints_[i])
+    {
+      ROS_WARN_STREAM("Joint " << i << " did not reach its goal. target position: "
+          << current_trajectory_->back().splines[i].target_position << " actual position: "
+          << katana_->getMotorAngles()[i] << std::endl);
       return false;
+    }
   }
   return true;
 }
