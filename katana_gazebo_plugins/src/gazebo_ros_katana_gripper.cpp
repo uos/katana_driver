@@ -121,6 +121,7 @@ void GazeboRosKatanaGripper::Load(physics::ModelPtr _parent, sdf::ElementPtr _sd
 
   // set default action
   active_gripper_action_ = gripper_grasp_controller_;
+  updateGains();
 
   // Get the name of the parent model
   std::string modelName = _sdf->GetParent()->Get<std::string>("name");
@@ -159,16 +160,6 @@ void GazeboRosKatanaGripper::UpdateChild()
 
   // check for new goals, this my change the active_gripper_action_
   this->updateActiveGripperAction();
-
-  // PID Controller paramters (gains)
-
-  double p, i, d, i_max, i_min;
-  // get current values
-  pid_controller_.getGains(p, i, d, i_max, i_min);
-  // change values by the active action
-  active_gripper_action_->getGains(p, i, d, i_max, i_min);
-  // set changed values
-  pid_controller_.setGains(p, i, d, i_max, i_min);
 
   for (size_t i = 0; i < NUM_JOINTS; ++i)
   {
@@ -234,7 +225,7 @@ void GazeboRosKatanaGripper::UpdateChild()
     //
     //    for (size_t i = 0; i < NUM_JOINTS; ++i)
     //    {
-    //      js_.position[i] = joints_[i]->GetAngle(0).adian();
+    //      js_.position[i] = joints_[i]->GetAngle(0).Radian();
     //      js_.velocity[i] = joints_[i]->GetVelocity(0);
     //      js_.effort[i] = commanded_effort[i];
     //
@@ -267,12 +258,24 @@ void GazeboRosKatanaGripper::updateActiveGripperAction()
       {
         // change the active gripper action
         active_gripper_action_ = gripper_action_list_[i];
+        updateGains();
+
         break;
       }
     }
-
   }
+}
 
+void GazeboRosKatanaGripper::updateGains()
+{
+  // PID Controller parameters (gains)
+  double p, i, d, i_max, i_min;
+  // get current values
+  pid_controller_.getGains(p, i, d, i_max, i_min);
+  // overwrite with defaults from the active action
+  active_gripper_action_->getGains(p, i, d, i_max, i_min);
+  // set changed values
+  pid_controller_.setGains(p, i, d, i_max, i_min);
 }
 
 void GazeboRosKatanaGripper::spin()

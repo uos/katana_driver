@@ -56,8 +56,8 @@ public:
 
 private:
   void updateActiveGripperAction();
+  void updateGains();
 
-private:
   static const size_t NUM_JOINTS = 2;
 
   ros::NodeHandle *rosnode_;
