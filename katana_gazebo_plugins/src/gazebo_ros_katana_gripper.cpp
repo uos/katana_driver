@@ -69,20 +69,20 @@ void GazeboRosKatanaGripper::Load(physics::ModelPtr _parent, sdf::ElementPtr _sd
 
   this->node_namespace_ = "katana/";
   if (_sdf->HasElement("robotNamespace"))
-    this->node_namespace_ = _sdf->GetElement("node_namespace")->GetValueString() + "/";
+    this->node_namespace_ = _sdf->Get<std::string>("node_namespace") + "/";
 
   torque_ = 0.5;
   if (_sdf->HasElement("max_torque"))
-    torque_ = _sdf->GetElement("max_torque")->GetValueDouble();
+    torque_ = _sdf->Get<float>("max_torque");
 
   joint_names_.resize(NUM_JOINTS);
   joint_names_[0] = "katana_r_finger_joint";
   if (_sdf->HasElement("r_finger_joint"))
-    joint_names_[0] = _sdf->GetElement("r_finger_joint")->GetValueString();
+    joint_names_[0] = _sdf->Get<std::string>("r_finger_joint");
 
   joint_names_[1] = "katana_r_finger_joint";
   if (_sdf->HasElement("l_finger_joint"))
-    joint_names_[1] = _sdf->GetElement("l_finger_joint")->GetValueString();
+    joint_names_[1] = _sdf->Get<std::string>("l_finger_joint");
 
   if (!ros::isInitialized())
   {
@@ -123,7 +123,7 @@ void GazeboRosKatanaGripper::Load(physics::ModelPtr _parent, sdf::ElementPtr _sd
   active_gripper_action_ = gripper_grasp_controller_;
 
   // Get the name of the parent model
-  std::string modelName = _sdf->GetParent()->GetValueString("name");
+  std::string modelName = _sdf->GetParent()->Get<std::string>("name");
 
   // Listen to the update event. This event is broadcast every
   // simulation iteration.
@@ -181,7 +181,7 @@ void GazeboRosKatanaGripper::UpdateChild()
     desired_pos[i] = active_gripper_action_->getNextDesiredPoint(ros::Time::now()).position;
     actual_pos[i] = joints_[i]->GetAngle(0).Radian();
 
-    commanded_effort[i] = pid_controller_.updatePid(actual_pos[i] - desired_pos[i], joints_[i]->GetVelocity(0), dt);
+    commanded_effort[i] = pid_controller_.computeCommand(desired_pos[i] - actual_pos[i], -joints_[i]->GetVelocity(0), dt);
 
     if (commanded_effort[i] > torque_)
       commanded_effort[i] = torque_;
