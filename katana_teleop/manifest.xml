@@ -16,6 +16,7 @@
   <review status="unreviewed" notes=""/>
   <url>http://ros.org/wiki/katana_teleop</url>
 
+  <depend package="control_msgs"/>
   <depend package="sensor_msgs"/>
   <depend package="roscpp"/>
   <depend package="katana_msgs"/>
