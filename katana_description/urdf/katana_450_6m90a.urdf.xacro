@@ -309,5 +309,28 @@
   <link name="katana_gripper_tool_frame">
     <!-- This is the coordinate system of the end effector (this is the position
          used in IK); there is no actual arm part attached to this link -->
+
+    <!-- The fake geometry here is only present to work around https://github.com/ros-planning/moveit_core/issues/158 -->
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 -${tool_frame_offset}"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="grey" />
+    </visual>
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 -${tool_frame_offset}"/>
+      <geometry>
+        <box size="0.01 0.01 0.01"/>
+      </geometry>
+      <material name="grey" />
+    </collision>
+    <inertial>
+      <mass value="0.0012" />
+      <origin xyz="0 0 0"/>
+      <inertia ixx="2e-8" ixy="0.0" ixz="0.0"
+        iyy="2e-8" iyz="0.0"
+        izz="2e-8" />
+    </inertial>
   </link>
 </robot>
