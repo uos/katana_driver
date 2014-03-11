@@ -30,10 +30,10 @@
 #include <katana_gazebo_plugins/katana_gripper_grasp_controller.h>
 #include <katana_gazebo_plugins/katana_gripper_joint_trajectory_controller.h>
 
-#include <common/Plugin.hh>
-#include <common/Time.hh>
-#include <common/Events.hh>
-#include <physics/physics.hh>
+#include <gazebo/common/Plugin.hh>
+#include <gazebo/common/Time.hh>
+#include <gazebo/common/Events.hh>
+#include <gazebo/physics/physics.hh>
 
 #include <katana_msgs/GripperControllerState.h>
 #include <control_toolbox/pid.h>
