@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(katana_moveit_ikfast_plugin)
 
+find_package(cmake_modules)
 find_package(Eigen REQUIRED)
 include_directories(SYSTEM ${EIGEN_INCLUDE_DIRS})
 
