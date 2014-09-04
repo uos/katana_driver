@@ -16,7 +16,6 @@
   <depend package="control_toolbox"/>
   <depend package="actionlib"/>
   <depend package="katana_msgs"/>
-  <depend package="pr2_controllers_msgs"/>
   <depend package="control_msgs"/>
 
   <export>
