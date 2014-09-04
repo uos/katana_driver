@@ -25,7 +25,7 @@ Pr2JointTrajectoryClient::Pr2JointTrajectoryClient() :
   // wait for action server to come up
   while (!traj_client_.waitForServer(ros::Duration(5.0)))
   {
-    ROS_INFO("Waiting for the follow_joint_trajectory server");
+    ROS_INFO("Waiting for the joint_trajectory_action server");
   }
 }
 
@@ -61,14 +61,14 @@ void Pr2JointTrajectoryClient::jointStateCB(const sensor_msgs::JointState::Const
 }
 
 //! Sends the command to start a given trajectory
-void Pr2JointTrajectoryClient::startTrajectory(pr2_controllers_msgs::JointTrajectoryGoal goal)
+void Pr2JointTrajectoryClient::startTrajectory(control_msgs::JointTrajectoryGoal goal)
 {
   // When to start the trajectory: 1s from now
   goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
   traj_client_.sendGoal(goal);
 }
 
-pr2_controllers_msgs::JointTrajectoryGoal Pr2JointTrajectoryClient::makeArmUpTrajectory()
+control_msgs::JointTrajectoryGoal Pr2JointTrajectoryClient::makeArmUpTrajectory()
 {
   const size_t NUM_TRAJ_POINTS = 4;
   const size_t NUM_JOINTS = 5;
@@ -135,7 +135,7 @@ pr2_controllers_msgs::JointTrajectoryGoal Pr2JointTrajectoryClient::makeArmUpTra
   //    }
   //  }
 
-  pr2_controllers_msgs::JointTrajectoryGoal goal;
+  control_msgs::JointTrajectoryGoal goal;
   goal.trajectory = trajectory;
   return goal;
 }

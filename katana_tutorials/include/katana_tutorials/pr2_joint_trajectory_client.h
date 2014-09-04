@@ -9,7 +9,7 @@
 #define FOLLOW_JOINT_TRAJECTORY_CLIENT_H_
 
 #include <ros/ros.h>
-#include <pr2_controllers_msgs/JointTrajectoryAction.h>
+#include <control_msgs/JointTrajectoryAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <sensor_msgs/JointState.h>
 #include <trajectory_msgs/JointTrajectory.h>
@@ -17,7 +17,7 @@
 namespace katana_tutorials
 {
 
-typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> TrajClient;
+typedef actionlib::SimpleActionClient<control_msgs::JointTrajectoryAction> TrajClient;
 
 class Pr2JointTrajectoryClient
 {
@@ -25,8 +25,8 @@ public:
   Pr2JointTrajectoryClient();
   virtual ~Pr2JointTrajectoryClient();
 
-  void startTrajectory(pr2_controllers_msgs::JointTrajectoryGoal goal);
-  pr2_controllers_msgs::JointTrajectoryGoal makeArmUpTrajectory();
+  void startTrajectory(control_msgs::JointTrajectoryGoal goal);
+  control_msgs::JointTrajectoryGoal makeArmUpTrajectory();
   actionlib::SimpleClientGoalState getState();
 
 private:

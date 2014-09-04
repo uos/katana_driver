@@ -33,10 +33,10 @@
 #include <actionlib/client/simple_action_client.h>
 
 #include <trajectory_msgs/JointTrajectory.h>
-#include <pr2_controllers_msgs/QueryTrajectoryState.h>
-#include <pr2_controllers_msgs/JointTrajectoryControllerState.h>
+#include <control_msgs/QueryTrajectoryState.h>
+#include <control_msgs/JointTrajectoryControllerState.h>
 
-#include <pr2_controllers_msgs/JointTrajectoryAction.h>
+#include <control_msgs/JointTrajectoryAction.h>
 #include <control_msgs/FollowJointTrajectoryAction.h>
 
 #include <katana/AbstractKatana.h>
@@ -50,8 +50,8 @@ class JointTrajectoryActionController
 {
 
 // Action typedefs for the original PR2 specific joint trajectory action
-typedef actionlib::SimpleActionServer<pr2_controllers_msgs::JointTrajectoryAction> JTAS;
-typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> JTAC;
+typedef actionlib::SimpleActionServer<control_msgs::JointTrajectoryAction> JTAS;
+typedef actionlib::SimpleActionClient<control_msgs::JointTrajectoryAction> JTAC;
 
 // Action typedefs for the new follow joint trajectory action
 typedef actionlib::SimpleActionServer<control_msgs::FollowJointTrajectoryAction> FJTAS;
@@ -81,8 +81,8 @@ private:
   ros::Subscriber sub_command_;
 
   // "query_state" service
-  bool queryStateService(pr2_controllers_msgs::QueryTrajectoryState::Request &req,
-                         pr2_controllers_msgs::QueryTrajectoryState::Response &resp);
+  bool queryStateService(control_msgs::QueryTrajectoryState::Request &req,
+                         control_msgs::QueryTrajectoryState::Response &resp);
   ros::ServiceServer serve_query_state_;
 
   // publisher to "state" topic

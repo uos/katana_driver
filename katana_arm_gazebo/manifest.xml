@@ -14,14 +14,13 @@
   <depend package="xacro"/>
   <depend package="robot_state_publisher"/>
   <depend package="katana_description"/>
-  <depend package="pr2_controller_manager"/>
-  <depend package="robot_mechanism_controllers"/>
+  <depend package="controller_manager"/>
   <depend package="katana_gazebo_plugins"/>
   <depend package="joint_trajectory_controller"/>
 
   <!-- needed for test programs (moving the joints and gripper): -->  
   <depend package="actionlib"/>
-  <depend package="pr2_controllers_msgs"/>
+  <depend package="controller_manager_msgs"/>
   <depend package="std_msgs"/>
 </package>
 
