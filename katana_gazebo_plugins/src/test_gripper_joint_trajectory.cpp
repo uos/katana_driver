@@ -25,11 +25,11 @@
  *    based on: min_max_trajectory.cpp
  */
 #include <ros/ros.h>
-#include <pr2_controllers_msgs/JointTrajectoryAction.h>
+#include <control_msgs/JointTrajectoryAction.h>
 #include <actionlib/client/simple_action_client.h>
 #include <sensor_msgs/JointState.h>
 
-typedef actionlib::SimpleActionClient<pr2_controllers_msgs::JointTrajectoryAction> TrajClient;
+typedef actionlib::SimpleActionClient<control_msgs::JointTrajectoryAction> TrajClient;
 
 /// Constants for gripper fully open or fully closed (should be equal to the value in the urdf description)
 static const double GRIPPER_OPEN_ANGLE = 0.30;
@@ -115,16 +115,16 @@ public:
   }
 
   //! Sends the command to start a given trajectory
-  void startTrajectory(pr2_controllers_msgs::JointTrajectoryGoal goal)
+  void startTrajectory(control_msgs::JointTrajectoryGoal goal)
   {
     // When to start the trajectory: 1s from now
     goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
     traj_client_->sendGoal(goal);
   }
 
-  pr2_controllers_msgs::JointTrajectoryGoal closeGoal()
+  control_msgs::JointTrajectoryGoal closeGoal()
   {
-    pr2_controllers_msgs::JointTrajectoryGoal goal;
+    control_msgs::JointTrajectoryGoal goal;
 
     // set up the joint names
     goal.trajectory.joint_names = joint_names_;
@@ -164,9 +164,9 @@ public:
     return goal;
   }
 
-  pr2_controllers_msgs::JointTrajectoryGoal openGoal()
+  control_msgs::JointTrajectoryGoal openGoal()
   {
-    pr2_controllers_msgs::JointTrajectoryGoal goal;
+    control_msgs::JointTrajectoryGoal goal;
 
     // set up the joint names
     goal.trajectory.joint_names = joint_names_;

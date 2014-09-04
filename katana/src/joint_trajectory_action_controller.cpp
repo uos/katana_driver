@@ -61,7 +61,7 @@ JointTrajectoryActionController::JointTrajectoryActionController(boost::shared_p
   action_server_follow_.start();
   sub_command_ = node_.subscribe("katana_arm_controller/command", 1, &JointTrajectoryActionController::commandCB, this);
   serve_query_state_ = node_.advertiseService("katana_arm_controller/query_state", &JointTrajectoryActionController::queryStateService, this);
-  controller_state_publisher_ = node_.advertise<pr2_controllers_msgs::JointTrajectoryControllerState> ("katana_arm_controller/state", 1);
+  controller_state_publisher_ = node_.advertise<control_msgs::JointTrajectoryControllerState> ("katana_arm_controller/state", 1);
 
   // NOTE: current_trajectory_ is not initialized here, because that will happen in reset_trajectory_and_stop()
 
@@ -149,7 +149,7 @@ void JointTrajectoryActionController::update()
 
   // ------ State publishing
 
-  pr2_controllers_msgs::JointTrajectoryControllerState msg;
+  control_msgs::JointTrajectoryControllerState msg;
 
   // Message containing current state for all controlled joints
   for (size_t j = 0; j < joints_.size(); ++j)
@@ -360,8 +360,8 @@ boost::shared_ptr<SpecifiedTrajectory> JointTrajectoryActionController::calculat
 /**
  * provides the "query_state" service
  */
-bool JointTrajectoryActionController::queryStateService(pr2_controllers_msgs::QueryTrajectoryState::Request &req,
-                                                        pr2_controllers_msgs::QueryTrajectoryState::Response &resp)
+bool JointTrajectoryActionController::queryStateService(control_msgs::QueryTrajectoryState::Request &req,
+                                                        control_msgs::QueryTrajectoryState::Response &resp)
 {
   ROS_WARN("queryStateService() called, this is not tested yet");
 
