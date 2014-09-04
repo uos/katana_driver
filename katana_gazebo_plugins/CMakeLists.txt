@@ -27,7 +27,7 @@ include_directories(${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
 rosbuild_add_library(gazebo_ros_katana_gripper src/gazebo_ros_katana_gripper.cpp src/katana_gripper_grasp_controller.cpp src/katana_gripper_joint_trajectory_controller.cpp src/gazebo_ros_katana_gripper_action_interface.cpp)
-target_link_libraries(gazebo_ros_katana_gripper ${GAZEBO_libraries})
+target_link_libraries(gazebo_ros_katana_gripper ${GAZEBO_LIBRARIES})
 
 
 
@@ -46,3 +46,4 @@ target_link_libraries(gazebo_ros_katana_gripper ${GAZEBO_libraries})
 
 rosbuild_add_boost_directories()
 rosbuild_add_executable(test_gripper_joint_trajectory src/test_gripper_joint_trajectory.cpp)
+target_link_libraries(test_gripper_joint_trajectory ${GAZEBO_LIBRARIES})
