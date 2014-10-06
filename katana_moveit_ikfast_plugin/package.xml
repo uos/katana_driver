@@ -5,8 +5,7 @@
   <description>The katana_moveit_ikfast_plugin package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
-  <maintainer email="mguenthe@uos.de">Martin Günther</maintainer>
-
+  <maintainer email="mguenthe@uos.de">Martin G&#252;nther</maintainer>
   <!-- One license tag required, multiple allowed, one license per tag -->
   <!-- Commonly used license strings: -->
   <!--   BSD, MIT, Boost Software License, GPLv2, GPLv3, LGPLv2.1, LGPLv3 -->
@@ -46,4 +45,8 @@
   <run_depend>pluginlib</run_depend>
   <build_depend>roscpp</build_depend>
   <run_depend>roscpp</run_depend>
+  <build_depend>liblapack-dev</build_depend>
+  <build_depend>tf_conversions</build_depend>
+  <run_depend>liblapack-dev</run_depend>
+  <run_depend>tf_conversions</run_depend>
 </package>
