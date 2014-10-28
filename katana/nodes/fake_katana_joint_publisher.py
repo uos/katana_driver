@@ -4,7 +4,7 @@ import rospy
 from sensor_msgs.msg import JointState
 
 def fake_katana_joint_publisher():
-    pub = rospy.Publisher('/joint_states', JointState)
+    pub = rospy.Publisher('/joint_states', JointState, queue_size=100)
     rospy.init_node('fake_katana_joint_publisher')
     while not rospy.is_shutdown():
         js = JointState()
