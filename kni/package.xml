@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<package>
+  <name>kni</name>
+  <version>0.1.0</version>
+  <description>
+     This package provides the third-party KNI (Katana Native Interface) library for Katana
+     robot arms.
+
+     Instead of using the KNI library directly, the <a href="/wiki/katana">katana</a>
+     package should be used for communication with the Katana arm.
+  </description>
+  <author email="mguenthe@uni-osnabrueck.de">Martin Günther</author>
+  <maintainer email="mguenthe@uni-osnabrueck.de">Martin Günther</maintainer>
+  <license>GPL</license>
+  <url type="website">http://ros.org/wiki/kni</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>

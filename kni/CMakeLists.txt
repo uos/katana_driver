@@ -1,67 +1,70 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
+cmake_minimum_required(VERSION 2.8.3)
+project(kni)
 
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
+find_package(catkin REQUIRED COMPONENTS )
 
-rosbuild_init()
+catkin_package(
+  INCLUDE_DIRS KNI_4.3.0/include
+  LIBRARIES KNIBase Kinematics KNI_InvKin KNI_LM
+  CATKIN_DEPENDS
+)
 
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+include(ExternalProject)
 
-#uncomment if you have defined messages
-#rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
+ExternalProject_Add(KNI_4.3.0_common
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/common/
+  CONFIGURE_COMMAND ""
+  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/common/
+  INSTALL_COMMAND ""
+)
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
+ExternalProject_Add(KNI_4.3.0_Base
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/Base/
+  CONFIGURE_COMMAND ""
+  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/Base/
+  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/linux/libKNIBase.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libKNIBase.so
+)
 
-execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/common/ make
-                RESULT_VARIABLE _make_failed)
-if(_make_failed)
-  message(FATAL_ERROR "Build of common files failed")
-endif(_make_failed)
+ExternalProject_Add(KNI_4.3.0_roboop
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/roboop/
+  CONFIGURE_COMMAND ""
+  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/roboop/
+  INSTALL_COMMAND ""
+)
 
-execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/Base/ make
-                RESULT_VARIABLE _make_failed)
-if(_make_failed)
-  message(FATAL_ERROR "Build of Base library failed")
-endif(_make_failed)
+ExternalProject_Add(KNI_4.3.0_kinematics
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/
+  CONFIGURE_COMMAND ""
+  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/
+  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/linux/libKinematics.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libKinematics.so
+)
 
-execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/roboop/ make
-                RESULT_VARIABLE _make_failed)
-if(_make_failed)
-  message(FATAL_ERROR "Build of roboop library failed")
-endif(_make_failed)
+ExternalProject_Add(KNI_4.3.0_InvKin
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/InvKin/
+  CONFIGURE_COMMAND ""
+  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/InvKin/
+  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/linux/libKNI_InvKin.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libKNI_InvKin.so
+)
 
-execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/ make
-                RESULT_VARIABLE _make_failed)
-if(_make_failed)
-  message(FATAL_ERROR "Build of kinematics library failed")
-endif(_make_failed)
+ExternalProject_Add(KNI_4.3.0_LM
+  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/LM/
+  CONFIGURE_COMMAND ""
+  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/LM/
+  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/linux/libKNI_LM.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libKNI_LM.so
+)
 
-execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/InvKin/ make
-                RESULT_VARIABLE _make_failed)
-if(_make_failed)
-  message(FATAL_ERROR "Build of InvKin library failed")
-endif(_make_failed)
+add_library(KNIBase SHARED)
+set_target_properties(KNIBase PROPERTIES LINKER_LANGUAGE CXX)
+add_library(Kinematics SHARED)
+set_target_properties(Kinematics PROPERTIES LINKER_LANGUAGE CXX)
+add_library(KNI_InvKin SHARED)
+set_target_properties(KNI_InvKin PROPERTIES LINKER_LANGUAGE CXX)
+add_library(KNI_LM SHARED)
+set_target_properties(KNI_LM PROPERTIES LINKER_LANGUAGE CXX)
 
-execute_process(COMMAND cmake -E chdir ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/LM/ make
-                RESULT_VARIABLE _make_failed)
-if(_make_failed)
-  message(FATAL_ERROR "Build of LM library failed")
-endif(_make_failed)
+install(TARGETS KNIBase Kinematics KNI_InvKin KNI_LM
+  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+)
 
+install(DIRECTORY KNI_4.3.0/include
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
