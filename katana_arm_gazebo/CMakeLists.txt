@@ -1,44 +1,62 @@
-cmake_minimum_required(VERSION 2.4.6)
-include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
-
-# Set the build type.  Options are:
-#  Coverage       : w/ debug symbols, w/o optimization, w/ code-coverage
-#  Debug          : w/ debug symbols, w/o optimization
-#  Release        : w/o debug symbols, w/ optimization
-#  RelWithDebInfo : w/ debug symbols, w/ optimization
-#  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-#set(ROS_BUILD_TYPE RelWithDebInfo)
-
-rosbuild_init()
-
-#set the default path for built executables to the "bin" directory
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
-#set the default path for built libraries to the "lib" directory
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+cmake_minimum_required(VERSION 2.8.3)
+project(katana_arm_gazebo)
 
 include(FindPkgConfig)
 if(PKG_CONFIG_FOUND)
    pkg_check_modules(GAZEBO gazebo)
 endif()
 
-include_directories(${GAZEBO_INCLUDE_DIRS})
+find_package(catkin REQUIRED COMPONENTS
+  roscpp
+  gazebo_ros
+  urdf
+  xacro
+  robot_state_publisher
+  katana_description
+  controller_manager
+  katana_gazebo_plugins
+  joint_trajectory_controller
+  actionlib
+  controller_manager_msgs
+  std_msgs
+)
+
+find_package(Boost REQUIRED COMPONENTS)
+
+catkin_package(
+  INCLUDE_DIRS
+  LIBRARIES
+  CATKIN_DEPENDS
+  roscpp
+  gazebo_ros
+  urdf
+  xacro
+  robot_state_publisher
+  katana_description
+  controller_manager
+  katana_gazebo_plugins
+  joint_trajectory_controller
+  actionlib
+  controller_manager_msgs
+  std_msgs
+  DEPENDS
+)
+
+include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
+add_executable(min_max_trajectory src/min_max_trajectory.cpp)
+target_link_libraries(min_max_trajectory ${catkin_LIBRARIES})
+add_dependencies(min_max_trajectory ${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
-#uncomment if you have defined messages
-#rosbuild_genmsg()
-#uncomment if you have defined services
-#rosbuild_gensrv()
+install(TARGETS min_max_trajectory
+        RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
 
-#common commands for building c++ executables and libraries
-#rosbuild_add_library(${PROJECT_NAME} src/example.cpp)
-#target_link_libraries(${PROJECT_NAME} another_library)
-#rosbuild_add_boost_directories()
-#rosbuild_link_boost(${PROJECT_NAME} thread)
-#rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
+install(DIRECTORY include/${PROJECT_NAME}/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-rosbuild_add_boost_directories()
-
-rosbuild_add_executable(min_max_trajectory src/min_max_trajectory.cpp)
-target_link_libraries(min_max_trajectory ${GAZEBO_LIBRARIES})
+install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY meshes DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY scripts DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY urdf DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+install(DIRECTORY worlds DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})

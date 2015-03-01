@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<package>
+  <name>katana_arm_gazebo</name>
+  <version>0.1.0</version>
+  <description>
+    This package starts a Neuronics Katana robot arm in the Gazebo simulation environment. It is modeled after the <a href="http://www.ros.org/wiki/pr2_arm_gazebo">pr2_arm_gazebo</a> package by John Hsu.
+  </description>
+  <author email="mguenthe@uni-osnabrueck.de">Martin Günther</author>
+  <maintainer email="mguenthe@uni-osnabrueck.de">Martin Günther</maintainer>
+  <license>GPL</license>
+  <url type="website">http://ros.org/wiki/katana_arm_gazebo</url>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>gazebo_ros</build_depend>
+  <build_depend>urdf</build_depend>
+  <build_depend>xacro</build_depend>
+  <build_depend>robot_state_publisher</build_depend>
+  <build_depend>katana_description</build_depend>
+  <build_depend>controller_manager</build_depend>
+  <build_depend>katana_gazebo_plugins</build_depend>
+  <build_depend>joint_trajectory_controller</build_depend>
+  <!-- needed for test programs (moving the joints and gripper): -->
+  <build_depend>actionlib</build_depend>
+  <build_depend>controller_manager_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>gazebo_ros</run_depend>
+  <run_depend>urdf</run_depend>
+  <run_depend>xacro</run_depend>
+  <run_depend>robot_state_publisher</run_depend>
+  <run_depend>katana_description</run_depend>
+  <run_depend>controller_manager</run_depend>
+  <run_depend>katana_gazebo_plugins</run_depend>
+  <run_depend>joint_trajectory_controller</run_depend>
+  <!-- needed for test programs (moving the joints and gripper): -->
+  <run_depend>actionlib</run_depend>
+  <run_depend>controller_manager_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+</package>
