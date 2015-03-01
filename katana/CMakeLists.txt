@@ -1,6 +1,11 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(katana)
 
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -l/home/hdeeken/ros/indigo/catkin_ws/src/katana_driver/kni/KNI_4.3.0/lib/linux/libKinematics.so" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -l/home/hdeeken/ros/indigo/catkin_ws/src/katana_driver/kni/KNI_4.3.0/lib/linux/libKNIBase.so" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -l/home/hdeeken/ros/indigo/catkin_ws/src/katana_driver/kni/KNI_4.3.0/lib/linux/libKNI_InvKin.so" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -l/home/hdeeken/ros/indigo/catkin_ws/src/katana_driver/kni/KNI_4.3.0/lib/linux/libKNI_LM.so" )
+
 find_package(catkin REQUIRED COMPONENTS
   roscpp
   roslib
