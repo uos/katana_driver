@@ -324,10 +324,10 @@ bool Katana300::executeTrajectory(boost::shared_ptr<SpecifiedTrajectory> traj,
         short encoder = static_cast<short>(converter->angle_rad2enc(jointNo, seg.splines[jointNo].target_position));
         desired_angles_[jointNo] = seg.splines[jointNo].target_position;
         // the actual position
-        short p1 = round(converter->angle_rad2enc(jointNo, seg.splines[jointNo].coef[0]));
-        short p2 = round(64 * converter->vel_rad2enc(jointNo, seg.splines[jointNo].coef[1]));
-        short p3 = round(1024 * converter->acc_rad2enc(jointNo, seg.splines[jointNo].coef[2]));
-        short p4 = round(32768 * converter->jerk_rad2enc(jointNo, seg.splines[jointNo].coef[3]));
+        short p1 = ::round(converter->angle_rad2enc(jointNo, seg.splines[jointNo].coef[0]));
+        short p2 = ::round(64 * converter->vel_rad2enc(jointNo, seg.splines[jointNo].coef[1]));
+        short p3 = ::round(1024 * converter->acc_rad2enc(jointNo, seg.splines[jointNo].coef[2]));
+        short p4 = ::round(32768 * converter->jerk_rad2enc(jointNo, seg.splines[jointNo].coef[3]));
 
         kni->sendSplineToMotor(jointNo, encoder, duration, p1, p2, p3, p4);
       }
