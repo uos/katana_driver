@@ -1,0 +1,26 @@
+<package>
+  <name> katana_driver </name>
+  <version>0.1.0</version>
+  <description>
+    This stack contains all descriptions, drivers and bringup facilities for Neuronics Katana 450 arm.
+  </description>
+
+  <maintainer email="mguenthe@uni-osnabrueck.de">Martin Günther</maintainer>
+  <license>BSD, GPL</license>
+  <url>http://ros.org/wiki/katana_driver</url>
+
+  <run_depend>katana</run_depend>
+  <run_depend>katana_arm_gazebo</run_depend>
+  <run_depend>katana_description</run_depend>
+  <run_depend>katana_gazebo_plugins</run_depend>
+  <run_depend>katana_moveit_ikfast_plugin</run_depend>
+  <run_depend>katana_msgs</run_depend>
+  <run_depend>katana_teleop</run_depend>
+  <run_depend>katana_tutorials</run_depend>
+  <run_depend>kni</run_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <export>
+    <metapackage/>
+  </export>
+</package>
