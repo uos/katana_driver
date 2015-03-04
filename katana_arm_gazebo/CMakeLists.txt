@@ -1,10 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(katana_arm_gazebo)
 
-include(FindPkgConfig)
-if(PKG_CONFIG_FOUND)
-   pkg_check_modules(GAZEBO gazebo)
-endif()
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GAZEBO gazebo)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -20,8 +18,6 @@ find_package(catkin REQUIRED COMPONENTS
   controller_manager_msgs
   std_msgs
 )
-
-find_package(Boost REQUIRED COMPONENTS)
 
 catkin_package(
   INCLUDE_DIRS
@@ -42,7 +38,7 @@ catkin_package(
   DEPENDS
 )
 
-include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
+include_directories(${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
 add_executable(min_max_trajectory src/min_max_trajectory.cpp)

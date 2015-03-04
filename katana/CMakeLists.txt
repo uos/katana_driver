@@ -18,6 +18,8 @@ find_package(catkin REQUIRED COMPONENTS
   geometry_msgs
 )
 
+find_package(Boost REQUIRED COMPONENTS system thread)
+
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES
@@ -37,6 +39,7 @@ catkin_package(
     moveit_msgs
     geometry_msgs
   DEPENDS
+    Boost
 )
 
 include_directories(include ${catkin_INCLUDE_DIRS})

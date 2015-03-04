@@ -120,7 +120,7 @@ foreach(it ${katana_stl_files})
 
   ENDIF ( ${basename} MATCHES "_convex" )
 
-endforeach(it)
+endforeach()
 
 add_custom_target(media_files ALL DEPENDS ${katana_gen_files} )
 

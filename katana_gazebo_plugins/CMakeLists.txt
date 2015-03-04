@@ -3,12 +3,11 @@ project(katana_gazebo_plugins)
 
 #add_definitions(-fPIC)
 
-include(FindPkgConfig)
-if(PKG_CONFIG_FOUND)
-   pkg_check_modules(GAZEBO gazebo)
-endif()
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GAZEBO gazebo)
 
 find_package(catkin REQUIRED COMPONENTS
+  control_toolbox
   gazebo_ros
   actionlib
   trajectory_msgs
