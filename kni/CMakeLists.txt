@@ -19,6 +19,7 @@ ExternalProject_Add(KNI_4.3.0_common
 )
 
 ExternalProject_Add(KNI_4.3.0_Base
+  DEPENDS KNI_4.3.0_common
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/Base/
   CONFIGURE_COMMAND ""
   BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/Base/
@@ -33,6 +34,7 @@ ExternalProject_Add(KNI_4.3.0_roboop
 )
 
 ExternalProject_Add(KNI_4.3.0_kinematics
+  DEPENDS KNI_4.3.0_roboop
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/
   CONFIGURE_COMMAND ""
   BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/
@@ -48,6 +50,7 @@ ExternalProject_Add(KNI_4.3.0_InvKin
 )
 
 ExternalProject_Add(KNI_4.3.0_LM
+  DEPENDS KNI_4.3.0_common KNI_4.3.0_Base
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/LM/
   CONFIGURE_COMMAND ""
   BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/LM/
