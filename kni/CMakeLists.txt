@@ -59,12 +59,16 @@ ExternalProject_Add(KNI_4.3.0_LM
 
 add_library(KNIBase SHARED)
 set_target_properties(KNIBase PROPERTIES LINKER_LANGUAGE CXX)
+add_dependencies(KNIBase KNI_4.3.0_Base)
 add_library(Kinematics SHARED)
 set_target_properties(Kinematics PROPERTIES LINKER_LANGUAGE CXX)
+add_dependencies(Kinematics KNI_4.3.0_kinematics)
 add_library(KNI_InvKin SHARED)
 set_target_properties(KNI_InvKin PROPERTIES LINKER_LANGUAGE CXX)
+add_dependencies(KNI_InvKin KNI_4.3.0_InvKin)
 add_library(KNI_LM SHARED)
 set_target_properties(KNI_LM PROPERTIES LINKER_LANGUAGE CXX)
+add_dependencies(KNI_LM KNI_4.3.0_LM)
 
 install(TARGETS KNIBase Kinematics KNI_InvKin KNI_LM
   DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
