@@ -20,6 +20,7 @@
   <!-- Default Controllers -->
   <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_arm_controller.yaml" />
   <rosparam command="load" file="$(find katana_arm_gazebo)/config/katana_gripper_controller.yaml" />
+  <rosparam command="load" file="$(find katana_arm_gazebo)/config/joint_state_controller.yaml" />
 
   <!-- Controller manager parameters -->
   <param name="controller_manager/mechanism_statistics_publish_rate" value="1.0" />
@@ -34,7 +35,7 @@
   <!-- Controllers that come up loaded -->
   <node name="default_loaded_controllers_spawner"
     pkg="controller_manager" type="spawner" output="screen"
-    args="--wait-for=/calibrated katana_arm_controller" />
+    args="--wait-for=/calibrated katana_arm_controller joint_state_controller" />
 
   <!-- Fake calibration -->
   <node pkg="rostopic" type="rostopic" name="fake_joint_calibration"
