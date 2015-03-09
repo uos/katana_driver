@@ -25,9 +25,9 @@ catkin_package(
   INCLUDE_DIRS
   LIBRARIES
   CATKIN_DEPENDS
+    message_runtime
     sensor_msgs
     actionlib_msgs
-    message_generation
   DEPENDS
 )
 
