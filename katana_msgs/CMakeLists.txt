@@ -30,9 +30,3 @@ catkin_package(
     actionlib_msgs
   DEPENDS
 )
-
-install(DIRECTORY action/
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/urdf)
-
-install(DIRECTORY msg/
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/urdf)
