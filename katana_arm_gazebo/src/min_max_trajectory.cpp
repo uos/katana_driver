@@ -1,8 +1,8 @@
 #include <ros/ros.h>
-#include <control_msgs/JointTrajectoryAction.h>
+#include <control_msgs/FollowJointTrajectoryAction.h>
 #include <actionlib/client/simple_action_client.h>
 
-typedef actionlib::SimpleActionClient<control_msgs::JointTrajectoryAction> TrajClient;
+typedef actionlib::SimpleActionClient<control_msgs::FollowJointTrajectoryAction> TrajClient;
 
 static const double MIN_POSITIONS [5] = {-3.025528, -0.135228, -1.0, -2.033309, -2.993240};
 static const double MAX_POSITIONS [5] = {2.891097, 2.168572, 2.054223, 1.876133, 2.870985};
@@ -23,12 +23,12 @@ public:
   RobotArm()
   {
     // tell the action client that we want to spin a thread by default
-    traj_client_ = new TrajClient("katana_arm_controller/joint_trajectory_action", true);
+    traj_client_ = new TrajClient("katana_arm_controller/follow_joint_trajectory", true);
 
     // wait for action server to come up
     while (!traj_client_->waitForServer(ros::Duration(5.0)) && ros::ok())
     {
-      ROS_INFO("Waiting for the joint_trajectory_action server");
+      ROS_INFO("Waiting for the follow_joint_trajectory server");
     }
   }
 
@@ -39,17 +39,17 @@ public:
   }
 
   //! Sends the command to start a given trajectory
-  void startTrajectory(control_msgs::JointTrajectoryGoal goal)
+  void startTrajectory(control_msgs::FollowJointTrajectoryGoal goal)
   {
     // When to start the trajectory: 1s from now
     goal.trajectory.header.stamp = ros::Time::now() + ros::Duration(1.0);
     traj_client_->sendGoal(goal);
   }
 
-  control_msgs::JointTrajectoryGoal armExtensionTrajectory(size_t moving_joint)
+  control_msgs::FollowJointTrajectoryGoal armExtensionTrajectory(size_t moving_joint)
   {
     //our goal variable
-    control_msgs::JointTrajectoryGoal goal;
+    control_msgs::FollowJointTrajectoryGoal goal;
 
     // First, the joint names, which apply to all waypoints
     goal.trajectory.joint_names.push_back("katana_motor1_pan_joint");
@@ -121,7 +121,7 @@ public:
 int main(int argc, char** argv)
 {
   // Init the ROS node
-  ros::init(argc, argv, "robot_driver");
+  ros::init(argc, argv, "min_max_trajectory");
 
   RobotArm arm;
   while (ros::ok())
