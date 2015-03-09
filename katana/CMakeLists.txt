@@ -75,5 +75,5 @@ install(DIRECTORY launch/
 install(DIRECTORY config
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 
-install(DIRECTORY nodes/
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+catkin_install_python(PROGRAMS nodes/fake_katana_joint_publisher.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
