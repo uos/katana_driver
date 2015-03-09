@@ -21,7 +21,7 @@ find_package(Boost REQUIRED COMPONENTS)
 
 catkin_package(
   INCLUDE_DIRS include
-  LIBRARIES
+  LIBRARIES gazebo_ros_katana_gripper
   CATKIN_DEPENDS
   gazebo_ros
   actionlib
