@@ -37,5 +37,5 @@ install(TARGETS follow_joint_trajectory_client pr2_joint_trajectory_client
 install(DIRECTORY include/${PROJECT_NAME}/
     DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION})
 
-install(DIRECTORY launch/
+install(DIRECTORY launch
     DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
