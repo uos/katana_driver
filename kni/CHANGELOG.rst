@@ -2,8 +2,8 @@
 Changelog for package kni
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.1 (2015-03-17)
+------------------
 * kni: add missing boost dependency in package.xml
 * Contributors: Martin Günther
 
