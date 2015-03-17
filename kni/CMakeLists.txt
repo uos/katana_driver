@@ -12,6 +12,8 @@ catkin_package(
   DEPENDS Boost
 )
 
+include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+
 include(ExternalProject)
 
 externalproject_add(KNI_4.3.0_common
