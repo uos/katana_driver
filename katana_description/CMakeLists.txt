@@ -13,8 +13,6 @@ catkin_package(
   LIBRARIES
   CATKIN_DEPENDS
   urdf
-  convex_decomposition
-  ivcon
   transmission_interface
   DEPENDS
 )
