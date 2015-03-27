@@ -54,6 +54,7 @@
     <mu2>50.0</mu2>
     <kp>1000000.0</kp>
     <kd>1.0</kd>
+    <self_collide>false</self_collide>
   </gazebo>
 
   <joint name="leg1_joint" type="fixed" >
@@ -88,7 +89,7 @@
     <mu2>1000.0</mu2>
     <kp>10000000.0</kp>
     <kd>1.0</kd>
-    <selfCollide>true</selfCollide>
+    <self_collide>false</self_collide>
   </gazebo>
 
   <joint name="leg2_joint" type="fixed" >
@@ -123,7 +124,7 @@
     <mu2>1000.0</mu2>
     <kp>10000000.0</kp>
     <kd>1.0</kd>
-    <selfCollide>true</selfCollide>
+    <self_collide>false</self_collide>
   </gazebo>
 
   <joint name="leg3_joint" type="fixed" >
@@ -158,7 +159,7 @@
     <mu2>1000.0</mu2>
     <kp>10000000.0</kp>
     <kd>1.0</kd>
-    <selfCollide>true</selfCollide>
+    <self_collide>false</self_collide>
   </gazebo>
 
   <joint name="leg4_joint" type="fixed" >
@@ -193,7 +194,7 @@
     <mu2>1000.0</mu2>
     <kp>10000000.0</kp>
     <kd>1.0</kd>
-    <selfCollide>true</selfCollide>
+    <self_collide>false</self_collide>
   </gazebo>
   <gazebo>
     <static>true</static>
