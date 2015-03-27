@@ -81,7 +81,7 @@
   <xacro:gazebo_finger_link  prefix="l"/>
 
   <!-- *************** joints ************** -->
-  <!-- note: initial_joint_position isn't supported by Gazebo yet -->
+  <!-- note: initial_joint_position isn't supported by Gazebo yet
 
   <gazebo reference="katana_motor1_pan_joint">
     <initial_joint_position>-3.022</initial_joint_position>
@@ -111,4 +111,5 @@
 
   <xacro:gazebo_finger_joint prefix="r"/>
   <xacro:gazebo_finger_joint prefix="l"/>
+  -->
 </robot>
