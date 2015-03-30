@@ -57,7 +57,6 @@
     <kp>100000000.0</kp>
     <kd>10000000.0</kd>
     <maxVel>1.0</maxVel>
-    <selfCollide>true</selfCollide>
     <turnGravityOff>true</turnGravityOff>
     <dampingFactor>0.001</dampingFactor>
   </gazebo>
@@ -96,7 +95,6 @@
     <kp>100000000.0</kp>
     <kd>10000000.0</kd>
     <maxVel>1.0</maxVel>
-    <selfCollide>true</selfCollide>
     <turnGravityOff>true</turnGravityOff>
     <dampingFactor>0.001</dampingFactor>
   </gazebo>
