@@ -47,7 +47,7 @@ externalproject_add(KNI_4.3.0_kinematics
 )
 
 externalproject_add(KNI_4.3.0_InvKin
-  DEPENDS KNI_4.3.0_kinematics
+  DEPENDS KNI_4.3.0_kinematics KNI_4.3.0_Base
   SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/InvKin/
   CONFIGURE_COMMAND ""
   BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/InvKin/
