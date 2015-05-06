@@ -2,6 +2,14 @@
 Changelog for package katana_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* comment initial_joint_position in katana-gazebo urdf
+  There is still no way to specify these, but gazebo5 fails
+  to load the urdf because it doesn't know the tags.
+* katana_description: ivcon + convex are only build dependencies
+* Contributors: Martin Günther, Michael Görner
+
 1.0.1 (2015-03-17)
 ------------------
 

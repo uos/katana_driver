@@ -2,6 +2,11 @@
 Changelog for package kni
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Even more KNI dependencies
+* Contributors: Jochen Sprickerhof
+
 1.0.1 (2015-03-17)
 ------------------
 * kni: add missing boost dependency in package.xml

@@ -2,6 +2,9 @@
 Changelog for package katana_gazebo_plugins
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.1 (2015-03-17)
 ------------------
 
