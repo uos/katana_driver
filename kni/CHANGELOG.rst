@@ -2,8 +2,8 @@
 Changelog for package kni
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2015-05-06)
+------------------
 * Even more KNI dependencies
 * Contributors: Jochen Sprickerhof
 

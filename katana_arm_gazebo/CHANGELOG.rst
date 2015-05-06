@@ -2,8 +2,8 @@
 Changelog for package katana_arm_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.2 (2015-05-06)
+------------------
 * gazebo urdfs: remove self_collide tags
   Due to fixed joint reduction, there is only one link in the resulting
   SDF anyway, so there is nothing to collide with. Apart from that, this
