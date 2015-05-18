@@ -3,8 +3,7 @@ project(katana_gazebo_plugins)
 
 #add_definitions(-fPIC)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GAZEBO gazebo)
+find_package(gazebo REQUIRED)
 
 find_package(catkin REQUIRED COMPONENTS
   control_toolbox

@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(katana_arm_gazebo)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(GAZEBO gazebo)
+find_package(gazebo REQUIRED)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
