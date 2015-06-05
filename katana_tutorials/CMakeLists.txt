@@ -25,11 +25,11 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(follow_joint_trajectory_client src/follow_joint_trajectory_client.cpp)
 target_link_libraries(follow_joint_trajectory_client ${catkin_LIBRARIES})
-add_dependencies(follow_joint_trajectory_client ${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(follow_joint_trajectory_client ${catkin_EXPORTED_TARGETS})
 
 add_executable(pr2_joint_trajectory_client src/pr2_joint_trajectory_client.cpp)
 target_link_libraries(pr2_joint_trajectory_client ${catkin_LIBRARIES})
-add_dependencies(pr2_joint_trajectory_client ${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(pr2_joint_trajectory_client ${catkin_EXPORTED_TARGETS})
 
 install(TARGETS follow_joint_trajectory_client pr2_joint_trajectory_client
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

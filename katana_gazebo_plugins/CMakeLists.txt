@@ -37,11 +37,11 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 add_library(gazebo_ros_katana_gripper src/gazebo_ros_katana_gripper.cpp src/katana_gripper_grasp_controller.cpp src/katana_gripper_joint_trajectory_controller.cpp src/gazebo_ros_katana_gripper_action_interface.cpp)
 target_link_libraries(gazebo_ros_katana_gripper ${catkin_LIBRARIES})
-add_dependencies(gazebo_ros_katana_gripper ${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(gazebo_ros_katana_gripper ${catkin_EXPORTED_TARGETS})
 
 add_executable(test_gripper_joint_trajectory src/test_gripper_joint_trajectory.cpp)
 target_link_libraries(test_gripper_joint_trajectory ${catkin_LIBRARIES})
-add_dependencies(test_gripper_joint_trajectory ${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(test_gripper_joint_trajectory ${catkin_EXPORTED_TARGETS})
 
 install(TARGETS test_gripper_joint_trajectory
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

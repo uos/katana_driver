@@ -42,7 +42,7 @@ link_directories(${GAZEBO_LIBRARY_DIRS})
 
 add_executable(min_max_trajectory src/min_max_trajectory.cpp)
 target_link_libraries(min_max_trajectory ${catkin_LIBRARIES})
-add_dependencies(min_max_trajectory ${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(min_max_trajectory ${catkin_EXPORTED_TARGETS})
 
 install(TARGETS min_max_trajectory
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})

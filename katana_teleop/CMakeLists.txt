@@ -25,7 +25,7 @@ include_directories(include ${catkin_INCLUDE_DIRS})
 
 add_executable(katana_teleop_key src/katana_teleop_key.cpp)
 target_link_libraries(katana_teleop_key ${catkin_LIBRARIES})
-add_dependencies(katana_teleop_key ${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
+add_dependencies(katana_teleop_key ${catkin_EXPORTED_TARGETS})
 
 install(TARGETS katana_teleop_key
         RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
