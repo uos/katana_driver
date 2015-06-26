@@ -3,7 +3,7 @@ project(kni)
 
 find_package(catkin REQUIRED)
 
-find_package(Boost REQUIRED COMPONENTS system)
+find_package(Boost REQUIRED)
 
 catkin_package(
   INCLUDE_DIRS KNI_4.3.0/include
@@ -12,72 +12,45 @@ catkin_package(
   DEPENDS Boost
 )
 
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+include_directories(KNI_4.3.0/include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
-include(ExternalProject)
+# knicommon
+aux_source_directory(KNI_4.3.0/src/common/ knicommon_SOURCES)
+add_library(knicommon STATIC ${knicommon_SOURCES})
 
-externalproject_add(KNI_4.3.0_common
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/common/
-  CONFIGURE_COMMAND ""
-  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/common/
-  INSTALL_COMMAND ""
-)
+# KNIBase
+aux_source_directory(KNI_4.3.0/src/Base/ KNIBase_SOURCES)
+add_library(KNIBase SHARED ${KNIBase_SOURCES})
+target_link_libraries(KNIBase knicommon)
 
-externalproject_add(KNI_4.3.0_Base
-  DEPENDS KNI_4.3.0_common
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/Base/
-  CONFIGURE_COMMAND ""
-  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/Base/
-  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/linux/libKNIBase.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libKNIBase.so
-)
+# roboop
+aux_source_directory(KNI_4.3.0/lib/kinematics/roboop/source/ roboop_SOURCES)
+aux_source_directory(KNI_4.3.0/lib/kinematics/roboop/newmat/ roboop_SOURCES)
+include_directories(include KNI_4.3.0/lib/kinematics/roboop/newmat/)
+add_library(roboop STATIC ${roboop_SOURCES})
 
-externalproject_add(KNI_4.3.0_roboop
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/roboop/
-  CONFIGURE_COMMAND ""
-  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/roboop/
-  INSTALL_COMMAND ""
-)
+# Kinematics
+aux_source_directory(KNI_4.3.0/lib/kinematics/ Kinematics_SOURCES)
+aux_source_directory(KNI_4.3.0/lib/kinematics/AnalyticalGuess/src/ Kinematics_SOURCES)
+include_directories(include KNI_4.3.0/lib/kinematics/AnalyticalGuess/include/)
+add_library(Kinematics SHARED ${Kinematics_SOURCES})
+target_link_libraries(Kinematics roboop)
 
-externalproject_add(KNI_4.3.0_kinematics
-  DEPENDS KNI_4.3.0_roboop
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/
-  CONFIGURE_COMMAND ""
-  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/kinematics/
-  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/linux/libKinematics.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libKinematics.so
-)
+# KNI_InvKin
+aux_source_directory(KNI_4.3.0/src/InvKin/ KNI_InvKin_SOURCES)
+add_library(KNI_InvKin SHARED ${KNI_InvKin_SOURCES})
+target_link_libraries(KNI_InvKin Kinematics)
 
-externalproject_add(KNI_4.3.0_InvKin
-  DEPENDS KNI_4.3.0_kinematics KNI_4.3.0_Base
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/InvKin/
-  CONFIGURE_COMMAND ""
-  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/InvKin/
-  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/linux/libKNI_InvKin.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libKNI_InvKin.so
-)
+# KNI_LM
+aux_source_directory(KNI_4.3.0/src/LM/ KNI_LM_SOURCES)
+add_library(KNI_LM SHARED ${KNI_LM_SOURCES})
+target_link_libraries(KNI_LM knicommon KNIBase)
 
-externalproject_add(KNI_4.3.0_LM
-  DEPENDS KNI_4.3.0_common KNI_4.3.0_Base
-  SOURCE_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/LM/
-  CONFIGURE_COMMAND ""
-  BINARY_DIR ${PROJECT_SOURCE_DIR}/KNI_4.3.0/src/LM/
-  INSTALL_COMMAND ${CMAKE_COMMAND} -E copy ${PROJECT_SOURCE_DIR}/KNI_4.3.0/lib/linux/libKNI_LM.so ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_LIB_DESTINATION}/libKNI_LM.so
-)
-
-add_library(KNIBase SHARED)
-set_target_properties(KNIBase PROPERTIES LINKER_LANGUAGE CXX)
-add_dependencies(KNIBase KNI_4.3.0_Base)
-add_library(Kinematics SHARED)
-set_target_properties(Kinematics PROPERTIES LINKER_LANGUAGE CXX)
-add_dependencies(Kinematics KNI_4.3.0_kinematics)
-add_library(KNI_InvKin SHARED)
-set_target_properties(KNI_InvKin PROPERTIES LINKER_LANGUAGE CXX)
-add_dependencies(KNI_InvKin KNI_4.3.0_InvKin)
-add_library(KNI_LM SHARED)
-set_target_properties(KNI_LM PROPERTIES LINKER_LANGUAGE CXX)
-add_dependencies(KNI_LM KNI_4.3.0_LM)
+set_target_properties(knicommon KNIBase roboop Kinematics KNI_InvKin KNI_LM 
+  PROPERTIES COMPILE_FLAGS "-fPIC")
 
 install(TARGETS KNIBase Kinematics KNI_InvKin KNI_LM
-  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-)
+  DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
 
 install(DIRECTORY KNI_4.3.0/include/
   DESTINATION ${CATKIN_GLOBAL_INCLUDE_DESTINATION})
