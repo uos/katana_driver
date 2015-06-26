@@ -12,7 +12,7 @@ catkin_package(
   DEPENDS Boost
 )
 
-include_directories(include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+include_directories(KNI_4.3.0/include ${Boost_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
 
 # knicommon
 aux_source_directory(KNI_4.3.0/src/common/ knicommon_SOURCES)
