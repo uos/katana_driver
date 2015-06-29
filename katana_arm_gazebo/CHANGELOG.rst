@@ -2,6 +2,12 @@
 Changelog for package katana_arm_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove dependencies to non-existing cmake targets
+* find_package gazebo instead of using PkgConfig
+* Contributors: Michael Görner
+
 1.0.2 (2015-05-06)
 ------------------
 * gazebo urdfs: remove self_collide tags

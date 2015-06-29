@@ -2,6 +2,16 @@
 Changelog for package kni
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Removed external project handling scheme from CMakeLists.txt.
+  The kni package's catkin definitions now do not rely on the original
+  project's Makefiles anymore. It now directly handles the build process.
+  This has the advantage that resulting targets are no "meta" targets
+  anymore. This caused client applications to link against the absolute
+  library path from build time, not using the library name + path pattern.
+* Contributors: Leon Ziegler
+
 1.0.2 (2015-05-06)
 ------------------
 * Even more KNI dependencies

@@ -2,6 +2,11 @@
 Changelog for package katana_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix cmake developer warning
+* Contributors: Michael Görner
+
 1.0.2 (2015-05-06)
 ------------------
 * comment initial_joint_position in katana-gazebo urdf

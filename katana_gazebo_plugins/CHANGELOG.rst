@@ -2,6 +2,12 @@
 Changelog for package katana_gazebo_plugins
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* remove dependencies to non-existing cmake targets
+* find_package gazebo instead of using PkgConfig
+* Contributors: Michael Görner
+
 1.0.2 (2015-05-06)
 ------------------
 
