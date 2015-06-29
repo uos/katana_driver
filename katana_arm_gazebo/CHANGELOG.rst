@@ -2,8 +2,8 @@
 Changelog for package katana_arm_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2015-06-29)
+------------------
 * remove dependencies to non-existing cmake targets
 * find_package gazebo instead of using PkgConfig
 * Contributors: Michael Görner

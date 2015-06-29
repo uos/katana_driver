@@ -2,8 +2,8 @@
 Changelog for package kni
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2015-06-29)
+------------------
 * Removed external project handling scheme from CMakeLists.txt.
   The kni package's catkin definitions now do not rely on the original
   project's Makefiles anymore. It now directly handles the build process.

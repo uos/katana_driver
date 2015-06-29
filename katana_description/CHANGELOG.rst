@@ -2,8 +2,8 @@
 Changelog for package katana_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.3 (2015-06-29)
+------------------
 * fix cmake developer warning
 * Contributors: Michael Görner
 
