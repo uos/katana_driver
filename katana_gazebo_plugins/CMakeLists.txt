@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 2.8.12)
 project(katana_gazebo_plugins)
 
 #add_definitions(-fPIC)
@@ -31,6 +31,8 @@ catkin_package(
   trajectory_msgs
   DEPENDS
 )
+
+add_compile_options(-std=c++11)
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS})
 link_directories(${GAZEBO_LIBRARY_DIRS})
