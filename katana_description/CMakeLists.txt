@@ -120,7 +120,7 @@ foreach(it ${katana_stl_files})
 
 endforeach()
 
-add_custom_target(media_files ALL DEPENDS ${katana_gen_files} )
+add_custom_target(katana_media_files ALL DEPENDS ${katana_gen_files} )
 
 install(DIRECTORY collada DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
 install(DIRECTORY launch DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
