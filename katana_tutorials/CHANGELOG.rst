@@ -2,6 +2,9 @@
 Changelog for package katana_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.3 (2015-06-29)
 ------------------
 * remove dependencies to non-existing cmake targets

@@ -2,6 +2,9 @@
 Changelog for package kni
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.3 (2015-06-29)
 ------------------
 * Removed external project handling scheme from CMakeLists.txt.

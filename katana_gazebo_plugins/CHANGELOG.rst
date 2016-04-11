@@ -2,6 +2,12 @@
 Changelog for package katana_gazebo_plugins
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* compile gazebo plugins with c++-11
+  This is required with gazebo6 and it's backwards compatible
+* Contributors: Michael Görner
+
 1.0.3 (2015-06-29)
 ------------------
 * remove dependencies to non-existing cmake targets

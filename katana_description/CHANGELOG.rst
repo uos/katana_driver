@@ -2,6 +2,11 @@
 Changelog for package katana_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Rename custom CMake target `media_files`
+* Contributors: Martin Günther
+
 1.0.3 (2015-06-29)
 ------------------
 * fix cmake developer warning
