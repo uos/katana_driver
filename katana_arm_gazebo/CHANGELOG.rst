@@ -2,6 +2,9 @@
 Changelog for package katana_arm_gazebo
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.4 (2016-04-11)
 ------------------
 
