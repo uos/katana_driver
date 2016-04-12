@@ -2,8 +2,8 @@
 Changelog for package katana_gazebo_plugins
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.5 (2016-04-12)
+------------------
 * Fix katana_gazebo_plugins compilation on Saucy
 * Contributors: Martin Günther
 

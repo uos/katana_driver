@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>katana_tutorials</name>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <description>
      This package contains test and demo programs for the katana_driver stack.
   </description>

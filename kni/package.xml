@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>kni</name>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <description>
      This package provides the third-party KNI (Katana Native Interface) library for Katana
      robot arms.

@@ -1,6 +1,6 @@
 <package>
   <name> katana_driver </name>
-  <version>1.0.4</version>
+  <version>1.0.5</version>
   <description>
     This stack contains all descriptions, drivers and bringup facilities for Neuronics Katana 450 arm.
   </description>
