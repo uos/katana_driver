@@ -64,8 +64,8 @@ IKFAST_COMPILE_ASSERT(IKFAST_VERSION==61);
 #define IKPI_2  ((IkReal)1.57079632679490)
 
 #ifdef _MSC_VER
-#ifndef isnan
-#define isnan _isnan
+#ifndef std::isnan
+#define std::isnan _isnan
 #endif
 #endif // _MSC_VER
 
@@ -165,21 +165,21 @@ inline double IKtan(double f) { return tan(f); }
 inline float IKsqrt(float f) { if( f <= 0.0f ) return 0.0f; return sqrtf(f); }
 inline double IKsqrt(double f) { if( f <= 0.0 ) return 0.0; return sqrt(f); }
 inline float IKatan2(float fy, float fx) {
-    if( isnan(fy) ) {
-        IKFAST_ASSERT(!isnan(fx)); // if both are nan, probably wrong value will be returned
+    if( std::isnan(fy) ) {
+        IKFAST_ASSERT(!std::isnan(fx)); // if both are nan, probably wrong value will be returned
         return float(IKPI_2);
     }
-    else if( isnan(fx) ) {
+    else if( std::isnan(fx) ) {
         return 0;
     }
     return atan2f(fy,fx);
 }
 inline double IKatan2(double fy, double fx) {
-    if( isnan(fy) ) {
-        IKFAST_ASSERT(!isnan(fx)); // if both are nan, probably wrong value will be returned
+    if( std::isnan(fy) ) {
+        IKFAST_ASSERT(!std::isnan(fx)); // if both are nan, probably wrong value will be returned
         return IKPI_2;
     }
-    else if( isnan(fx) ) {
+    else if( std::isnan(fx) ) {
         return 0;
     }
     return atan2(fy,fx);
@@ -467,7 +467,7 @@ if( sj4array[0] >= -1-IKFAST_SINCOS_THRESH && sj4array[0] <= 1+IKFAST_SINCOS_THR
     j4array[1] = j4array[0] > 0 ? (IKPI-j4array[0]) : (-IKPI-j4array[0]);
     cj4array[1] = -cj4array[0];
 }
-else if( isnan(sj4array[0]) )
+else if( std::isnan(sj4array[0]) )
 {
     // probably any value will work
     j4valid[0] = true;
