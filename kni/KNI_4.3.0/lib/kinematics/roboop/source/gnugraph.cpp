@@ -78,7 +78,7 @@ static const char rcsid[] = "$Id: gnugraph.cpp,v 1.44 2006/05/19 17:49:58 gourde
 using namespace std;
 
 
-char *curvetype[] =
+const char *curvetype[] =
    {"lines",
     "points",
     "linespoints",
