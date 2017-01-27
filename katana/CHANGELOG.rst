@@ -2,6 +2,11 @@
 Changelog for package katana
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Initial release to Kinetic
+* Contributors: Martin Günther
+
 1.0.5 (2016-04-12)
 ------------------
 
