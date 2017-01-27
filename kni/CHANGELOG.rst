@@ -2,8 +2,8 @@
 Changelog for package kni
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.0.6 (2017-01-27)
+------------------
 * Fix deprecation warning (`#20 <https://github.com/uos/katana_driver/issues/20>`_)
 * Initial release to Kinetic
 * Contributors: Martin Günther

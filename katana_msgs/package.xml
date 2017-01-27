@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>katana_msgs</name>
-  <version>1.0.5</version>
+  <version>1.0.6</version>
   <description>
      This package contains messages specific to the Neuronics Katana arm.
   </description>
