@@ -102,9 +102,6 @@ KNIKinematics::KNIKinematics()
   ikBase_.create(&config, NULL);
 
   // ------- register services
-  get_kinematic_solver_info_server_ = nh_.advertiseService("get_kinematic_solver_info",
-                                                           &KNIKinematics::get_kinematic_solver_info, this);
-
   get_fk_server_ = nh_.advertiseService("get_fk", &KNIKinematics::get_position_fk, this);
 
   get_ik_server_ = nh_.advertiseService("get_ik", &KNIKinematics::get_position_ik, this);
@@ -113,15 +110,6 @@ KNIKinematics::KNIKinematics()
 KNIKinematics::~KNIKinematics()
 {
   delete converter_;
-}
-
-bool KNIKinematics::get_kinematic_solver_info(moveit_msgs::GetKinematicSolverInfo::Request &req,
-                                              moveit_msgs::GetKinematicSolverInfo::Response &res)
-{
-  res.kinematic_solver_info.joint_names = joint_names_;
-  res.kinematic_solver_info.limits = joint_limits_;
-
-  return true;
 }
 
 bool KNIKinematics::get_position_fk(moveit_msgs::GetPositionFK::Request &req,

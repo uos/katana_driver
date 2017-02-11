@@ -29,9 +29,9 @@
 #include <ros/package.h>
 #include <tf/transform_listener.h>
 #include <geometry_msgs/PoseStamped.h>
-#include <moveit_msgs/GetKinematicSolverInfo.h>
 #include <moveit_msgs/GetPositionFK.h>
 #include <moveit_msgs/GetPositionIK.h>
+#include <moveit_msgs/JointLimits.h>
 #include <urdf/model.h>
 
 #include <KNI_InvKin/ikBase.h>
@@ -54,7 +54,6 @@ public:
 
 private:
   ros::NodeHandle nh_;
-  ros::ServiceServer get_kinematic_solver_info_server_;
   ros::ServiceServer get_fk_server_;
   ros::ServiceServer get_ik_server_;
 
@@ -64,9 +63,6 @@ private:
   CikBase ikBase_;
   KNIConverter* converter_;
   tf::TransformListener tf_listener_;
-
-  bool get_kinematic_solver_info(moveit_msgs::GetKinematicSolverInfo::Request &req,
-                                 moveit_msgs::GetKinematicSolverInfo::Response &res);
 
   bool get_position_fk(moveit_msgs::GetPositionFK::Request &req, moveit_msgs::GetPositionFK::Response &res);
   bool get_position_ik(moveit_msgs::GetPositionIK::Request &req, moveit_msgs::GetPositionIK::Response &res);
