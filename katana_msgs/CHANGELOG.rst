@@ -2,6 +2,9 @@
 Changelog for package katana_msgs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.6 (2017-01-27)
 ------------------
 * Initial release to Kinetic
