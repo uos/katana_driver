@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>katana</name>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <description>
     This package provides ROS interfaces to the Neuronics Katana 450 arm.
     It wraps the <a href="/wiki/kni">KNI</a> library for low-level communication

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>katana_description</name>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <description>
     This package contains an URDF description of the Katana arm and all supporting mesh files.
   </description>

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>katana_teleop</name>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <description>
      This package provides tele-operation nodes to control the Neuronics Katana 450 arm via keyboard commands or with a playstation 3 controller.
   </description>

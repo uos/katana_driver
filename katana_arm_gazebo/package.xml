@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>katana_arm_gazebo</name>
-  <version>1.0.6</version>
+  <version>1.0.7</version>
   <description>
     This package starts a Neuronics Katana robot arm in the Gazebo simulation environment. It is modeled after the <a href="http://www.ros.org/wiki/pr2_arm_gazebo">pr2_arm_gazebo</a> package by John Hsu.
   </description>
