@@ -2,6 +2,9 @@
 Changelog for package katana_description
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.7 (2017-02-11)
 ------------------
 

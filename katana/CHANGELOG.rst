@@ -2,6 +2,9 @@
 Changelog for package katana
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.0.7 (2017-02-11)
 ------------------
 * KNIKinematics: Remove GetKinematicSolverInfo service

@@ -2,6 +2,13 @@
 Changelog for package katana_moveit_ikfast_plugin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Update for urdf 1.0 (Closes: `#22 <https://github.com/uos/katana_driver/issues/22>`_)
+* ikfast plugin: update to newest moveit_kinematics template
+  Manual update, without the formatting changes
+* Contributors: Jochen Sprickerhof, Martin Günther
+
 1.0.7 (2017-02-11)
 ------------------
 
