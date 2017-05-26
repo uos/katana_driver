@@ -2,8 +2,8 @@
 Changelog for package katana
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.0 (2017-05-26)
+------------------
 * Fix build with gcc6 and C++11
 * Contributors: Jochen Sprickerhof
 
