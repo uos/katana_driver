@@ -53,7 +53,7 @@ struct Tpos{
 	static const int xArr[], yArr[], zArr[], uArr[], vArr[], wArr[];
 };
 //Katana obj.
-std::auto_ptr<CLMBase> katana;
+std::unique_ptr<CLMBase> katana;
 //std::vector<int> Foo::vec(array, array + sizeof(array)/sizeof(*array));
 //positionen, hard-coded. Use values from file instead
 const int Tpos::xArr[] = {30206, -23393, -3066, 14454, 30000, 30000};
@@ -153,8 +153,8 @@ int main(int argc, char *argv[]) {
 	//----------------------------------------------------------------//
 
 		
-	std::auto_ptr<CCdlSocket> device;
-	std::auto_ptr<CCplSerialCRC> protocol;
+	std::unique_ptr<CCdlSocket> device;
+	std::unique_ptr<CCplSerialCRC> protocol;
 
 	try {
 

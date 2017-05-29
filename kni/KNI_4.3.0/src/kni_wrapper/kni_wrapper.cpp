@@ -19,9 +19,9 @@
 #include <sstream>
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //KNI internal types
-static std::auto_ptr<CLMBase> katana;
-static std::auto_ptr<CCdlSocket> device;
-static std::auto_ptr<CCplSerialCRC> protocol;
+static std::unique_ptr<CLMBase> katana;
+static std::unique_ptr<CCdlSocket> device;
+static std::unique_ptr<CCplSerialCRC> protocol;
 /////////////////////////////////////////////////////////////////////////////////////////////////
 //A map containing movement vectors accessible by a string name:
 std::map< std::string, std::vector<TMovement> > movements;

@@ -33,7 +33,7 @@ struct Tpos{
 };
 //////////////////////////////////////////////////////////////////////////////////
 //Katana obj.
-std::auto_ptr<CLMBase> katana;
+std::unique_ptr<CLMBase> katana;
 int retVal = 0;
 const double PI = 3.14159265358979323846;
 //////////////////////////////////////////////////////////////////////////////////
@@ -47,8 +47,8 @@ int main(int argc, char *argv[]) {
 	std::cout << "--------------------------\n";
 	std::cout << "SOCKETCONTROL DEMO STARTED\n";
 	std::cout << "--------------------------\n";
-	std::auto_ptr<CCdlSocket> device;
-	std::auto_ptr<CCplSerialCRC> protocol;
+	std::unique_ptr<CCdlSocket> device;
+	std::unique_ptr<CCplSerialCRC> protocol;
 	try {
 		int port = 5566;
 		device.reset(new CCdlSocket(argv[2], port));

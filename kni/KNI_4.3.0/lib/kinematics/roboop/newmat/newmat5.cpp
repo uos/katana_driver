@@ -8,6 +8,8 @@
 
 //#define WANT_STREAM
 
+#include <iostream>
+
 #include "include.h"
 
 #include "newmat.h"
@@ -491,7 +493,8 @@ MatrixInput::~MatrixInput()
 {
    REPORT
    Tracer et("MatrixInput");
-   if (n!=0) Throw(ProgramException("A list of values was too short"));
+   if (n!=0)
+     std::cerr << "Error in destructor: A list of values was too short" << std::endl;
 }
 
 MatrixInput BandMatrix::operator<<(double)

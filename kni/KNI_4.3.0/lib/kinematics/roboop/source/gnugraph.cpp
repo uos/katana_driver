@@ -147,7 +147,12 @@ void Plot2d::gnuplot(void)
 #if defined(__BCPLUSPLUS__) || defined(_MSC_VER) || defined(__WATCOMC__) || defined(__MINGW32__)
    tmpnam(filename); /* generate a temporary file name */
 #else
-   mkstemp(filename);
+   int fd = mkstemp(filename);
+   if (fd == -1)
+   {
+     std::cerr << "mkstemp(" << filename << "failed: " << std::strerror(errno) << std::endl;
+     return;
+   }
 #endif
    /* replacing \ by / */
    while((wibsl = strchr(filename,bsl)) != 0) {
@@ -345,7 +350,12 @@ void Plot3d::gnuplot(const Matrix & xyz)
 #if defined(__BCPLUSPLUS__) || defined(_MSC_VER) || defined(__WATCOMC__) || defined(__MINGW32__)
    tmpnam(filename); /* generate a temporary file name */
 #else
-   mkstemp(filename);
+   int fd = mkstemp(filename);
+   if (fd == -1)
+   {
+     std::cerr << "mkstemp(" << filename << "failed: " << std::strerror(errno) << std::endl;
+     return;
+   }
 #endif
 
    while((wibsl = strchr(filename,bsl)) != 0) {

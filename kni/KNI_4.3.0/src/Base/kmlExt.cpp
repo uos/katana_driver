@@ -185,7 +185,7 @@ void CKatana::calibrate(long idx, TMotCLB clb, TMotSCP scp, TMotDYL dyl) {
 
 	searchMechStop(idx,clb.dir,scp,dyl);
 //std::cout << "setting actual position to " << base->GetMOT()->arr[idx].GetInitialParameters()->encoderOffset << " with motor command flag " << clb.mcf << std::endl;
-	TMotAPS aps = { clb.mcf, base->GetMOT()->arr[idx].GetInitialParameters()->encoderOffset };
+	TMotAPS aps = { clb.mcf, static_cast<short int>(base->GetMOT()->arr[idx].GetInitialParameters()->encoderOffset) };
 	base->GetMOT()->arr[idx].sendAPS(&aps);
 
 	mov(idx, clb.encoderPositionAfter, true);

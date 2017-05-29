@@ -50,7 +50,7 @@ struct Tpos{
 };
 
 //Katana obj.
-std::auto_ptr<CLMBase> katana;
+std::unique_ptr<CLMBase> katana;
 //////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, char *argv[]) {
@@ -71,8 +71,8 @@ int main(int argc, char *argv[]) {
 	//----------------------------------------------------------------//
 
 		
-	std::auto_ptr<CCdlSocket> device;
-	std::auto_ptr<CCplSerialCRC> protocol;
+	std::unique_ptr<CCdlSocket> device;
+	std::unique_ptr<CCplSerialCRC> protocol;
 
 	try {
 

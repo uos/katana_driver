@@ -49,7 +49,7 @@
 class DLLDIR_IK CikBase : public CKatana {
 
  private:
-	std::auto_ptr<KNI::KatanaKinematics> _kinematicsImpl;
+	std::unique_ptr<KNI::KatanaKinematics> _kinematicsImpl;
 	bool _kinematicsIsInitialized;
 	void _initKinematics();
 
