@@ -2,6 +2,9 @@
 Changelog for package katana_tutorials
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.1.1 (2017-05-26)
 ------------------
 

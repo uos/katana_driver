@@ -2,6 +2,11 @@
 Changelog for package kni
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* kni: Build with c++11, fix warnings
+* Contributors: Martin Günther
+
 1.1.1 (2017-05-26)
 ------------------
 

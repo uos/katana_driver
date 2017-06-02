@@ -2,6 +2,9 @@
 Changelog for package katana
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 1.1.1 (2017-05-26)
 ------------------
 * Compile katana package with c++11
