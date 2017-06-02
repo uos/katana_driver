@@ -2,8 +2,8 @@
 Changelog for package katana_moveit_ikfast_plugin
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+1.1.2 (2017-06-02)
+------------------
 * ikfast plugin: regenerated with newest moveit_ikfast
 * Update update_ikfast_plugin.sh
 * Contributors: Martin Günther
