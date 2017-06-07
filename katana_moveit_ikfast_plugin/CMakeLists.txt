@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 2.8.12)
 project(katana_moveit_ikfast_plugin)
 
 add_compile_options(-std=c++11)
