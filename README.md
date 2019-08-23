@@ -10,3 +10,8 @@ This stack contains ROS hardware drivers, Gazebo plugins and other basic functio
 * some demo programs (package `katana_tutorials`).
 
 For more information, visit the [katana_driver ROS wiki page](http://www.ros.org/wiki/katana_driver).
+
+### Build
+
+* `rosdep install --from-paths src --ignore-src -r -y`
+* catkin build
