@@ -138,7 +138,11 @@ void GazeboRosKatanaGripper::Load(physics::ModelPtr _parent, sdf::ElementPtr _sd
 void GazeboRosKatanaGripper::InitChild()
 {
   pid_controller_.reset();
-  prev_update_time_ = this->my_world_->GetSimTime();
+  #if GAZEBO_MAJOR_VERSION >= 8 
+    prev_update_time_ = this->my_world_->SimTime();
+  #else
+    prev_update_time_ = this->my_world_->GetSimTime();
+  #endif
 }
 
 void GazeboRosKatanaGripper::FiniChild()
@@ -149,7 +153,11 @@ void GazeboRosKatanaGripper::FiniChild()
 void GazeboRosKatanaGripper::UpdateChild()
 {
   // --------------- command joints  ---------------
-  common::Time time_now = this->my_world_->GetSimTime();
+  #if GAZEBO_MAJOR_VERSION >= 8 
+    common::Time time_now = this->my_world_->SimTime();
+  #else
+    common::Time time_now = this->my_world_->GetSimTime();
+  #endif
   common::Time step_time = time_now - prev_update_time_;
   prev_update_time_ = time_now;
   ros::Duration dt = ros::Duration(step_time.Double());
@@ -170,8 +178,11 @@ void GazeboRosKatanaGripper::UpdateChild()
     //  desired_pos[i] = -0.44;
 
     desired_pos[i] = active_gripper_action_->getNextDesiredPoint(ros::Time::now()).position;
-    actual_pos[i] = joints_[i]->GetAngle(0).Radian();
-
+    #if GAZEBO_MAJOR_VERSION >= 8 
+      actual_pos[i] = joints_[i]->Position(0);
+    #else
+      actual_pos[i] = joints_[i]->GetAngle(0).Radian();
+    #endif
     commanded_effort[i] = pid_controller_.computeCommand(desired_pos[i] - actual_pos[i], -joints_[i]->GetVelocity(0), dt);
 
     if (commanded_effort[i] > torque_)
@@ -194,7 +205,11 @@ void GazeboRosKatanaGripper::UpdateChild()
     // update all actions
     for (std::size_t i = 0; i != gripper_action_list_.size(); i++)
     {
-      gripper_action_list_[i]->setCurrentPoint(joints_[i]->GetAngle(0).Radian(), joints_[i]->GetVelocity(0));
+      #if GAZEBO_MAJOR_VERSION >= 8 
+        gripper_action_list_[i]->setCurrentPoint(joints_[i]->Position(0), joints_[i]->GetVelocity(0));
+      #else
+        gripper_action_list_[i]->setCurrentPoint(joints_[i]->GetAngle(0).Radian(), joints_[i]->GetVelocity(0));
+      #endif
     }
 
   }
