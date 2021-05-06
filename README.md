@@ -14,4 +14,4 @@ For more information, visit the [katana_driver ROS wiki page](http://www.ros.org
 ### Build
 
 * `rosdep install --from-paths src --ignore-src -r -y`
-* catkin build
+* `catkin_make`
