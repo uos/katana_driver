@@ -1,19 +1,18 @@
 <?xml version="1.0"?>
 
-<robot xmlns:xacro="http://ros.org/wiki/xacro"
-  name="katana_400_6m180">
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="katana_400_6m180">
 
   <xacro:include filename="$(find katana_description)/urdf/transmissions.urdf.xacro"/>
   <xacro:include filename="$(find katana_description)/urdf/gazebo.urdf.xacro"/>
 
-  <property name="M_PI" value="3.1415926535897931" />
+  <xacro:property name="M_PI" value="3.1415926535897931" />
 
   <!-- all values from the katana manual -->
-  <property name="base_height" value="0.2015" />
-  <property name="link2_length" value="0.19" />
-  <property name="link3_length" value="0.139" />
-  <property name="link4_length" value="0.1523" />
-  <property name="link5_length" value="0.1505" />
+  <xacro:property name="base_height" value="0.2015" />
+  <xacro:property name="link2_length" value="0.19" />
+  <xacro:property name="link3_length" value="0.139" />
+  <xacro:property name="link4_length" value="0.1523" />
+  <xacro:property name="link5_length" value="0.1505" />
 
   <!-- All inertial values (mass, center of mass and inertia tensor) have been
        calculated from the meshes using MeshLab -->

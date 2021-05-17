@@ -2,8 +2,8 @@
 
 <robot xmlns:xacro="http://ros.org/wiki/xacro" >
 
-  <property name="M_PI" value="3.1415926535897931" />
-  <property name="controlbox_height" value="0.073" />
+  <xacro:property name="M_PI" value="3.1415926535897931" />
+  <xacro:property name="controlbox_height" value="0.073" />
   
   <link name="katana_internal_controlbox_link">
     <visual>

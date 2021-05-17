@@ -3,7 +3,7 @@
   <param name="katana_type" type="string" value="$(env KATANA_TYPE)" />
 
   <!-- start katana node for a physical katana arm -->
-  <include file="$(find katana)/launch/$(env KATANA_TYPE).launch" />
+  <include file ='$(find katana)/launch/$(env KATANA_TYPE).launch' />
 </launch>
 
  
